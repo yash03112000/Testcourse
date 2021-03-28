@@ -69,12 +69,12 @@ export default function Home() {
 
   const login=(e)=>{
       e.preventDefault();
-      fetch(`/auth/local`, {method: 'POST',headers: {
+      fetch(`/auth/SignUp`, {method: 'POST',headers: {
           'Content-Type': 'application/json'}, body: JSON.stringify({username:Name,password:Password})})
           .then(res => {
               if(res.status === 200){
                 res.json().then((res)=>{
-                  if(!res.status){
+                  if(res.msg === "Username Exist"){
                     setMsg(res.msg)
                   }else{
                     router.replace('/dashboard');
@@ -99,7 +99,7 @@ export default function Home() {
                   {msg}
                 </Typography>
                 <Typography component="p" color="primary" variant="subtitle1" gutterBottom className={classes.header} >
-                  LogIn To Your TestCourse Account
+                  Create Your TestCourse Account
                 </Typography>
                 <Divider />
                 <div className={classes.btnbox}>
@@ -129,11 +129,11 @@ export default function Home() {
                       }}/>
                     </div>
                     <div>
-                      <Button color="primary" variant="contained" type="submit" style={{}} className={classes.submit}>LogIn</Button>
+                      <Button color="primary" variant="contained" type="submit" style={{}} className={classes.submit}>SignUp</Button>
                     </div>
                   </form>
                   <Divider />
-                  <Typography component="h4" color="primary" variant="subtitle1" className={classes.header} gutterBottom>New User?Sign Up <Link href="/SignUp" >Here</Link></Typography>
+                  <Typography component="h4" color="primary" variant="subtitle1" className={classes.header} gutterBottom>Already Have An Account?Sign In <Link href="/" >Here</Link></Typography>
               </div>
             </div>
           </div>

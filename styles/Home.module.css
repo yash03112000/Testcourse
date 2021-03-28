@@ -14,6 +14,34 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
+}
+
+.header{
+  color:'black';
+  font-weight:'bold';
+  font-size:5
+}
+.fb{
+  background-color:'#1A538A';
+  width:250
+}
+.google,.MuiButton-root{
+  background-color:'red';
+  width:250;
+  color:'black'
+}
+.mainform{
+  width:250;
+
+}
+.btnbox{
+  display:flex;
+  flex-direction: column;
+}
+.submit{
+  background-color:'#1A538A';
+  width:250
 }
 
 .footer {
