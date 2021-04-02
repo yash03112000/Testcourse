@@ -58,6 +58,7 @@ app.prepare().then(() => {
     server.use(passport.session())
     server.use('/auth', require('./routes/auth'))
     server.use('/payment', require('./routes/Payments'))
+    // server.use('/test', require('./routes/Test'))
     // server.use('/User',ensureAuthenticated, require('./routes/User'))
     // server.use('/Link', require('./routes/Link'))
 

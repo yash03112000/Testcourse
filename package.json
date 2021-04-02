@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "nodemon --ignore pages server.js",
+    "dev": "nodemon --ignore pages --ignore components server.js",
     "build": "next build",
     "prod_start": "cross-env NODE_ENV=production node server.js",
     "start": "yarn run build && yarn run prod_start"

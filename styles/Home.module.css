@@ -31,10 +31,7 @@
   width:250;
   color:'black'
 }
-.mainform{
-  width:250;
 
-}
 .btnbox{
   display:flex;
   flex-direction: column;
