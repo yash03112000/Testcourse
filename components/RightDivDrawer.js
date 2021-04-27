@@ -60,7 +60,7 @@ export default function RightDivDrawer() {
   return(
     <div className={classes.maindivright}> 
     <div className={classes.rightsec1}>
-        <img src="./malefig.jpg" height="100" style={{margin:10,borderRadius:10}} />
+        <img src="../malefig.jpg" height="100" style={{margin:10,borderRadius:10}} />
         <div>
             <Typography component="span" color="primary" variant="subtitle1" gutterBottom  style={{color:'black',fontSize:18}}>
             John Doe

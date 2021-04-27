@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import styles from '../styles/Home.module.css'
+// import styles from '../styles/Home.module.css'
 import React, {useState} from 'react';
 import {TextField,Button,Typography,Divider,InputAdornment,Select,MenuItem,InputLabel,Radio,RadioGroup,FormControlLabel} from '@material-ui/core';
 import MailOutlineIcon from '@material-ui/icons/MailOutline';
@@ -8,8 +8,11 @@ import LockIcon from '@material-ui/icons/Lock';
 import { useRouter } from 'next/router'
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
-import Drawer from '../components/Drawer'
-import RightDiv from '../components/RightDiv'
+import Drawer from '../../components/Drawer'
+import RightDiv from '../../components/RightDiv'
+import Question from '../../components/Question'
+import { server } from '../../config';
+
 const useStyles = makeStyles((theme) => ({
 
     mainform:{
@@ -72,40 +75,23 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function Home() {
+export default function Home({test,result}) {
   const [lang,setLang] = useState('');
   const [status,setStatus] = useState(false);
-//   const [drawer,setDrawer] = useState(false);
+  const [data,setData] = useState(test);
+  const [quesid,setQuesid] = useState(test.question_id);
   const router = useRouter()
   const classes = useStyles();
 
-
-  const googlelgn = ()=>{
-    fetch('/auth/google',{method:'GET'})
-  }
+//   console.log(data)
 
 
 
 
 
 
-  const login=(e)=>{
-      e.preventDefault();
-      fetch(`/auth/SignUp`, {method: 'POST',headers: {
-          'Content-Type': 'application/json'}, body: JSON.stringify({username:Name,password:Password})})
-          .then(res => {
-              if(res.status === 200){
-                res.json().then((res)=>{
-                  if(res.msg === "Username Exist"){
-                    setMsg(res.msg)
-                  }else{
-                    router.replace('/dashboard');
-                 }
-                })
-              }
-          })
 
-    }
+
   return (
     <div >
       <Head>
@@ -117,7 +103,7 @@ export default function Home() {
                 <div className={classes.header}>
                     <div>
                         <Typography component="span" color="primary" variant="subtitle1" gutterBottom className={classes.headertext} >
-                        ABCD Test
+                        {data.title}
                         </Typography>
                     </div>
                     <div className={classes.headertextInstruct}>
@@ -132,11 +118,16 @@ export default function Home() {
                 <div className={classes.maindiv}>
                     <div className={classes.maindivleft}>
                         <div className={classes.sec1}>
-                            <div style={{padding:5}}>  
-                                <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'#38A9EB',color:'white',padding:8,margin:10,borderRadius:10}} >
-                                General Awareness
-                                </Typography>
-                            </div>
+                            {data.section_id.map((sec,index)=>{
+                                return (
+                                    <div style={{padding:5}} key={index}>  
+                                        <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'#38A9EB',color:'white',padding:8,margin:10,borderRadius:10}} >
+                                        {sec}
+                                        </Typography>
+                                    </div>
+                                )
+                            })}
+
                         </div>
                         <div className={classes.sec2}>
                             <div>
@@ -161,57 +152,9 @@ export default function Home() {
                                 </Typography>
                             </div>
                         </div>
-                        <div className={classes.sec4}>
-                            <div>
-                                <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{color:'red',padding:8,margin:5}} >
-                                Question Type : MCQ
-                                </Typography>
-                            </div>
-                        </div>
-                        <div className={classes.sec5}>
-                            <div style={{display:'flex',flexDirection:'row'}}>
-                                <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{color:'white',margin:6}} >
-                                ViewIn:
-                                </Typography>
-                                <Select
-                                labelId="demo-simple-select-helper-label"
-                                id="demo-simple-select-helper"
-                                onChange={(e)=>setLang(e.target.value)}
-                                value={lang}
-                                style={{minWidth:30}}
-                                >
-                                    <MenuItem value={10}>Ten</MenuItem>
-                                    <MenuItem value={20}>Twenty</MenuItem>
-                                    <MenuItem value={30}>Thirty</MenuItem>
-                                </Select>
-                            </div>
-                        </div>
-                        <div className={classes.sec6}>
-                            <div>
-                                <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{color:'black',padding:8}} >
-                                Question NO :1
-                                </Typography>
-                            </div>
-                        </div>
-                        <div className={classes.sec6}>
-                            <div>
-                                <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{color:'black',padding:8}} >
-                                    Mr Donald Reagan was _______
-                                </Typography>
-                                <RadioGroup aria-label="quiz" name="quiz" style={{color:'black',padding:8}}>
-                                    <FormControlLabel value="a" control={<Radio />} label="A" />
-                                    <FormControlLabel value="b" control={<Radio />} label="B" />
-                                    <FormControlLabel value="c" control={<Radio />} label="C" />
-                                    <FormControlLabel value="d" control={<Radio />} label="D" />
-                                </RadioGroup>
-                            </div>
-                        </div>
-                        <div>
-                            
-                        </div>
-                        <div></div>
+                        <Question id={quesid} />
                     </div>
-                    <RightDiv/>
+                    <RightDiv result={result}/>
                     </div>
                     <div style={{width:'100vw',display:'flex',flexDirection:'row'}}>
                         <div style={{flex:3}}>
@@ -236,3 +179,29 @@ export default function Home() {
     </div>
   )
 }
+
+
+export async function getServerSideProps(ctx) {
+    // console.log(server)
+    var res = await fetch(`${server}/Testserver/${ctx.params.id}`,{method:"GET",headers: ctx.req ? { cookie: ctx.req.headers.cookie,'User-Agent': '*' } : undefined});
+    // if(res.status===404){
+    //     return {
+    //         redirect: {
+    //           destination: '/404',
+    //           permanent: false,
+    //         },
+    //       }
+    // }
+    var data = await res.json();
+    var test = data.test;
+    var result = data.result
+
+
+    // var data = 'a';
+
+    // console.log(data);
+    
+    return {
+      props: {test,result}, // will be passed to the page component as props
+    }
+  }

@@ -53,14 +53,15 @@ const useStyles =makeStyles((theme)=>({
   }
 }));
 
-export default function RightDiv() {
+export default function RightDiv({result}) {
     // console.log(dis)
   const classes = useStyles();
+  console.log(result)
 
   return(
     <div className={classes.maindivright}> 
     <div className={classes.rightsec1}>
-        <img src="./malefig.jpg" height="100" style={{margin:10,borderRadius:10}} />
+        <img src="../malefig.jpg" height="100" style={{margin:10,borderRadius:10}} />
         <div>
             <Typography component="span" color="primary" variant="subtitle1" gutterBottom  style={{color:'black',fontSize:18}}>
             John Doe
@@ -72,7 +73,7 @@ export default function RightDiv() {
         <div style={{display:'flex',flexDirection:'row',margin:10,padding:3}}>
             <div>
                 <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'green',color:'white',padding:10,borderRadius:15}}>
-                0
+                {result.answered}
                 </Typography>
                 <Typography component="span" color="primary" variant="subtitle1"  gutterBottom style={{color:'black',margin:10,fontSize:14}}>
                 Answered
@@ -80,7 +81,7 @@ export default function RightDiv() {
             </div>
             <div>
                 <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'red',color:'white',padding:10,borderRadius:15}}>
-                0
+                {result.notanswered}
                 </Typography>
                 <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{color:'black',margin:10,fontSize:14}}>
                 Not Answered
@@ -90,7 +91,7 @@ export default function RightDiv() {
         <div style={{display:'flex',flexDirection:'row',margin:10,padding:3}}>
             <div>
                 <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'white',color:'black',padding:10,borderRadius:15}}>
-                0
+                {result.notvisited}
                 </Typography>
                 <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{color:'black',margin:10,fontSize:14}}>
                 Not Visited
@@ -98,7 +99,7 @@ export default function RightDiv() {
             </div>
             <div>
                 <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'purple',color:'white',padding:10,borderRadius:15}}>
-                0
+                {result.markedforreview}
                 </Typography>
                 <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{color:'black',margin:10,fontSize:14}}>
                 Marked For Review
@@ -108,7 +109,7 @@ export default function RightDiv() {
         <div style={{display:'flex',flexDirection:'row',margin:10,padding:3}}>
             <div>
                 <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'purple',color:'white',padding:10,borderRadius:15}}>
-                0
+                {result.markedanswered}
                 </Typography>
                 <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{color:'black',margin:10,fontSize:14}}>
                 Answered And Marked for Review
@@ -132,27 +133,40 @@ export default function RightDiv() {
             </Typography>
         </div>
         <div style={{display:'flex',flexDirection:'row',flexWrap:'wrap',maxHeight:'100%',overflow:'scroll'}}>
-            <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'green',color:'white',padding:15,borderRadius:15,margin:5}}>
-                0
-            </Typography>
-            <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'green',color:'white',padding:15,borderRadius:15,margin:5}}>
-                0
-            </Typography>
-            <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'green',color:'white',padding:15,borderRadius:15,margin:5}}>
-                0
-            </Typography>                                
-            <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'green',color:'white',padding:15,borderRadius:15,margin:5}}>
-                0
-            </Typography>                                
-            <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'green',color:'white',padding:15,borderRadius:15,margin:5}}>
-                0
-            </Typography>
-            <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'green',color:'white',padding:15,borderRadius:15,margin:5}}>
-                0
-            </Typography>                                
-            <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'green',color:'white',padding:15,borderRadius:15,margin:5}}>
-                0
-            </Typography>
+            {result.user_response.map((res,i)=>{
+                if(!res.visited){
+                    return(
+                        <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'white',color:'black',padding:15,borderRadius:15,margin:5}}>
+                            0
+                        </Typography>
+                    )
+                }else if(res.answered){
+                    return(
+                        <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'green',color:'white',padding:15,borderRadius:15,margin:5}}>
+                            0
+                        </Typography>
+                    )
+                }else if(res.notanswered){
+                    return(
+                        <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'red',color:'white',padding:15,borderRadius:15,margin:5}}>
+                            0
+                        </Typography>
+                    )
+                }else if(res.markedforreview){
+                    return(
+                        <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'purple',color:'white',padding:15,borderRadius:15,margin:5}}>
+                            0
+                        </Typography>
+                    )
+                }else if(res.markedanswered){
+                    return(
+                        <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'pink',color:'white',padding:15,borderRadius:15,margin:5}}>
+                            0
+                        </Typography>
+                    )
+                }
+            })}
+
         </div>
 
         </div>

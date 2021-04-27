@@ -132,6 +132,7 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1>Dashboard</h1>
+        <Link href={`/test/608470b2649f1c577703ea58`}>Test Link</Link>
         {<Typography component="p" color="primary" variant="subtitle1" gutterBottom className={classes.msg} >
           {Msg}
         </Typography>
