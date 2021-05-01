@@ -23,7 +23,8 @@ const QuestionSchema = new mongoose.Schema({
         default:false
     },
     response:{
-        type:String,
+        type:Array,
+        default:[]
     }
 });
 

@@ -53,7 +53,7 @@ const useStyles =makeStyles((theme)=>({
   }
 }));
 
-export default function RightDiv({result}) {
+export default function RightDiv({result,changeqid,section}) {
     // console.log(dis)
   const classes = useStyles();
   console.log(result)
@@ -134,37 +134,40 @@ export default function RightDiv({result}) {
         </div>
         <div style={{display:'flex',flexDirection:'row',flexWrap:'wrap',maxHeight:'100%',overflow:'scroll'}}>
             {result.user_response.map((res,i)=>{
-                if(!res.visited){
-                    return(
-                        <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'white',color:'black',padding:15,borderRadius:15,margin:5}}>
-                            0
-                        </Typography>
-                    )
-                }else if(res.answered){
-                    return(
-                        <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'green',color:'white',padding:15,borderRadius:15,margin:5}}>
-                            0
-                        </Typography>
-                    )
-                }else if(res.notanswered){
-                    return(
-                        <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'red',color:'white',padding:15,borderRadius:15,margin:5}}>
-                            0
-                        </Typography>
-                    )
-                }else if(res.markedforreview){
-                    return(
-                        <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'purple',color:'white',padding:15,borderRadius:15,margin:5}}>
-                            0
-                        </Typography>
-                    )
-                }else if(res.markedanswered){
-                    return(
-                        <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'pink',color:'white',padding:15,borderRadius:15,margin:5}}>
-                            0
-                        </Typography>
-                    )
+                if(i>=section.startindex && i<=section.endindex){
+                    if(!res.visited){
+                        return(
+                            <Typography key={i} component="span" color="primary" variant="subtitle1" onClick={()=>changeqid(res._id)} gutterBottom style={{backgroundColor:'white',color:'black',padding:15,borderRadius:15,margin:5}}>
+                                {i+1}
+                            </Typography>
+                        )
+                    }else if(res.answered){
+                        return(
+                            <Typography key={i} component="span" color="primary" variant="subtitle1" onClick={()=>changeqid(res._id)} gutterBottom style={{backgroundColor:'green',color:'white',padding:15,borderRadius:15,margin:5}}>
+                                {i+1}
+                            </Typography>
+                        )
+                    }else if(res.notanswered){
+                        return(
+                            <Typography key={i} component="span" color="primary" variant="subtitle1" onClick={()=>changeqid(res._id)} gutterBottom style={{backgroundColor:'red',color:'white',padding:15,borderRadius:15,margin:5}}>
+                                {i+1}
+                            </Typography>
+                        )
+                    }else if(res.markedforreview){
+                        return(
+                            <Typography key={i} component="span" color="primary" variant="subtitle1" onClick={()=>changeqid(res._id)} gutterBottom style={{backgroundColor:'purple',color:'white',padding:15,borderRadius:15,margin:5}}>
+                                {i+1}
+                            </Typography>
+                        )
+                    }else if(res.markedanswered){
+                        return(
+                            <Typography key={i} component="span" color="primary" variant="subtitle1" onClick={()=>changeqid(res._id)} gutterBottom style={{backgroundColor:'pink',color:'white',padding:15,borderRadius:15,margin:5}}>
+                                {i+1}
+                            </Typography>
+                        )
+                    }
                 }
+
             })}
 
         </div>

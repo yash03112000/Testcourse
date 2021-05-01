@@ -75,15 +75,35 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function Home({test,result}) {
+export default function Home({test,results}) {
   const [lang,setLang] = useState('');
   const [status,setStatus] = useState(false);
   const [data,setData] = useState(test);
-  const [quesid,setQuesid] = useState(test.question_id);
+  const [result,setResult] = useState(results);
+  const [section,setSection] = useState(test.section_id[0]);
+  const [quesid,setQuesid] = useState(test.question_id[section.startindex]);
+//   const [sanswer,setSanswer] = useState('')
+//   const [manswer,setManswer] = useState([]);
   const router = useRouter()
   const classes = useStyles();
 
 //   console.log(data)
+
+    const changeqid= (id)=>{
+        if(quesid!==id) setQuesid(id);
+    }
+    const secChange= (curr)=>{
+        if(curr.title!==section.title){
+            setSection(curr);
+            setQuesid(data.question_id[curr.startindex])
+        } 
+    }
+    const changeresult= (result)=>{
+        setResult(result);
+    }
+    // const changeanswer= (type,result)=>{
+    //     if(type==='SCQ') setSanswer(result)
+    // }
 
 
 
@@ -120,9 +140,9 @@ export default function Home({test,result}) {
                         <div className={classes.sec1}>
                             {data.section_id.map((sec,index)=>{
                                 return (
-                                    <div style={{padding:5}} key={index}>  
+                                    <div style={{padding:5}} key={index} onClick={()=>{secChange(sec)}}>  
                                         <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'#38A9EB',color:'white',padding:8,margin:10,borderRadius:10}} >
-                                        {sec}
+                                        {sec.title}
                                         </Typography>
                                     </div>
                                 )
@@ -148,15 +168,15 @@ export default function Home({test,result}) {
                         <div className={classes.sec3}>
                             <div>
                                 <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'#38A9EB',color:'white',padding:8,margin:10}} >
-                                General Awareness
+                                {section.title}
                                 </Typography>
                             </div>
                         </div>
-                        <Question id={quesid} />
+                        <Question id={quesid} changeresult={changeresult} />
                     </div>
-                    <RightDiv result={result}/>
+                    <RightDiv result={result} changeqid={changeqid} section={section}  />
                     </div>
-                    <div style={{width:'100vw',display:'flex',flexDirection:'row'}}>
+                    {/* <div style={{width:'100vw',display:'flex',flexDirection:'row'}}>
                         <div style={{flex:3}}>
                             <Button variant="contained">
                             Mark For Review and Next
@@ -173,7 +193,7 @@ export default function Home({test,result}) {
                                 Submit
                             </Button>
                         </div>
-                    </div>
+                    </div> */}
                </div> 
       </main>
     </div>
@@ -202,6 +222,6 @@ export async function getServerSideProps(ctx) {
     // console.log(data);
     
     return {
-      props: {test,result}, // will be passed to the page component as props
+      props: {test,results:result}, // will be passed to the page component as props
     }
   }
