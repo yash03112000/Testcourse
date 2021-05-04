@@ -114,33 +114,82 @@ router.post('/save',(req,res)=>{
             if(test.length>0){
                 var test = test[0];
                 var ques = test.user_response.id(req.body.id);
-                if(!ques.answered){
-                    test.notanswered--;
-                    test.answered++;
-                    ques.answered = true;
-                    ques.notanswered = false;
-                    ques.response = req.body.answer;
-                    test.save()
-                        .then((test)=>{
-                            res.json({
-                                result:test
+                if(req.body.answer.length>0){
+                    if(!ques.answered){
+                        if(ques.notanswered){
+                            test.notanswered--;
+                            ques.notanswered = false;
+                        }else if(ques.markedanswered){
+                            test.markedanswered--;
+                            ques.markedanswered = false;
+                        }else if(ques.markedforreview){
+                            test.markedforreview--;
+                            ques.markedforreview = false;
+                        }
+                        test.answered++;
+                        ques.answered = true;
+                        ques.response = req.body.answer;
+                        test.save()
+                            .then((test)=>{
+                                res.json({
+                                    result:test
+                                })
                             })
-                        })
-                        .catch((err)=>{
-                          console.log(err);
-                        })
+                            .catch((err)=>{
+                              console.log(err);
+                            })
+                    }else{
+                        ques.response = req.body.answer;
+                        test.save()
+                            .then((test)=>{
+                                res.json({
+                                    result:test
+                                })
+                            })
+                            .catch((err)=>{
+                                console.log(err);
+                            })
+                    }
                 }else{
-                    ques.response = req.body.answer;
-                    test.save()
-                        .then((test)=>{
-                            res.json({
-                                result:test
+                    if(!ques.answered){
+                        if(ques.notanswered){
+
+                        }else if(ques.markedanswered){
+                            test.markedanswered--;
+                            ques.markedanswered = false;
+                            test.markedforreview++;
+                            ques.markedforreview = true;
+                        }else if(ques.markedforreview){
+
+                        }
+                        ques.response = req.body.answer;
+                        test.save()
+                            .then((test)=>{
+                                res.json({
+                                    result:test
+                                })
                             })
-                        })
-                        .catch((err)=>{
-                            console.log(err);
-                        })
+                            .catch((err)=>{
+                              console.log(err);
+                            })
+                    }else{
+                        ques.response = req.body.answer;
+                        ques.answered = false;
+                        ques.notanswered = true;
+                        test.answered--;
+                        test.notanswered++;
+                        test.save()
+                            .then((test)=>{
+                                res.json({
+                                    result:test
+                                })
+                            })
+                            .catch((err)=>{
+                                console.log(err);
+                            })
+                    }
                 }
+
 
             }else{
 
@@ -177,6 +226,21 @@ router.post('/clearresponse',(req,res)=>{
                         .catch((err)=>{
                           console.log(err);
                         })
+                }else if(ques.markedanswered){
+                    test.markedforreview++;
+                    test.markedanswered--;
+                    ques.markedanswered = false;
+                    ques.markedforreview = true;
+                    ques.response = [];
+                    test.save()
+                        .then((test)=>{
+                            res.json({
+                                result:test
+                            })
+                        })
+                        .catch((err)=>{
+                          console.log(err);
+                        })
                 }else{
                     ques.response = [];
                     test.save()
@@ -187,6 +251,107 @@ router.post('/clearresponse',(req,res)=>{
                         })
                         .catch((err)=>{
                             console.log(err);
+                        })
+                }
+
+            }else{
+
+            }
+
+        })
+        .catch((err)=>{
+          console.log(err);
+        })    
+})
+
+
+router.post('/review',(req,res)=>{
+    Result.find({test_id:req.body.test,user_id:req.user.id})
+        .exec()
+        .then((test)=>{
+            // console.log(test)
+            if(test.length>0){
+                var test = test[0];
+                var ques = test.user_response.id(req.body.id);
+                if(ques.markedanswered){
+                    ques.response = req.body.answer;
+                    if(req.body.answer.length>0){
+
+                    }else{
+                        ques.markedanswered = false;
+                        ques.markedforreview = true;
+                        test.markedanswered --;
+                        test.markedforreview++;
+                    }
+                    test.save()
+                        .then((test)=>{
+                            res.json({
+                                result:test
+                            })
+                        })
+                        .catch((err)=>{
+                          console.log(err);
+                        })
+                }else if(ques.markedforreview){
+                    ques.response = req.body.answer;
+                    if(req.body.answer.length>0){
+                        ques.markedanswered = true;
+                        ques.markedforreview = false;
+                        test.markedanswered ++;
+                        test.markedforreview--;
+                    }
+                    test.save()
+                        .then((test)=>{
+                            res.json({
+                                result:test
+                            })
+                        })
+                        .catch((err)=>{
+                          console.log(err);
+                        })
+                }else if(ques.answered){
+                    ques.response = req.body.answer;
+                    if(req.body.answer.length>0){
+                        ques.markedanswered = true;
+                        ques.answered = false;
+                        test.markedanswered ++;
+                        test.answered--;
+                    }else{
+                        ques.answered = true;
+                        ques.markedforreview = false;
+                        test.answered --;
+                        test.markedforreview++;
+                    }
+                    test.save()
+                        .then((test)=>{
+                            res.json({
+                                result:test
+                            })
+                        })
+                        .catch((err)=>{
+                          console.log(err);
+                        })
+                }else if(ques.notanswered){
+                    ques.response = req.body.answer;
+                    if(req.body.answer.length>0){
+                        ques.markedanswered = true;
+                        ques.notanswered = false;
+                        test.markedanswered ++;
+                        test.notanswered--;
+                    }else{
+                        ques.notanswered = false;
+                        ques.markedforreview = true;
+                        test.notanswered --;
+                        test.markedforreview++;
+                    }
+                    test.save()
+                        .then((test)=>{
+                            res.json({
+                                result:test
+                            })
+                        })
+                        .catch((err)=>{
+                          console.log(err);
                         })
                 }
 

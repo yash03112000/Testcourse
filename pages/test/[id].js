@@ -98,12 +98,18 @@ export default function Home({test,results}) {
             setQuesid(data.question_id[curr.startindex])
         } 
     }
-    const changeresult= (result)=>{
+    const changeresult= (result,id)=>{
+        var i =0;
+        for(i=0;i<result.user_response.length;i++){
+            if(result.user_response[i]._id === id){
+                if(i!==section.endindex){
+                    setQuesid(result.user_response[i+1]._id)
+                }
+            }
+        }
         setResult(result);
     }
-    // const changeanswer= (type,result)=>{
-    //     if(type==='SCQ') setSanswer(result)
-    // }
+
 
 
 
@@ -172,28 +178,10 @@ export default function Home({test,results}) {
                                 </Typography>
                             </div>
                         </div>
-                        <Question id={quesid} changeresult={changeresult} />
+                        <Question id={quesid} changeresult={changeresult} result={result} />
                     </div>
                     <RightDiv result={result} changeqid={changeqid} section={section}  />
                     </div>
-                    {/* <div style={{width:'100vw',display:'flex',flexDirection:'row'}}>
-                        <div style={{flex:3}}>
-                            <Button variant="contained">
-                            Mark For Review and Next
-                            </Button>
-                            <Button variant="contained">
-                            Clear Response
-                            </Button>
-                            <Button variant="contained">
-                            Save and Next
-                            </Button>
-                        </div>
-                        <div style={{flex:1}}>
-                            <Button variant="contained" disabled>
-                                Submit
-                            </Button>
-                        </div>
-                    </div> */}
                </div> 
       </main>
     </div>

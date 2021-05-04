@@ -75,7 +75,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function Question({id,changeresult}) {
+export default function Question({id,changeresult,result}) {
   const [lang,setLang] = useState('');
   const [loading,setLoading] = useState(true);
   const [ques,setQues] = useState({});
@@ -106,6 +106,16 @@ export default function Question({id,changeresult}) {
             }
         })
   }
+
+  const qnum= (id)=>{
+    var i =0;
+    for(i=0;i<result.user_response.length;i++){
+        if(result.user_response[i]._id === id){
+            return (i+1)
+
+        }
+    }
+    }
   const savefun = ()=>{
     // setLoading(true);
     fetch(`${server}/Testserver/save`, {method: 'POST',headers: {
@@ -114,10 +124,7 @@ export default function Question({id,changeresult}) {
             // console.log(res.status)
             if(res.status === 200){
                 res.json().then((res)=>{
-                // console.log(res)
-                // setQues(res.ques)
-                // setLoading(false)
-                changeresult(res.result)
+                changeresult(res.result,id)
                 })
             }
         })
@@ -130,11 +137,21 @@ export default function Question({id,changeresult}) {
                 // console.log(res.status)
                 if(res.status === 200){
                     res.json().then((res)=>{
-                    // console.log(res)
-                    // setQues(res.ques)
-                    // setLoading(false)
                     setAnswer([])
-                    changeresult(res.result)
+                    changeresult(res.result,id)
+                    })
+                }
+            })
+        }
+    const review = ()=>{
+        // setLoading(true);
+        fetch(`${server}/Testserver/review`, {method: 'POST',headers: {
+            'Content-Type': 'application/json'}, body: JSON.stringify({id,test,answer})})
+            .then(res => {
+                // console.log(res.status)
+                if(res.status === 200){
+                    res.json().then((res)=>{
+                    changeresult(res.result,id)
                     })
                 }
             })
@@ -253,16 +270,16 @@ export default function Question({id,changeresult}) {
             <div className={classes.sec6}>
                 <div>
                     <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{color:'black',padding:8}} >
-                    Question NO :1
+                    Question NO : {qnum(id)}
                     </Typography>
                 </div>
             </div>
             {qtype(ques)}
             <div style={{display:'flex',flexDirection:'row'}}>
                 <div style={{flex:3}}>
-                    {/* <Button variant="contained">
+                    <Button variant="contained" onClick={review}>
                     Mark For Review
-                    </Button> */}
+                    </Button>
                     <Button variant="contained" onClick={clearresponse}>
                     Clear Response
                     </Button>
