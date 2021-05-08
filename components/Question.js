@@ -11,41 +11,9 @@ import { server } from '../config';
 import parse from 'html-react-parser';
 const useStyles = makeStyles((theme) => ({
 
-    mainform:{
-        width:'100vw',
-        display:'flex',
-        flexDirection:'column'
-    },
-    header:{
-        backgroundColor:'#363636',
-        width:'100vw',
-        display:'flex',
-        flexDirection:'row',
-        justifyContent:"space-between"
-    },
-    headertext:{
-        color:'#D8EA4D',
-        fontSize:12
-    },
-    headertextInstruct:{
-        // justifySelf:'center',
-        // backgroundColor:'red'
-    },
-    maindiv:{
-        height:550,
-        width:"100vw",
-        display:'flex',
-        flexDirection:'row',
-        justifyContent:"space-between"
-    },
-    maindivleft:{
-        flex:3,
-        // backgroundColor:'red',
-        display:'flex',
-        flexDirection:'column'
-    },
+
     sec1:{
-        height:50,
+        // height:50,
         display:'flex',
         flexDirection:'row',
         alignItems:'center',
@@ -275,23 +243,17 @@ export default function Question({id,changeresult,result}) {
                 </div>
             </div>
             {qtype(ques)}
-            <div style={{display:'flex',flexDirection:'row'}}>
-                <div style={{flex:3}}>
-                    <Button variant="contained" onClick={review}>
-                    Mark For Review
-                    </Button>
-                    <Button variant="contained" onClick={clearresponse}>
-                    Clear Response
-                    </Button>
-                    <Button variant="contained" onClick={savefun}>
-                    Save
-                    </Button>
-                </div>
-                <div style={{flex:1}}>
-                    <Button variant="contained" disabled>
-                        Submit
-                    </Button>
-                </div>
+            <div style={{display:'flex',flexDirection:'row',justifyContent:'space-around',marginTop:'auto'}}>
+                <Button variant="contained" onClick={review} style={{backgroundColor:'#286090'}}>
+                Mark For Review And Next
+                </Button>
+                <Button variant="contained" onClick={clearresponse} style={{backgroundColor:'#E74500'}}>
+                Clear Response
+                </Button>
+                <Button variant="contained" onClick={savefun} style={{backgroundColor:'#449D44'}}>
+                Save And Next
+                </Button>
+
             </div>
 
         </>

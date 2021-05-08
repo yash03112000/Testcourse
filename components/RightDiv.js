@@ -53,10 +53,10 @@ const useStyles =makeStyles((theme)=>({
   }
 }));
 
-export default function RightDiv({result,changeqid,section}) {
+export default function RightDivDrawer({result,changeqid,section}) {
     // console.log(dis)
   const classes = useStyles();
-  console.log(result)
+//   console.log(result)
 
   return(
     <div className={classes.maindivright}> 
@@ -122,7 +122,7 @@ export default function RightDiv({result,changeqid,section}) {
     <div className={classes.rightsec3}>
         <div>
             <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{color:'white',margin:5,padding:5}} >
-            General Awarness
+            {section.title}
             </Typography>
         </div>
     </div>
@@ -172,7 +172,12 @@ export default function RightDiv({result,changeqid,section}) {
 
         </div>
 
-        </div>
     </div>
+    <div style={{display:'flex',justifyContent:'space-around'}}>
+        <Button variant="contained" style={{backgroundColor:'#F0AD4E'}}>
+            Submit
+        </Button>
+    </div>
+   </div>
   )
 }

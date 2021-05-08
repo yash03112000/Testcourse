@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme)=>({
   }
 }));
 
-export default function SwipeableTemporaryDrawer() {
+export default function SwipeableTemporaryDrawer({result,changeqid,section}) {
   const classes = useStyles();
   const [state, setState] = React.useState({
     right: false,
@@ -78,7 +78,7 @@ export default function SwipeableTemporaryDrawer() {
             onOpen={toggleDrawer(anchor, true)}
           >
             {/* {list(anchor)} */}
-            <RightDivDrawer  />
+            <RightDivDrawer result={result} changeqid={changeqid} section={section} />
           </SwipeableDrawer>
         </React.Fragment>
       ))}

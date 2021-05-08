@@ -18,29 +18,28 @@ const useStyles = makeStyles((theme) => ({
     mainform:{
         width:'100vw',
         display:'flex',
-        flexDirection:'column'
+        flexDirection:'column',
+        height:'100vh'
     },
     header:{
         backgroundColor:'#363636',
         width:'100vw',
         display:'flex',
         flexDirection:'row',
-        justifyContent:"space-between"
+        justifyContent:"space-between",
+        height:'5vh'
     },
     headertext:{
         color:'#D8EA4D',
         fontSize:12
     },
-    headertextInstruct:{
-        // justifySelf:'center',
-        // backgroundColor:'red'
-    },
     maindiv:{
-        height:550,
         width:"100vw",
         display:'flex',
         flexDirection:'row',
-        justifyContent:"space-between"
+        justifyContent:"space-between",
+        height:'95vh'
+
     },
     maindivleft:{
         flex:3,
@@ -137,7 +136,7 @@ export default function Home({test,results}) {
                         View Instructions
                         </Typography>
                     </div>
-                    <Drawer />
+                    <Drawer result={result} changeqid={changeqid} section={section} />
                     {/* <MenuIcon className={classes.hamicon} /> */}
 
                 </div>
@@ -180,7 +179,8 @@ export default function Home({test,results}) {
                         </div>
                         <Question id={quesid} changeresult={changeresult} result={result} />
                     </div>
-                    <RightDiv result={result} changeqid={changeqid} section={section}  />
+                    <RightDiv result={result} changeqid={changeqid} section={section}/>
+                    
                     </div>
                </div> 
       </main>

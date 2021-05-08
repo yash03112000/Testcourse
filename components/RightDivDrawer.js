@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import {TextField,Button,Typography,Divider,InputAdornment,Select,MenuItem,InputLabel,Radio,RadioGroup,FormControlLabel} from '@material-ui/core';
 
 
-const useStyles = dis=>makeStyles((theme)=>({
+const useStyles = makeStyles((theme)=>({
   list: {
     width: 250,
   },
@@ -53,9 +53,10 @@ const useStyles = dis=>makeStyles((theme)=>({
   }
 }));
 
-export default function RightDivDrawer() {
+export default function RightDiv({result,changeqid,section}) {
     // console.log(dis)
   const classes = useStyles();
+//   console.log(result)
 
   return(
     <div className={classes.maindivright}> 
@@ -72,7 +73,7 @@ export default function RightDivDrawer() {
         <div style={{display:'flex',flexDirection:'row',margin:10,padding:3}}>
             <div>
                 <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'green',color:'white',padding:10,borderRadius:15}}>
-                0
+                {result.answered}
                 </Typography>
                 <Typography component="span" color="primary" variant="subtitle1"  gutterBottom style={{color:'black',margin:10,fontSize:14}}>
                 Answered
@@ -80,7 +81,7 @@ export default function RightDivDrawer() {
             </div>
             <div>
                 <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'red',color:'white',padding:10,borderRadius:15}}>
-                0
+                {result.notanswered}
                 </Typography>
                 <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{color:'black',margin:10,fontSize:14}}>
                 Not Answered
@@ -90,7 +91,7 @@ export default function RightDivDrawer() {
         <div style={{display:'flex',flexDirection:'row',margin:10,padding:3}}>
             <div>
                 <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'white',color:'black',padding:10,borderRadius:15}}>
-                0
+                {result.notvisited}
                 </Typography>
                 <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{color:'black',margin:10,fontSize:14}}>
                 Not Visited
@@ -98,7 +99,7 @@ export default function RightDivDrawer() {
             </div>
             <div>
                 <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'purple',color:'white',padding:10,borderRadius:15}}>
-                0
+                {result.markedforreview}
                 </Typography>
                 <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{color:'black',margin:10,fontSize:14}}>
                 Marked For Review
@@ -108,7 +109,7 @@ export default function RightDivDrawer() {
         <div style={{display:'flex',flexDirection:'row',margin:10,padding:3}}>
             <div>
                 <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'purple',color:'white',padding:10,borderRadius:15}}>
-                0
+                {result.markedanswered}
                 </Typography>
                 <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{color:'black',margin:10,fontSize:14}}>
                 Answered And Marked for Review
@@ -121,7 +122,7 @@ export default function RightDivDrawer() {
     <div className={classes.rightsec3}>
         <div>
             <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{color:'white',margin:5,padding:5}} >
-            General Awarness
+            {section.title}
             </Typography>
         </div>
     </div>
@@ -132,30 +133,51 @@ export default function RightDivDrawer() {
             </Typography>
         </div>
         <div style={{display:'flex',flexDirection:'row',flexWrap:'wrap',maxHeight:'100%',overflow:'scroll'}}>
-            <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'green',color:'white',padding:15,borderRadius:15,margin:5}}>
-                0
-            </Typography>
-            <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'green',color:'white',padding:15,borderRadius:15,margin:5}}>
-                0
-            </Typography>
-            <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'green',color:'white',padding:15,borderRadius:15,margin:5}}>
-                0
-            </Typography>                                
-            <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'green',color:'white',padding:15,borderRadius:15,margin:5}}>
-                0
-            </Typography>                                
-            <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'green',color:'white',padding:15,borderRadius:15,margin:5}}>
-                0
-            </Typography>
-            <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'green',color:'white',padding:15,borderRadius:15,margin:5}}>
-                0
-            </Typography>                                
-            <Typography component="span" color="primary" variant="subtitle1" gutterBottom style={{backgroundColor:'green',color:'white',padding:15,borderRadius:15,margin:5}}>
-                0
-            </Typography>
-        </div>
+            {result.user_response.map((res,i)=>{
+                if(i>=section.startindex && i<=section.endindex){
+                    if(!res.visited){
+                        return(
+                            <Typography key={i} component="span" color="primary" variant="subtitle1" onClick={()=>changeqid(res._id)} gutterBottom style={{backgroundColor:'white',color:'black',padding:15,borderRadius:15,margin:5}}>
+                                {i+1}
+                            </Typography>
+                        )
+                    }else if(res.answered){
+                        return(
+                            <Typography key={i} component="span" color="primary" variant="subtitle1" onClick={()=>changeqid(res._id)} gutterBottom style={{backgroundColor:'green',color:'white',padding:15,borderRadius:15,margin:5}}>
+                                {i+1}
+                            </Typography>
+                        )
+                    }else if(res.notanswered){
+                        return(
+                            <Typography key={i} component="span" color="primary" variant="subtitle1" onClick={()=>changeqid(res._id)} gutterBottom style={{backgroundColor:'red',color:'white',padding:15,borderRadius:15,margin:5}}>
+                                {i+1}
+                            </Typography>
+                        )
+                    }else if(res.markedforreview){
+                        return(
+                            <Typography key={i} component="span" color="primary" variant="subtitle1" onClick={()=>changeqid(res._id)} gutterBottom style={{backgroundColor:'purple',color:'white',padding:15,borderRadius:15,margin:5}}>
+                                {i+1}
+                            </Typography>
+                        )
+                    }else if(res.markedanswered){
+                        return(
+                            <Typography key={i} component="span" color="primary" variant="subtitle1" onClick={()=>changeqid(res._id)} gutterBottom style={{backgroundColor:'pink',color:'white',padding:15,borderRadius:15,margin:5}}>
+                                {i+1}
+                            </Typography>
+                        )
+                    }
+                }
+
+            })}
 
         </div>
+
     </div>
+    <div style={{display:'flex',justifyContent:'space-around'}}>
+        <Button variant="contained" style={{backgroundColor:'#F0AD4E'}}>
+            Submit
+        </Button>
+    </div>
+   </div>
   )
 }
