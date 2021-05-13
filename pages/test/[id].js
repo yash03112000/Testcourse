@@ -2,7 +2,8 @@ import Head from 'next/head'
 import Link from 'next/link'
 // import styles from '../styles/Home.module.css'
 import React, {useState} from 'react';
-import {TextField,Button,Typography,Divider,InputAdornment,Select,MenuItem,InputLabel,Radio,RadioGroup,FormControlLabel} from '@material-ui/core';
+import ReactDOM,{unstable_batchedUpdates as unstable} from "react-dom";
+import {TextField,Button,Typography,Divider,InputAdornment,Select,MenuItem,InputLabel,Radio,RadioGroup,FormControlLabel,Modal,Backdrop,Fade} from '@material-ui/core';
 import MailOutlineIcon from '@material-ui/icons/MailOutline';
 import LockIcon from '@material-ui/icons/Lock';
 import { useRouter } from 'next/router'
@@ -12,6 +13,7 @@ import Drawer from '../../components/Drawer'
 import RightDiv from '../../components/RightDiv'
 import Question from '../../components/Question'
 import { server } from '../../config';
+import { model } from 'mongoose';
 
 const useStyles = makeStyles((theme) => ({
 
@@ -71,16 +73,30 @@ const useStyles = makeStyles((theme) => ({
         justifyContent:'flex-end',
         backgroundColor:'#38A9EB',
         padding:8
+    },
+    modal: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+    paper: {
+    backgroundColor: theme.palette.background.paper,
+    border: '2px solid #000',
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
     }
 }));
 
-export default function Home({test,results}) {
+export default function Home({test,results,arr}) {
   const [lang,setLang] = useState('');
   const [status,setStatus] = useState(false);
   const [data,setData] = useState(test);
   const [result,setResult] = useState(results);
   const [section,setSection] = useState(test.section_id[0]);
   const [quesid,setQuesid] = useState(test.question_id[section.startindex]);
+  const [quesarr,setQuesarr] = useState(arr)
+  const [modal,setModal] = useState(false)
+
 //   const [sanswer,setSanswer] = useState('')
 //   const [manswer,setManswer] = useState([]);
   const router = useRouter()
@@ -89,24 +105,58 @@ export default function Home({test,results}) {
 //   console.log(data)
 
     const changeqid= (id)=>{
+        console.log('quesid')
         if(quesid!==id) setQuesid(id);
     }
     const secChange= (curr)=>{
+        console.log('quesid')
+
         if(curr.title!==section.title){
-            setSection(curr);
-            setQuesid(data.question_id[curr.startindex])
+            unstable(()=>{
+                setSection(curr);
+                setQuesid(data.question_id[curr.startindex])
+            })
+
         } 
     }
-    const changeresult= (result,id)=>{
+    const changeresult= (result,id,data,next)=>{
         var i =0;
+        console.log('quesid')
+
         for(i=0;i<result.user_response.length;i++){
             if(result.user_response[i]._id === id){
                 if(i!==section.endindex){
-                    setQuesid(result.user_response[i+1]._id)
+                    unstable(()=>{
+                        // setQuesarr(data)
+                        if(next)setQuesid(result.user_response[i+1]._id);
+                        setResult(result);
+                    })
+                }else{
+                    unstable(()=>{
+                        // setQuesarr(data)
+                        // if(next)setQuesid(result.user_response[i+1]._id);
+                        setResult(result);
+                    })
                 }
             }
         }
-        setResult(result);
+    }
+    const changequesarr = (data)=>{
+        setQuesarr(data)
+    }
+    const changeModal = ()=>{
+        setModal(true)
+    }
+    const submitTest = ()=>{
+        fetch(`server/Testserver/submit`, {method: 'POST',headers: {
+            'Content-Type': 'application/json'}, body: JSON.stringify({})})
+            .then(res => {
+                // console.log(res.status)
+                if(res.status === 200){
+                    res.json().then((res)=>{
+                    })
+                }
+            })
     }
 
 
@@ -177,12 +227,38 @@ export default function Home({test,results}) {
                                 </Typography>
                             </div>
                         </div>
-                        <Question id={quesid} changeresult={changeresult} result={result} />
+                        <Question id={quesid} changeresult={changeresult} result={result} quesarr={quesarr} changequesarr={changequesarr} />
                     </div>
-                    <RightDiv result={result} changeqid={changeqid} section={section}/>
+                    <RightDiv result={result} changeqid={changeqid} section={section} changeModal={changeModal} />
                     
                     </div>
-               </div> 
+               </div>
+               <Modal
+                aria-labelledby="transition-modal-title"
+                aria-describedby="transition-modal-description"
+                className={classes.modal}
+                open={modal}
+                // onClose={handleClose}
+                closeAfterTransition
+                BackdropComponent={Backdrop}
+                BackdropProps={{
+                timeout: 500,
+                }}
+            >
+                <Fade in={modal}>
+                <div className={classes.paper}>
+                    <h2 id="transition-modal-title">
+                        Do You Wanna Submit
+                    </h2>
+                    <Button variant="contained" style={{backgroundColor:'#449D44'}} onClick={()=>submitTest()}>
+                        Submit
+                    </Button>
+                    <Button variant="contained" style={{backgroundColor:'#E74500'}} onClick={()=>setModal(false)}>
+                        Cancel
+                    </Button>
+                </div>
+                </Fade>
+            </Modal> 
       </main>
     </div>
   )
@@ -203,13 +279,24 @@ export async function getServerSideProps(ctx) {
     var data = await res.json();
     var test = data.test;
     var result = data.result
+    var arr = [];
+
+    result.user_response.map((res,i)=>{
+        var a = {};
+        a['done'] = false;
+        a['_id'] = res._id;
+        a['content'] = {};
+        // a['response'] = []
+        arr.push(a);
+    })
+
+    // console.log(result);
 
 
-    // var data = 'a';
 
-    // console.log(data);
+
     
     return {
-      props: {test,results:result}, // will be passed to the page component as props
+      props: {test,results:result,arr}, // will be passed to the page component as props
     }
   }

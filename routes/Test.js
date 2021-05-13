@@ -17,7 +17,7 @@ router.get('/:id',(req,res)=>{
                 a._id = q;
                 arr.push(a);
             })
-            console.log(arr)
+            // console.log(arr)
             Result.find({test_id:test._id,user_id:req.user.id})
                 .exec()
                 .then((result)=>{

@@ -53,7 +53,7 @@ const useStyles =makeStyles((theme)=>({
   }
 }));
 
-export default function RightDivDrawer({result,changeqid,section}) {
+export default function RightDivDrawer({result,changeqid,section,changeModal}) {
     // console.log(dis)
   const classes = useStyles();
 //   console.log(result)
@@ -174,7 +174,7 @@ export default function RightDivDrawer({result,changeqid,section}) {
 
     </div>
     <div style={{display:'flex',justifyContent:'space-around'}}>
-        <Button variant="contained" style={{backgroundColor:'#F0AD4E'}}>
+        <Button variant="contained" style={{backgroundColor:'#F0AD4E'}} onClick={()=>changeModal()}>
             Submit
         </Button>
     </div>
