@@ -102,6 +102,9 @@ export default function Home({test,results,arr}) {
   const router = useRouter()
   const classes = useStyles();
 
+  const {id:testid} = router.query;
+  
+
 //   console.log(data)
 
     const changeqid= (id)=>{
@@ -148,12 +151,15 @@ export default function Home({test,results,arr}) {
         setModal(true)
     }
     const submitTest = ()=>{
-        fetch(`server/Testserver/submit`, {method: 'POST',headers: {
-            'Content-Type': 'application/json'}, body: JSON.stringify({})})
+        fetch(`${server}/Testserver/submit`, {method: 'POST',headers: {
+            'Content-Type': 'application/json'}, body: JSON.stringify({testid})})
             .then(res => {
                 // console.log(res.status)
                 if(res.status === 200){
                     res.json().then((res)=>{
+                        if(res.status===200){
+                            router.replace(`/result/${testid}`)
+                        }
                     })
                 }
             })

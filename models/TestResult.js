@@ -25,7 +25,49 @@ const QuestionSchema = new mongoose.Schema({
     response:{
         type:Array,
         default:[]
+    },
+    marks_correct:{
+        type:Number,
+        default:0
+    },
+    marks_wrong:{
+        type:Number,
+        default:0
+    },
+    user_score:{
+        type:Number,
+        default:0
+    },
+    iscorrect:{
+        type:Boolean,
+        default:false
     }
+
+});
+
+const SectionSchema = new mongoose.Schema({
+    title :{
+        type:String
+    },
+    startindex:{
+        type:Number
+    },
+    endindex:{
+        type:Number
+    },
+    score:{
+        type:Number,
+        default:0
+    },
+    correct:{
+        type:Number,
+        default:0
+    },
+    attempt:{
+        type:Number,
+        default:0
+    }
+    
 });
 
 const TestResultSchema = new mongoose.Schema({
@@ -39,7 +81,12 @@ const TestResultSchema = new mongoose.Schema({
         type:Boolean,
         default:false
     },
+    computation:{
+        type:Boolean,
+        default:false
+    },
     user_response:[QuestionSchema],
+    sections:[SectionSchema],
     answered:{
         type:Number,
         default:0
@@ -56,6 +103,10 @@ const TestResultSchema = new mongoose.Schema({
         default:0
     },
     markedanswered:{
+        type:Number,
+        default:0
+    },
+    totalscore:{
         type:Number,
         default:0
     }

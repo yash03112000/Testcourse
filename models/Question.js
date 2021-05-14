@@ -25,6 +25,7 @@ const QuestionSchema = new mongoose.Schema({
     option_2: OptionSchema,
     option_3: OptionSchema,
     option_4: OptionSchema,
+    answer:[String]
 
 
 
