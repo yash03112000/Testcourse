@@ -74,6 +74,7 @@ router.post('/question',(req,res)=>{
                     test.save()
                         .then((test)=>{
                             Ques.findById(req.body.id)
+                                .select('-answer')
                                 .exec()
                                 .then((quesbody)=>{
                                     res.json({
@@ -92,6 +93,7 @@ router.post('/question',(req,res)=>{
                         })
                 }else{
                     Ques.findById(req.body.id)
+                    .select('-answer')
                     .exec()
                     .then((quesbody)=>{
                         res.json({
@@ -495,6 +497,63 @@ router.get('/result/:id',(req,res)=>{
                                         })
                                   })
 
+                            }
+                        }else{
+                            res.json({
+                                status:404,
+                                msg:"Error Occured"
+                            })
+                        }
+                    }else{
+                        res.json({
+                            status:404,
+                            msg:"Error Occured"
+                        })
+                    }
+            })
+        })
+})
+
+
+router.post('/result/questions',(req,res)=>{
+    // console.log('here')
+    Test.findById(req.body.testid)
+        .exec()
+        .then((test)=>{
+            Result.findOne({test_id:test._id,user_id:req.user.id})
+                .exec()
+                .then((result)=>{
+                    if(result){
+                        // var a = result[0];
+                        if(result.is_test_completed){
+                            if(result.computation){
+                                var quesarr = [];
+                                Promise.all(result.user_response.map(async (res,i) => {
+                                    await Ques.findById(res._id)
+                                        .exec()
+                                        .then((ques)=>{
+                                            var a = {};
+                                            a.ques = ques;
+                                            a.marks_correct = res.marks_correct;
+                                            a.user_score = res.user_score;
+                                            a.user_response = res.response
+                                            quesarr.push(a);
+                                        })
+                                        .catch((err)=>{
+                                            console.log(err);
+                                        })
+                                  }))
+                                    .then(()=>{
+                                        // console.log(quesarr)
+                                        res.json({
+                                            quesarr
+                                        })
+                                    })
+                            }else{
+                                res.json({
+                                    status:404,
+                                    msg:"Error Occured"
+                                })
                             }
                         }else{
                             res.json({

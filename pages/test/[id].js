@@ -88,7 +88,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Home({test,results,arr}) {
-  const [lang,setLang] = useState('');
   const [status,setStatus] = useState(false);
   const [data,setData] = useState(test);
   const [result,setResult] = useState(results);
