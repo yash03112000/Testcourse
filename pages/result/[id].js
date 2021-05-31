@@ -166,6 +166,7 @@ export default function Home({ data }) {
 					if (res.status == 200) {
 						setModal(false);
 						setText('');
+						setID('');
 					}
 				});
 			}

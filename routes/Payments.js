@@ -15,12 +15,13 @@ const instance = new Razorpay({
 const eligible = (test, id) => {
 	var i;
 	var flag = false;
-	for (i = 0; i < test.payments; i++) {
+	for (i = 0; i < test.payments.length; i++) {
 		if (test.payments[i].userid.equals(id)) return false;
 	}
 	return true;
 };
 router.post('/orders', async (req, res) => {
+	// console.log(req.body.testid);
 	var test = await Test.findById(req.body.testid).exec();
 	if (test == null) {
 		res.json({
@@ -55,7 +56,7 @@ router.post('/orders', async (req, res) => {
 });
 
 router.post('/success', (req, res) => {
-	// console.log(req.body);
+	// console.log('here');
 	const {
 		orderCreationId,
 		razorpayPaymentId,
@@ -79,7 +80,7 @@ router.post('/success', (req, res) => {
 		.then((test) => {
 			if (eligible(test, req.user.id))
 				if (test) {
-					// console.log('here');
+					console.log('here');
 					var payment = new Payment();
 					payment.orderCreationId = orderCreationId;
 					payment.razorpayPaymentId = razorpayPaymentId;
@@ -88,7 +89,7 @@ router.post('/success', (req, res) => {
 					payment.userid = req.user.id;
 					payment.free = false;
 					payment.save().then((payment) => {
-						// console.log(payment);
+						console.log(payment);
 						var a = {};
 						a.userid = req.user.id;
 						a.paymentid = payment.id;

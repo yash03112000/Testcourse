@@ -120,28 +120,6 @@ export default function Home() {
 						);
 					})}
 				</div>
-
-				{/* <Link href={`/test/608470b2649f1c577703ea58`}>Test Link</Link>
-				{
-					<Typography
-						component="p"
-						color="primary"
-						variant="subtitle1"
-						gutterBottom
-						className={classes.msg}
-					>
-						{Msg}
-					</Typography>
-				}
-				<Button
-					variant="contained"
-					type="submit"
-					onClick={pay}
-					className={classes.fb}
-					startIcon={<FacebookIcon />}
-				>
-					Pay
-				</Button> */}
 			</main>
 		</div>
 	);
