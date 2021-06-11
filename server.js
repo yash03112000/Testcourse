@@ -9,6 +9,8 @@ const passport = require('passport');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const isDev = process.env.NODE_ENV !== 'production';
+const MongoStore = require('connect-mongo')(session);
+
 // const config = isDev?require('./config/config'):'';
 var cors = require('cors');
 require('dotenv').config();
@@ -45,6 +47,7 @@ app.prepare().then(() => {
 		resave: false,
 		cookie: { maxAge: 60000000 },
 		saveUninitialized: false,
+		store: new MongoStore({ mongooseConnection: mongoose.connection }),
 	});
 
 	server.use(idk);
@@ -56,6 +59,7 @@ app.prepare().then(() => {
 	server.use('/payment', require('./routes/Payments'));
 	server.use('/Testserver', require('./routes/Test'));
 	server.use('/DashboardServer', require('./routes/DashboardServer'));
+	server.use('/CourseServer', require('./routes/CourseServer'));
 
 	server.all('*', (req, res) => {
 		return handle(req, res);

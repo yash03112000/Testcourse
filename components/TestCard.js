@@ -101,7 +101,7 @@ export default function TestCard({ test, router }) {
 
 	const register = (e) => {
 		e.preventDefault();
-		fetch(`/payment/registerfree`, {
+		fetch(`/payment/test/registerfree`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -119,7 +119,7 @@ export default function TestCard({ test, router }) {
 
 	const pay = (e) => {
 		e.preventDefault();
-		fetch(`/payment/orders`, {
+		fetch(`/payment/orders/test`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -146,7 +146,7 @@ export default function TestCard({ test, router }) {
 									razorpaySignature: response.razorpay_signature,
 								};
 
-								fetch(`/payment/success`, {
+								fetch(`/payment/test/success`, {
 									method: 'POST',
 									headers: {
 										'Content-Type': 'application/json',

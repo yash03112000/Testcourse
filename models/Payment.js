@@ -10,7 +10,10 @@ const PaymentSchema = new mongoose.Schema({
 	razorpayOrderId: {
 		type: String,
 	},
-	testid: {
+	entitytype: {
+		type: String,
+	},
+	entityid: {
 		type: mongoose.Types.ObjectId,
 	},
 	userid: {

@@ -15,11 +15,13 @@
     "@nivo/pie": "^0.69.0",
     "babel-plugin-styled-components": "^1.12.0",
     "bcryptjs": "^2.4.3",
+    "connect-mongo": "3.2",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "html-react-parser": "^1.2.6",
+    "moment": "^2.29.1",
     "mongoose": "^5.12.2",
     "next": "10.0.9",
     "nodemon": "^2.0.7",
@@ -30,6 +32,7 @@
     "razorpay": "^2.0.6",
     "react": "17.0.2",
     "react-dom": "17.0.2",
+    "react-svg-star-rating": "^2.1.1",
     "styled-components": "^5.2.1"
   },
   "devDependencies": {

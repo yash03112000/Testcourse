@@ -1,11 +1,14 @@
 const mongoose = require('mongoose');
 
 const PaymentSchema = new mongoose.Schema({
-	testid: {
+	entityid: {
 		type: mongoose.Types.ObjectId,
 	},
 	paymentid: {
 		type: mongoose.Types.ObjectId,
+	},
+	entitytype: {
+		type: String,
 	},
 });
 

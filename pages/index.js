@@ -1,144 +1,103 @@
-import Head from 'next/head'
-import Link from 'next/link'
-import styles from '../styles/Home.module.css'
-import React, {useState} from 'react';
-import {TextField,Button,Typography,Divider,InputAdornment} from '@material-ui/core';
-import MailOutlineIcon from '@material-ui/icons/MailOutline';
-import LockIcon from '@material-ui/icons/Lock';
-import { useRouter } from 'next/router'
+import Head from 'next/head';
+import Link from 'next/link';
+import styles from '../styles/Home.module.css';
+import React, { useState } from 'react';
+import {
+	TextField,
+	Button,
+	Typography,
+	Divider,
+	InputAdornment,
+	Badge,
+} from '@material-ui/core';
+import { useRouter } from 'next/router';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import FacebookIcon from '@material-ui/icons/Facebook';
-import GTranslateIcon from '@material-ui/icons/GTranslate';
+import Header from '../components/Header';
+import Banner from '../components/Home/Banner';
+import CourseCard from '../components/Home/CourseCard';
+import Footer from '../components/Footer';
+import { server } from '../config';
+
 const useStyles = makeStyles((theme) => ({
-    msg:{
-      color:'red',
-      fontWeight:'bold',
-      fontSize:15
-    },
-    header:{
-      color:'black',
-      fontWeight:'bold',
-      fontSize:10
-    },
-    fb:{
-      backgroundColor:'#1A538A',
-      width:250,
-      color:'white',
-      marginBottom:5
-    },
-    google:{
-      backgroundColor:'#fff',
-      width:250,
-      color:'black'
-    },
-    submit:{
-      backgroundColor:'#A436F1',
-      width:250,
-      color:'black',
-      marginTop:20
-    },
-    main:{
-      // backgroundColor:'green',
-      width:250
-    },
-    btnbox:{  
-      display:'flex',
-      flexDirection: 'column',
-      marginTop:20,
-      marginBottom:10
-    }
+	heading: {
+		display: 'flex',
+		flexDirection: 'column',
+	},
+	header: {
+		padding: 40,
+		fontSize: 25,
+		color: 'black',
+		opacity: 0.6,
+	},
+	carddiv: {
+		display: 'flex',
+		flexDirection: 'row',
+		justifyContent: 'center',
+	},
 }));
 
-export default function Home() {
-  const [Name,setName] = useState('');
-  const [Password,setPassword] = useState('');
-  const [msg,setMsg] = useState('');
-  const [status,setStatus] = useState(false);
-  const router = useRouter()
-  const classes = useStyles();
+export default function Home({ data }) {
+	const router = useRouter();
+	const classes = useStyles();
+	const [courses, setCourses] = useState(data.courses);
 
+	return (
+		<div className={classes.container}>
+			<Head>
+				<title>HomePage</title>
+			</Head>
 
-  const googlelgn = ()=>{
-    fetch('/auth/google',{method:'GET'})
-  }
+			<main className={classes.main}>
+				<Header />
+				<Banner />
+				<div className={classes.heading}>
+					<div>
+						<Typography
+							component="p"
+							color="primary"
+							variant="subtitle1"
+							gutterBottom
+							className={classes.header}
+						>
+							Top Courses
+						</Typography>
+					</div>
+					<div className={classes.carddiv}>
+						{courses.map((course, i) => {
+							return <CourseCard key={i} data={course} />;
+						})}
+					</div>
+				</div>
+				{/* <div className={classes.heading}>
+					<div>
+						<Typography
+							component="p"
+							color="primary"
+							variant="subtitle1"
+							gutterBottom
+							className={classes.header}
+						>
+							Top 10 Courses
+						</Typography>
+					</div>
+					<div className={classes.carddiv}>
+						<CourseCard />
+					</div>
+				</div> */}
+				<Footer />
+			</main>
+		</div>
+	);
+}
 
+export async function getStaticProps() {
+	// console.log(server)
+	var res = await fetch(`${server}/CourseServer/`);
+	var data = await res.json();
 
+	// var a = data.courses;
 
-
-
-
-  const login=(e)=>{
-      e.preventDefault();
-      fetch(`/auth/local`, {method: 'POST',headers: {
-          'Content-Type': 'application/json'}, body: JSON.stringify({username:Name,password:Password})})
-          .then(res => {
-              if(res.status === 200){
-                res.json().then((res)=>{
-                  if(!res.status){
-                    setMsg(res.msg)
-                  }else{
-                    router.replace('/dashboard');
-                 }
-                })
-              }
-          })
-
-    }
-  return (
-    <div className={styles.container}>
-      <Head>
-        <title>TestCourse</title>
-      </Head>
-
-      <main className={styles.main}>
-        <div className= "container">
-          <div className= "row">
-            <div className= "col-8">
-              <div className= {styles.mainform}>
-                <Typography component="p" color="primary" variant="subtitle1" gutterBottom className={classes.msg} >
-                  {msg}
-                </Typography>
-                <Typography component="p" color="primary" variant="subtitle1" gutterBottom className={classes.header} >
-                  LogIn To Your TestCourse Account
-                </Typography>
-                <Divider />
-                <div className={classes.btnbox}>
-                  <Link href="/auth/facebook">
-                    <Button  variant="contained" type="submit"  className={classes.fb} startIcon={<FacebookIcon />} >SignIn with FaceBook</Button>
-                  </Link>
-                  <Link href="/auth/google">
-                    <Button  variant="contained" type="submit"  className={classes.google} startIcon={<GTranslateIcon />}  >SignIn with Google</Button>
-                  </Link>
-                </div>
-                  <form onSubmit={login}>
-
-                    <div className={styles.btnbox}>
-                      <TextField  type="username" required label="Username" name="username" variant="outlined" size="small" autoFocus value={Name} onChange={(e)=>setName(e.target.value)} InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <MailOutlineIcon />
-                          </InputAdornment>
-                        ),
-                      }}/>
-                      <TextField  type="password" required label="Password" name="Password" variant="outlined" size="small" value={Password} onChange={(e)=>setPassword(e.target.value)} InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <LockIcon />
-                          </InputAdornment>
-                        ),
-                      }}/>
-                    </div>
-                    <div>
-                      <Button color="primary" variant="contained" type="submit" style={{}} className={classes.submit}>LogIn</Button>
-                    </div>
-                  </form>
-                  <Divider />
-                  <Typography component="h4" color="primary" variant="subtitle1" className={classes.header} gutterBottom>New User?Sign Up <Link href="/SignUp" >Here</Link></Typography>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
-  )
+	return {
+		props: { data }, // will be passed to the page component as props
+	};
 }
