@@ -22,12 +22,16 @@ const useStyles = makeStyles((theme) => ({
 	main: {
 		display: 'flex',
 		flexDirection: 'column',
-		width: '90%',
+		width: '100%',
 		// backgroundColor: 'purple',
-		margin: 10,
+		height: '100%',
+		// margin: 10,
 		padding: 10,
 		border: '0.2px solid rgba(0,0,0,0.2)',
 		borderRadius: 5,
+		// backgroundColor: 'red',
+		overflow: 'scroll',
+		justifyContent: 'flex-start',
 	},
 	head: {
 		color: 'black',
@@ -111,7 +115,7 @@ export default function Home({ data }) {
 						gutterBottom
 						className={classes.head}
 					>
-						Curriculum
+						Content
 					</Typography>
 				</div>
 				<div className={classes.topright}>
@@ -126,7 +130,7 @@ export default function Home({ data }) {
 							{lessonfun()} Lessons
 						</Typography>
 					</div>
-					<div>
+					{/* <div>
 						<Typography
 							component="h1"
 							color="primary"
@@ -136,7 +140,7 @@ export default function Home({ data }) {
 						>
 							{cirdate()}
 						</Typography>
-					</div>
+					</div> */}
 				</div>
 			</div>
 			<div className={classes.bottom}>
@@ -165,7 +169,7 @@ export default function Home({ data }) {
 								<div className={classes.detail}>
 									{/* <div className={classes.row}> */}
 									<Link href={`/lesson/${les._id}`}>
-										<div style={{ cursor: 'pointer' }}>{les.title}</div>
+										<div sty>{les.title}</div>
 									</Link>
 									<div>
 										{moment('1900-01-01 00:00:00')

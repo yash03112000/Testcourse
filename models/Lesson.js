@@ -4,9 +4,15 @@ const LessonSchema = new mongoose.Schema({
 	title: {
 		type: String,
 	},
-	duration: {
+	secs: {
 		type: Number,
 		default: 0,
+	},
+	course_id: {
+		type: mongoose.Types.ObjectId,
+	},
+	video_url: {
+		type: String,
 	},
 });
 

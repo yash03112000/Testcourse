@@ -10,6 +10,7 @@ const session = require('express-session');
 const mongoose = require('mongoose');
 const isDev = process.env.NODE_ENV !== 'production';
 const MongoStore = require('connect-mongo')(session);
+const { ensureAuthenciated } = require('./middleware/auth');
 
 // const config = isDev?require('./config/config'):'';
 var cors = require('cors');
@@ -56,9 +57,13 @@ app.prepare().then(() => {
 	server.use(passport.initialize());
 	server.use(passport.session());
 	server.use('/auth', require('./routes/auth'));
-	server.use('/payment', require('./routes/Payments'));
-	server.use('/Testserver', require('./routes/Test'));
-	server.use('/DashboardServer', require('./routes/DashboardServer'));
+	server.use('/payment', ensureAuthenciated, require('./routes/Payments'));
+	server.use('/Testserver', ensureAuthenciated, require('./routes/Test'));
+	server.use(
+		'/DashboardServer',
+		ensureAuthenciated,
+		require('./routes/DashboardServer')
+	);
 	server.use('/CourseServer', require('./routes/CourseServer'));
 
 	server.all('*', (req, res) => {

@@ -65,6 +65,8 @@ export default function Home() {
 								}).then((res) => {
 									if (res.status == 400) {
 										setMsg('Failure');
+									} else if (res.status == 403) {
+										router.replace('/LogIn');
 									} else {
 										setMsg('success');
 										router.reload();
@@ -88,6 +90,8 @@ export default function Home() {
 						paymentObject.open();
 					}
 				});
+			} else if (res.status == 403) {
+				router.replace('/LogIn');
 			}
 		});
 	};

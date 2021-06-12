@@ -95,6 +95,8 @@ export default function TestCard({ test, router }) {
 					setStatus(res.status);
 					setLoad(false);
 				});
+			} else if (res.status == 403) {
+				router.replace('/LogIn');
 			}
 		});
 	};
@@ -113,6 +115,8 @@ export default function TestCard({ test, router }) {
 				res.json().then((res) => {
 					router.reload();
 				});
+			} else if (res.status == 403) {
+				router.replace('/LogIn');
 			}
 		});
 	};
@@ -155,6 +159,8 @@ export default function TestCard({ test, router }) {
 								}).then((res) => {
 									if (res.status == 400) {
 										setMsg('Failure');
+									} else if (res.status == 403) {
+										router.replace('/LogIn');
 									} else {
 										setMsg('success');
 										router.reload();
@@ -178,6 +184,8 @@ export default function TestCard({ test, router }) {
 						paymentObject.open();
 					}
 				});
+			} else if (res.status == 403) {
+				router.replace('/LogIn');
 			}
 		});
 	};
@@ -324,7 +332,7 @@ export default function TestCard({ test, router }) {
 	) : (
 		<div className={classes.main}>
 			<div className={classes.imgdiv}>
-				<img src="../malefig.jpg" className={classes.img} />
+				<img src="/static/malefig.jpg" className={classes.img} />
 			</div>
 			<div className={classes.condiv}>
 				<div>

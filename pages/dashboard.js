@@ -86,6 +86,8 @@ export default function Home() {
 					setTests(res.tests);
 					setLoad(false);
 				});
+			} else if (res.status == 403) {
+				router.replace('/LogIn');
 			}
 		});
 	};

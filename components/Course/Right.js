@@ -110,6 +110,8 @@ export default function Home({ data }) {
 					setFresh(res.data);
 					setLoad(false);
 				});
+			} else if (res.status == 403) {
+				router.replace('/LogIn');
 			}
 		});
 	};
@@ -128,6 +130,8 @@ export default function Home({ data }) {
 				res.json().then((res) => {
 					router.reload();
 				});
+			} else if (res.status == 403) {
+				router.replace('/LogIn');
 			}
 		});
 	};
@@ -171,6 +175,8 @@ export default function Home({ data }) {
 								}).then((res) => {
 									if (res.status == 400) {
 										setMsg('Failure');
+									} else if (res.status == 403) {
+										router.replace('/LogIn');
 									} else {
 										setMsg('success');
 										router.reload();
@@ -194,6 +200,8 @@ export default function Home({ data }) {
 						paymentObject.open();
 					}
 				});
+			} else if (res.status == 403) {
+				router.replace('/LogIn');
 			}
 		});
 	};

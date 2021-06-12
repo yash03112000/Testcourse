@@ -109,6 +109,8 @@ export default function Question({
 								changeresult(res.result, id, data, false);
 								setLoading(false);
 							});
+						} else if (res.status == 403) {
+							router.replace('/LogIn');
 						}
 					});
 				}
@@ -147,6 +149,8 @@ export default function Question({
 						}
 					});
 				});
+			} else if (res.status == 403) {
+				router.replace('/LogIn');
 			}
 		});
 	};
@@ -175,6 +179,8 @@ export default function Question({
 						}
 					});
 				});
+			} else if (res.status == 403) {
+				router.replace('/LogIn');
 			}
 		});
 	};
@@ -201,6 +207,8 @@ export default function Question({
 						}
 					});
 				});
+			} else if (res.status == 403) {
+				router.replace('/LogIn');
 			}
 		});
 	};

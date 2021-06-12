@@ -7,6 +7,9 @@ const LessonSchema = new mongoose.Schema({
 	secs: {
 		type: Number,
 	},
+	video_url: {
+		type: String,
+	},
 });
 
 const SectionSchema = new mongoose.Schema({

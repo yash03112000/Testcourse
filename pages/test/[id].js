@@ -24,11 +24,10 @@ import LockIcon from '@material-ui/icons/Lock';
 import { useRouter } from 'next/router';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
-import Drawer from '../../components/Drawer';
-import RightDiv from '../../components/RightDiv';
-import Question from '../../components/Question';
+import Drawer from '../../components/Test/Drawer';
+import RightDiv from '../../components/Test/RightDiv';
+import Question from '../../components/Test/Question';
 import { server } from '../../config';
-import { model } from 'mongoose';
 
 const useStyles = makeStyles((theme) => ({
 	mainform: {
@@ -174,6 +173,8 @@ export default function Home({ test, results, arr }) {
 						router.replace(`/result/${testid}`);
 					}
 				});
+			} else if (res.status == 403) {
+				router.replace('/LogIn');
 			}
 		});
 	};
@@ -351,14 +352,14 @@ export async function getServerSideProps(ctx) {
 			? { cookie: ctx.req.headers.cookie, 'User-Agent': '*' }
 			: undefined,
 	});
-	// if(res.status===404){
-	//     return {
-	//         redirect: {
-	//           destination: '/404',
-	//           permanent: false,
-	//         },
-	//       }
-	// }
+	if (res.status === 403) {
+		return {
+			redirect: {
+				destination: '/LogIn',
+				permanent: false,
+			},
+		};
+	}
 	var data = await res.json();
 	var test = data.test;
 	var result = data.result;

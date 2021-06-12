@@ -147,6 +147,8 @@ export default function Home({ data }) {
 					setQuesarr(res.quesarr);
 					setLoadques(false);
 				});
+			} else if (res.status == 403) {
+				router.replace('/LogIn');
 			}
 		});
 	};
@@ -169,6 +171,8 @@ export default function Home({ data }) {
 						setID('');
 					}
 				});
+			} else if (res.status == 403) {
+				router.replace('/LogIn');
 			}
 		});
 	};
@@ -748,6 +752,14 @@ export async function getServerSideProps(ctx) {
 			? { cookie: ctx.req.headers.cookie, 'User-Agent': '*' }
 			: undefined,
 	});
+	if (res.status == 403) {
+		return {
+			redirect: {
+				destination: '/LogIn',
+				permanent: false,
+			},
+		};
+	}
 	var data = await res.json();
 
 	var a = data.result;

@@ -105,7 +105,7 @@ router.post('/course/success', (req, res) => {
 	const shasum = crypto.createHmac('sha256', process.env.RAZORPAY_SECRET);
 	shasum.update(`${orderCreationId}|${razorpayPaymentId}`);
 	const digest = shasum.digest('hex');
-	console.log(digest);
+	// console.log(digest);
 
 	if (digest !== razorpaySignature)
 		return res.status(400).json({ msg: 'Transaction not legit!' });

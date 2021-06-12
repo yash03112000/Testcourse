@@ -3,6 +3,8 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const User = require('../models/User');
 const Course = require('../models/Course');
+const Lesson = require('../models/Lesson');
+const { ensureAuthenciated } = require('../middleware/auth');
 
 router.get('/', (req, res) => {
 	Course.find({})
@@ -17,6 +19,7 @@ router.get('/', (req, res) => {
 			console.log(err);
 		});
 });
+
 router.get('/:id', (req, res) => {
 	Course.findById(req.params.id)
 		.exec()
@@ -34,7 +37,37 @@ router.get('/:id', (req, res) => {
 			console.log(err);
 		});
 });
-router.post('/permit', async (req, res) => {
+
+router.post('/lessondata', (req, res) => {
+	// console.log(req.body.id);
+	Lesson.findById(req.body.id)
+		.exec()
+		.then((les) => {
+			// console.log(course);
+			if (les) {
+				Course.findById(les.course_id)
+					.exec()
+					.then((course) => {
+						if (course) {
+							// console.log(course.sections);
+							res.json({
+								data: course.sections,
+								lesson: les.video_url,
+							});
+						} else {
+							res.sendStatus(404).end();
+						}
+					});
+			} else {
+				res.sendStatus(404).end();
+			}
+		})
+		.catch((err) => {
+			console.log(err);
+		});
+});
+
+router.post('/permit', ensureAuthenciated, async (req, res) => {
 	try {
 		var course = await Course.findById(req.body.id).exec();
 		var i;
@@ -47,9 +80,12 @@ router.post('/permit', async (req, res) => {
 				status: flag,
 				data: course,
 			});
+		} else {
+			res.sendStatus(404).end();
 		}
 	} catch (err) {
 		console.log(err);
 	}
 });
+
 module.exports = router;
