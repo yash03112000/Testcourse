@@ -33,6 +33,8 @@ const useStyles = makeStyles((theme) => ({
 		display: 'flex',
 		flexDirection: 'row',
 		justifyContent: 'center',
+		// maxWidth: '100vw',
+		overflow: 'scroll',
 	},
 }));
 

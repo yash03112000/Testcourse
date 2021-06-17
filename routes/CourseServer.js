@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const User = require('../models/User');
+const Test = require('../models/Test');
 const Course = require('../models/Course');
 const Lesson = require('../models/Lesson');
 const { ensureAuthenciated } = require('../middleware/auth');
@@ -11,9 +11,17 @@ router.get('/', (req, res) => {
 		.exec()
 		.then((courses) => {
 			// console.log(courses);
-			res.json({
-				courses,
-			});
+			Test.find({})
+				.exec()
+				.then((tests) => {
+					res.json({
+						courses,
+						tests,
+					});
+				})
+				.catch((err) => {
+					console.log(err);
+				});
 		})
 		.catch((err) => {
 			console.log(err);
@@ -67,19 +75,26 @@ router.post('/lessondata', (req, res) => {
 		});
 });
 
-router.post('/permit', ensureAuthenciated, async (req, res) => {
+router.post('/permit', async (req, res) => {
 	try {
 		var course = await Course.findById(req.body.id).exec();
 		var i;
 		var flag = false;
 		if (course) {
-			for (i = 0; i < course.payments.length; i++) {
-				if (course.payments[i].userid.equals(req.user.id)) flag = true;
+			if (req.isAuthenticated()) {
+				for (i = 0; i < course.payments.length; i++) {
+					if (course.payments[i].userid.equals(req.user.id)) flag = true;
+				}
+				res.json({
+					status: flag,
+					data: course,
+				});
+			} else {
+				res.json({
+					status: false,
+					data: course,
+				});
 			}
-			res.json({
-				status: flag,
-				data: course,
-			});
 		} else {
 			res.sendStatus(404).end();
 		}

@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const OptionSchema = new mongoose.Schema({
 	content: {
 		type: String,
+		default: ' ',
 	},
 	valid: {
 		type: Boolean,
@@ -20,20 +21,35 @@ const ReportSchema = new mongoose.Schema({
 	},
 	content: {
 		type: String,
+		default: ' ',
 	},
 });
 
 const QuestionSchema = new mongoose.Schema({
 	question: {
 		type: String,
+		default: ' ',
 	},
 	question_type: {
 		type: String,
+		default: ' ',
 	},
-	option_1: OptionSchema,
-	option_2: OptionSchema,
-	option_3: OptionSchema,
-	option_4: OptionSchema,
+	option_1: {
+		type: OptionSchema,
+		default: () => ({}),
+	},
+	option_2: {
+		type: OptionSchema,
+		default: () => ({}),
+	},
+	option_3: {
+		type: OptionSchema,
+		default: () => ({}),
+	},
+	option_4: {
+		type: OptionSchema,
+		default: () => ({}),
+	},
 	answer: [String],
 	reports: [ReportSchema],
 });

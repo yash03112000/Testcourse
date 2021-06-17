@@ -53,12 +53,23 @@ const useStyles = makeStyles((theme) => ({
 	bottom: {
 		display: 'flex',
 		flexDirection: 'row',
+		[theme.breakpoints.down('sm')]: {
+			// flexDirection: 'column',
+			// height: '15vh',
+			flexDirection: 'column',
+		},
 	},
 	left: {
 		display: 'flex',
 		flexDirection: 'column',
 		// backgroundColor: 'red',
+		alignItems: 'center',
 		width: '40%',
+		[theme.breakpoints.down('sm')]: {
+			// flexDirection: 'column',
+			// height: '15vh',
+			width: '100%',
+		},
 	},
 	logo: {
 		width: '100%',
@@ -85,10 +96,15 @@ const useStyles = makeStyles((theme) => ({
 		display: 'flex',
 		flexDirection: 'row',
 		// backgroundColor: 'red',
+		justifyContent: 'center',
 		alignItems: 'center',
 	},
 	right: {
 		width: '100%',
+		display: 'flex',
+		flexDirection: 'column',
+		// backgroundColor: 'red',
+		// alignItems: 'center',
 	},
 	progdiv: {
 		// backgroundColor: 'red',

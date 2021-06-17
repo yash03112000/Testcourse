@@ -3,12 +3,15 @@ const mongoose = require('mongoose');
 const SectionSchema = new mongoose.Schema({
 	title: {
 		type: String,
+		default: ' ',
 	},
 	startindex: {
 		type: Number,
+		default: 0,
 	},
 	endindex: {
 		type: Number,
+		default: 0,
 	},
 });
 
@@ -27,12 +30,18 @@ const ReportSchema = new mongoose.Schema({
 	},
 	content: {
 		type: String,
+		default: ' ',
 	},
 });
 
 const TestSchema = new mongoose.Schema({
 	title: {
 		type: String,
+		default: '',
+	},
+	thumbnail: {
+		type: String,
+		default: '',
 	},
 	question_id: [mongoose.Types.ObjectId],
 	question_marks_correct: [Number],
@@ -49,15 +58,19 @@ const TestSchema = new mongoose.Schema({
 	},
 	price: {
 		type: Number,
+		default: 0,
 	},
 	sale_price: {
 		type: Number,
+		default: 0,
 	},
 	test_duration: {
 		type: Number,
+		default: 0,
 	},
 	maximum_marks: {
 		type: Number,
+		default: 0,
 	},
 	payments: [PaymentSchema],
 	reports: [ReportSchema],

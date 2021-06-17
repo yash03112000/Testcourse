@@ -3,18 +3,22 @@ const mongoose = require('mongoose');
 const LessonSchema = new mongoose.Schema({
 	title: {
 		type: String,
+		default: ' ',
 	},
 	secs: {
 		type: Number,
+		default: 0,
 	},
 	video_url: {
 		type: String,
+		default: ' ',
 	},
 });
 
 const SectionSchema = new mongoose.Schema({
 	title: {
 		type: String,
+		default: ' ',
 	},
 	// total_secs: {
 	// 	type: Number,
@@ -95,7 +99,10 @@ const CourseSchema = new mongoose.Schema({
 		type: Number,
 		default: 0,
 	},
-	ratings_count: RatingSchema,
+	ratings_count: {
+		type: RatingSchema,
+		default: () => ({}),
+	},
 	languages: [String],
 	last_updated: {
 		type: Date,

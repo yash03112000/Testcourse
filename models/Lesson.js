@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const LessonSchema = new mongoose.Schema({
 	title: {
 		type: String,
+		default: ' ',
 	},
 	secs: {
 		type: Number,
@@ -13,6 +14,7 @@ const LessonSchema = new mongoose.Schema({
 	},
 	video_url: {
 		type: String,
+		default: ' ',
 	},
 });
 
