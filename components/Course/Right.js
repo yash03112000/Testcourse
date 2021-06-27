@@ -210,7 +210,7 @@ export default function Home({ data }) {
 		if (status) {
 			return (
 				<>
-					<div className={classes.row}>
+					{/* <div className={classes.row}>
 						<Typography
 							component="p"
 							color="primary"
@@ -228,7 +228,7 @@ export default function Home({ data }) {
 								FREE
 							</span>
 						</Typography>
-					</div>
+					</div> */}
 					<div className={classes.rest}>
 						<Button
 							style={{
@@ -281,7 +281,7 @@ export default function Home({ data }) {
 									margin: 10,
 									// border: '0.2px solid black',
 								}}
-								onClick={pay}
+								onClick={register}
 							>
 								Buy Now
 							</Button>

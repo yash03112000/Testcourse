@@ -115,8 +115,8 @@ router.post('/course/success', (req, res) => {
 	Course.findById(req.body.id)
 		.exec()
 		.then((test) => {
-			if (eligible(test, req.user.id))
-				if (test) {
+			if (test) {
+				if (eligible(test, req.user.id)) {
 					console.log('here');
 					var payment = new Payment();
 					payment.orderCreationId = orderCreationId;
@@ -155,6 +155,9 @@ router.post('/course/success', (req, res) => {
 				} else {
 					res.status(400).json({ msg: 'Some Error Occured' });
 				}
+			} else {
+				res.status(400).json({ msg: 'Some Error Occured' });
+			}
 		})
 		.catch((err) => {
 			res.status(400).json({ msg: 'Transaction not legit!' });
@@ -183,8 +186,8 @@ router.post('/test/success', (req, res) => {
 	Test.findById(req.body.testid)
 		.exec()
 		.then((test) => {
-			if (eligible(test, req.user.id))
-				if (test) {
+			if (test) {
+				if (eligible(test, req.user.id)) {
 					console.log('here');
 					var payment = new Payment();
 					payment.orderCreationId = orderCreationId;
@@ -223,6 +226,9 @@ router.post('/test/success', (req, res) => {
 				} else {
 					res.status(400).json({ msg: 'Some Error Occured' });
 				}
+			} else {
+				res.status(400).json({ msg: 'Some Error Occured' });
+			}
 		})
 		.catch((err) => {
 			res.status(400).json({ msg: 'Transaction not legit!' });
@@ -234,41 +240,45 @@ router.post('/test/registerfree', (req, res) => {
 		.exec()
 		.then((test) => {
 			if (test) {
-				// console.log('here');
-				var payment = new Payment();
-				// payment.orderCreationId = orderCreationId;
-				// payment.razorpayPaymentId = razorpayPaymentId;
-				// payment.razorpayOrderId = razorpayOrderId;
-				payment.entityid = req.body.testid;
-				payment.entitytype = 'Test';
-				payment.userid = req.user.id;
-				payment.free = true;
-				payment.save().then((payment) => {
-					// console.log(payment);
-					var a = {};
-					a.userid = req.user.id;
-					a.paymentid = payment.id;
-					test.payments.push(a);
-					test.save().then(() => {
-						User.findById(req.user.id)
-							.exec()
-							.then((user) => {
-								var a = {};
-								a.entitytype = 'Test';
-								a.entityid = test._id;
-								a.paymentid = payment.id;
-								user.payments.push(a);
-								user.save().then(() => {
-									res.json({
-										msg: 'success',
-										// orderId: razorpayOrderId,
-										// paymentId: razorpayPaymentId,
-										status: true,
+				if (eligible(test, req.user.id)) {
+					// console.log('here');
+					var payment = new Payment();
+					// payment.orderCreationId = orderCreationId;
+					// payment.razorpayPaymentId = razorpayPaymentId;
+					// payment.razorpayOrderId = razorpayOrderId;
+					payment.entityid = req.body.testid;
+					payment.entitytype = 'Test';
+					payment.userid = req.user.id;
+					payment.free = true;
+					payment.save().then((payment) => {
+						// console.log(payment);
+						var a = {};
+						a.userid = req.user.id;
+						a.paymentid = payment.id;
+						test.payments.push(a);
+						test.save().then(() => {
+							User.findById(req.user.id)
+								.exec()
+								.then((user) => {
+									var a = {};
+									a.entitytype = 'Test';
+									a.entityid = test._id;
+									a.paymentid = payment.id;
+									user.payments.push(a);
+									user.save().then(() => {
+										res.json({
+											msg: 'success',
+											// orderId: razorpayOrderId,
+											// paymentId: razorpayPaymentId,
+											status: true,
+										});
 									});
 								});
-							});
+						});
 					});
-				});
+				} else {
+					res.status(400).json({ msg: 'Some Error Occured' });
+				}
 			} else {
 				res.status(400).json({ msg: 'Some Error Occured' });
 			}
@@ -283,41 +293,45 @@ router.post('/course/registerfree', (req, res) => {
 		.exec()
 		.then((test) => {
 			if (test) {
-				// console.log('here');
-				var payment = new Payment();
-				// payment.orderCreationId = orderCreationId;
-				// payment.razorpayPaymentId = razorpayPaymentId;
-				// payment.razorpayOrderId = razorpayOrderId;
-				payment.entityid = req.body.id;
-				payment.entitytype = 'Course';
-				payment.userid = req.user.id;
-				payment.free = true;
-				payment.save().then((payment) => {
-					// console.log(payment);
-					var a = {};
-					a.userid = req.user.id;
-					a.paymentid = payment.id;
-					test.payments.push(a);
-					test.save().then(() => {
-						User.findById(req.user.id)
-							.exec()
-							.then((user) => {
-								var a = {};
-								a.entitytype = 'Course';
-								a.entityid = test._id;
-								a.paymentid = payment.id;
-								user.payments.push(a);
-								user.save().then(() => {
-									res.json({
-										msg: 'success',
-										// orderId: razorpayOrderId,
-										// paymentId: razorpayPaymentId,
-										status: true,
+				if (eligible(test, req.user.id)) {
+					// console.log('here');
+					var payment = new Payment();
+					// payment.orderCreationId = orderCreationId;
+					// payment.razorpayPaymentId = razorpayPaymentId;
+					// payment.razorpayOrderId = razorpayOrderId;
+					payment.entityid = req.body.id;
+					payment.entitytype = 'Course';
+					payment.userid = req.user.id;
+					payment.free = true;
+					payment.save().then((payment) => {
+						// console.log(payment);
+						var a = {};
+						a.userid = req.user.id;
+						a.paymentid = payment.id;
+						test.payments.push(a);
+						test.save().then(() => {
+							User.findById(req.user.id)
+								.exec()
+								.then((user) => {
+									var a = {};
+									a.entitytype = 'Course';
+									a.entityid = test._id;
+									a.paymentid = payment.id;
+									user.payments.push(a);
+									user.save().then(() => {
+										res.json({
+											msg: 'success',
+											// orderId: razorpayOrderId,
+											// paymentId: razorpayPaymentId,
+											status: true,
+										});
 									});
 								});
-							});
+						});
 					});
-				});
+				} else {
+					res.status(400).json({ msg: 'Some Error Occured' });
+				}
 			} else {
 				res.status(400).json({ msg: 'Some Error Occured' });
 			}

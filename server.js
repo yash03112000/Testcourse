@@ -64,6 +64,11 @@ app.prepare().then(() => {
 		ensureAuthenciated,
 		require('./routes/DashboardServer')
 	);
+	server.use(
+		'/AddTestServer',
+		ensureAuthenciated,
+		require('./routes/AddTestServer')
+	);
 	server.use('/CourseServer', require('./routes/CourseServer'));
 
 	server.all('*', (req, res) => {

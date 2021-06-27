@@ -43,6 +43,13 @@ const TestSchema = new mongoose.Schema({
 		type: String,
 		default: '',
 	},
+	user_id: {
+		type: mongoose.Types.ObjectId,
+	},
+	dev_step: {
+		type: Boolean,
+		default: 0,
+	},
 	question_id: [mongoose.Types.ObjectId],
 	question_marks_correct: [Number],
 	question_marks_wrong: [Number],
