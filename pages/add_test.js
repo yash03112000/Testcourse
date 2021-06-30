@@ -15,6 +15,8 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Header from '../components/Header';
 import StepCom from '../components/AddTest/StepCom';
 import BasicInfo from '../components/AddTest/BasicInfo';
+import SectionInfo from '../components/AddTest/SectionInfo';
+import AddQuestion from '../components/AddTest/AddQuestion';
 
 const useStyles = makeStyles((theme) => ({
 	main: {
@@ -35,28 +37,36 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Home() {
-	const [load, setLoad] = useState(false);
-	const [step, setStep] = useState();
+	const [load, setLoad] = useState(true);
+	const [isNew, setIsNew] = useState(true);
+	const [step, setStep] = useState(0);
 	const router = useRouter();
-	const { id } = router.query;
+	const { id, edit } = router.query;
+	// console.log(router);
 	const classes = useStyles();
 
 	useEffect(() => {
-		// initial();
-	}, []);
+		if (edit) initial();
+		else setLoad(false);
+	}, [edit]);
 
 	const initial = () => {
-		fetch(`/DashboardServer`, {
+		console.log(edit);
+		setLoad(true);
+		setIsNew(false);
+
+		fetch(`/AddTestServer/${edit}`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
 			},
 		}).then((res) => {
-			// console.log(res.status)
 			if (res.status === 200) {
 				res.json().then((res) => {
-					setTests(res.tests);
-					setLoad(false);
+					if (res.status == 200) {
+						setStep(res.id);
+						setLoad(false);
+					}
 				});
 			} else if (res.status == 403) {
 				router.replace('/LogIn');
@@ -69,7 +79,9 @@ export default function Home() {
 	};
 
 	const stepfun = () => {
-		if (step === 1) return <BasicInfo {...{ changestep }} />;
+		if (step === 0) return <BasicInfo {...{ changestep, isNew, edit }} />;
+		if (step === 1) return <SectionInfo {...{ changestep, isNew, edit }} />;
+		if (step === 2) return <AddQuestion {...{ changestep, isNew, edit }} />;
 	};
 
 	return load ? (

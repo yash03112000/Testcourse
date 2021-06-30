@@ -47,7 +47,7 @@ const TestSchema = new mongoose.Schema({
 		type: mongoose.Types.ObjectId,
 	},
 	dev_step: {
-		type: Boolean,
+		type: Number,
 		default: 0,
 	},
 	question_id: [mongoose.Types.ObjectId],

@@ -2,11 +2,12 @@ const express = require('express');
 const Test = require('../models/Test');
 const Ques = require('../models/Question');
 const Result = require('../models/TestResult');
+const mongoose = require('mongoose');
 
 const router = express.Router();
 
-router.post('/step1', (req, res) => {
-	const { title, sale, free, price, saleprice } = req.body;
+router.post('/step0', (req, res) => {
+	const { title, sale, free, price, saleprice, edit } = req.body;
 	if (
 		typeof title === 'undefined' ||
 		typeof sale === 'undefined' ||
@@ -42,24 +43,314 @@ router.post('/step1', (req, res) => {
 			}
 		}
 	}
-	var test = new Test();
-	test.title = title;
-	test.is_free = free;
-	test.is_on_sale = sale;
-	test.price = price;
-	test.sale_price = saleprice;
-	test.dev_step = 1;
-	test.user_id = req.user.id;
-	test
-		.save()
-		.then((test) => {
+	if (!(typeof edit === 'undefined')) {
+		if (!mongoose.Types.ObjectId.isValid(edit)) {
 			res.json({
-				status: 200,
+				status: 400,
+				msg: 'Price Required',
 			});
+		} else {
+			Test.findById(edit)
+				.exec()
+				.then((test) => {
+					if (test) {
+						test.title = title;
+						test.is_free = free;
+						test.is_on_sale = sale;
+						test.price = price;
+						test.sale_price = saleprice;
+						test.dev_step = 1;
+						test.user_id = req.user.id;
+						test
+							.save()
+							.then((test) => {
+								res.json({
+									status: 200,
+								});
+							})
+							.catch((err) => {
+								console.log(err);
+							});
+					} else {
+						res.json({
+							status: 400,
+							msg: 'Wrong ID',
+						});
+					}
+				});
+		}
+	} else {
+		var test = new Test();
+		test.title = title;
+		test.is_free = free;
+		test.is_on_sale = sale;
+		test.price = price;
+		test.sale_price = saleprice;
+		test.dev_step = 1;
+		test.user_id = req.user.id;
+		test
+			.save()
+			.then((test) => {
+				res.json({
+					status: 200,
+				});
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}
+});
+
+router.get('/:id', (req, res) => {
+	const { id } = req.params;
+	if (typeof id === 'undefined')
+		res.json({
+			status: 400,
+			msg: 'Fill All Fields',
+		});
+	else if (!mongoose.Types.ObjectId.isValid(id)) {
+		console.log('aa');
+		res.json({
+			status: 400,
+			msg: 'Price Required',
+		});
+	} else {
+		Test.findById(id)
+			.select('dev_step user_id')
+			.exec()
+			.then((test) => {
+				if (test) {
+					// console.log(test);
+					if (test.user_id.equals(req.user.id)) {
+						res.json({
+							status: 200,
+							id: test.dev_step,
+						});
+					} else {
+						res.json({
+							status: 400,
+							msg: 'Not Authorized',
+						});
+					}
+				} else {
+					res.json({
+						status: 400,
+						msg: 'Invalid ID',
+					});
+				}
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}
+});
+
+router.get('/step0/:id', (req, res) => {
+	const { id } = req.params;
+	if (typeof id === 'undefined')
+		res.json({
+			status: 400,
+			msg: 'Fill All Fields',
+		});
+	if (!mongoose.Types.ObjectId.isValid(edit)) {
+		res.json({
+			status: 400,
+			msg: 'Price Required',
+		});
+	}
+
+	Test.findById(id)
+		.select('title free price is_on_sale sale_price user_id')
+		.exec()
+		.then((test) => {
+			if (test) {
+				if (test.user_id.equals(req.user.id)) {
+					res.json({
+						status: 200,
+						test,
+					});
+				} else {
+					res.json({
+						status: 400,
+						msg: 'Not Authorized',
+					});
+				}
+			} else {
+				res.json({
+					status: 400,
+					msg: 'Invalid ID',
+				});
+			}
 		})
 		.catch((err) => {
 			console.log(err);
 		});
+});
+
+router.get('/step1/:id', (req, res) => {
+	const { id } = req.params;
+	if (typeof id === 'undefined')
+		res.json({
+			status: 400,
+			msg: 'Fill All Fields',
+		});
+
+	if (!mongoose.Types.ObjectId.isValid(id)) {
+		res.json({
+			status: 400,
+			msg: 'Fill All Fields',
+		});
+	}
+	Test.findById(id)
+		.select('section_id user_id')
+		.exec()
+		.then((test) => {
+			if (test) {
+				// console.log(test.section_id);
+				if (test.user_id.equals(req.user.id)) {
+					res.json({
+						status: 200,
+						sections: test.section_id,
+					});
+				} else {
+					res.json({
+						status: 400,
+						msg: 'Not Authorized',
+					});
+				}
+			} else {
+				res.json({
+					status: 400,
+					msg: 'Invalid ID',
+				});
+			}
+		})
+		.catch((err) => {
+			console.log(err);
+		});
+});
+
+router.post('/step1', (req, res) => {
+	const { id, name } = req.body;
+	if (typeof id === 'undefined' || typeof name === 'undefined' || name === '') {
+		res.json({
+			status: 400,
+			msg: 'Fill All Fields',
+		});
+	} else {
+		console.log('here');
+		if (!mongoose.Types.ObjectId.isValid(edit)) {
+			res.json({
+				status: 400,
+				msg: 'Price Required',
+			});
+		}
+
+		Test.findById(id)
+			.select('section_id user_id')
+			.exec()
+			.then((test) => {
+				if (test) {
+					if (test.user_id.equals(req.user.id)) {
+						var a = {};
+						a.title = name;
+						a.startindex = 0;
+						a.endindex = 0;
+						test.section_id.push(a);
+						test.save().then(() => {
+							res.json({
+								status: 200,
+								sections: test.section_id,
+							});
+						});
+					} else {
+						res.json({
+							status: 400,
+							msg: 'Not Authorized',
+						});
+					}
+				} else {
+					res.json({
+						status: 400,
+						msg: 'Invalid ID',
+					});
+				}
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}
+});
+
+router.post('/addQuestion', (req, res) => {
+	console.log('hehe');
+	const { id, ques, options, qtype, answer } = req.body;
+	if (
+		typeof id === 'undefined' ||
+		typeof ques === 'undefined' ||
+		typeof options === 'undefined' ||
+		typeof qtype === 'undefined' ||
+		typeof answer === 'undefined'
+	) {
+		res.json({
+			status: 400,
+			msg: 'Fill All Fields',
+		});
+	} else if (!mongoose.Types.ObjectId.isValid(id)) {
+		res.json({
+			status: 400,
+			msg: 'Price Required',
+		});
+	} else {
+		Test.findById(id)
+			.select('title free price is_on_sale sale_price user_id')
+			.exec()
+			.then((test) => {
+				if (test) {
+					if (test.user_id.equals(req.user.id)) {
+						var a = new Ques();
+						// console.log(a);
+						a.question = ques;
+						a.question_type = qtype;
+						a.answer = [];
+						if (qtype === 'Fill') a.answer.push(answer);
+						else {
+							// var i;
+							options.map((opt, i) => {
+								var b = {};
+								b.valid = true;
+								b.content = opt.body;
+								a[`option_${i + 1}`] = b;
+								if (opt.correct) {
+									a.answer.push(a[`option_${i + 1}`]._id);
+								}
+							});
+						}
+						a.save().then((ques) => {
+							// console.log(ques);
+
+							res.json({
+								status: 200,
+								// test,
+							});
+						});
+					} else {
+						res.json({
+							status: 400,
+							msg: 'Not Authorized',
+						});
+					}
+				} else {
+					res.json({
+						status: 400,
+						msg: 'Invalid ID',
+					});
+				}
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}
 });
 
 module.exports = router;

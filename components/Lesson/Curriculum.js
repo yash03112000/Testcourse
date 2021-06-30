@@ -145,7 +145,7 @@ export default function Home({ data }) {
 			</div>
 			<div className={classes.bottom}>
 				{data.map((dat, i) => (
-					<Accordion>
+					<Accordion key={i}>
 						<AccordionSummary
 							expandIcon={<ExpandMoreIcon />}
 							aria-controls="panel1a-content"

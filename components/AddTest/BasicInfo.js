@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export default function Home({ changestep }) {
+export default function Home({ changestep, isNew, edit }) {
 	const [load, setLoad] = useState(false);
 	const [free, setFree] = useState(false);
 	const [sale, setSale] = useState(false);
@@ -58,15 +58,15 @@ export default function Home({ changestep }) {
 	const [saleprice, setSalePrice] = useState(0);
 	const [msg, setMsg] = useState(false);
 	const router = useRouter();
-	const { id } = router.query;
+	// const { id } = router.query;
 	const classes = useStyles();
 
 	useEffect(() => {
-		// initial();
+		if (!isNew) initial();
 	}, []);
 
 	const initial = () => {
-		fetch(`/DashboardServer`, {
+		fetch(`/AddTestServer/step0/${edit}`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
@@ -75,8 +75,14 @@ export default function Home({ changestep }) {
 			// console.log(res.status)
 			if (res.status === 200) {
 				res.json().then((res) => {
-					setTests(res.tests);
-					setLoad(false);
+					if (res.status === 200) {
+						setPrice(res.test.price);
+						setFree(res.test.free);
+						setSalePrice(res.test.sale_price);
+						setSale(res.test.is_on_sale);
+						setTitle(res.test.title);
+						setLoad(false);
+					}
 				});
 			} else if (res.status == 403) {
 				router.replace('/LogIn');
@@ -105,19 +111,19 @@ export default function Home({ changestep }) {
 		}
 
 		setMsg(false);
-		fetch(`/AddTestServer/step1`, {
+		fetch(`/AddTestServer/step0`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({ free, sale, title, price, saleprice }),
+			body: JSON.stringify({ free, sale, title, price, saleprice, edit }),
 		}).then((res) => {
 			// console.log(res.status)
 			if (res.status === 200) {
 				res.json().then((res) => {
 					// setTests(res.tests);
 					// setLoad(false);
-					changestep(2);
+					changestep(1);
 				});
 			} else if (res.status == 403) {
 				router.replace('/LogIn');

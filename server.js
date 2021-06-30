@@ -11,6 +11,7 @@ const mongoose = require('mongoose');
 const isDev = process.env.NODE_ENV !== 'production';
 const MongoStore = require('connect-mongo')(session);
 const { ensureAuthenciated } = require('./middleware/auth');
+const morgan = require('morgan');
 
 // const config = isDev?require('./config/config'):'';
 var cors = require('cors');
@@ -40,6 +41,22 @@ app.prepare().then(() => {
 	connectDB();
 	server.use(cors());
 	// server.set('trust proxy', 1);
+	// console.log(process.env.NODE_ENV);
+
+	if (isDev) {
+		// console.log(process.env.NODE_ENV);
+		server.use(
+			morgan('dev', {
+				skip: function (req, res) {
+					if (req.url.split('/static/')[0] == '/_next') {
+						return true;
+					} else {
+						return false;
+					}
+				},
+			})
+		);
+	}
 
 	server.use(express.urlencoded({ extended: true }));
 	server.use(express.json());
