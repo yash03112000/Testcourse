@@ -58,8 +58,8 @@ app.prepare().then(() => {
 		);
 	}
 
-	server.use(express.urlencoded({ extended: true }));
-	server.use(express.json());
+	server.use(express.urlencoded({ extended: true, limit: '10mb' }));
+	server.use(express.json({ limit: '10mb' }));
 	var idk = session({
 		secret: 'keyboard cat',
 		resave: false,
@@ -75,7 +75,7 @@ app.prepare().then(() => {
 	server.use(passport.session());
 	server.use('/auth', require('./routes/auth'));
 	server.use('/payment', ensureAuthenciated, require('./routes/Payments'));
-	server.use('/Testserver', ensureAuthenciated, require('./routes/Test'));
+	server.use('/Testserver', ensureAuthenciated, require('./routes/TestServer'));
 	server.use(
 		'/DashboardServer',
 		ensureAuthenciated,
@@ -87,6 +87,7 @@ app.prepare().then(() => {
 		require('./routes/AddTestServer')
 	);
 	server.use('/CourseServer', require('./routes/CourseServer'));
+	server.use('/ImageServer', require('./routes/ImageServer'));
 
 	server.all('*', (req, res) => {
 		return handle(req, res);

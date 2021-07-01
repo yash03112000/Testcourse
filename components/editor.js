@@ -46,21 +46,63 @@ export default function Home({ a, b }) {
 		setEditorLoaded(true);
 	}, []);
 
+	class MyUploadAdapter {
+		constructor(loader) {
+			this.loader = loader;
+		}
+		// Starts the upload process.
+		upload() {
+			return this.loader.file.then(
+				(file) =>
+					new Promise((resolve, reject) => {
+						var reader = new FileReader();
+						reader.readAsDataURL(file);
+						reader.onload = () => {
+							fetch(`/ImageServer/imageupload`, {
+								method: 'POST',
+								headers: {
+									'Content-Type': 'application/json',
+								},
+								body: JSON.stringify({ data: reader.result }),
+							})
+								.then((res) => res.json())
+								.then((res) => {
+									resolve({
+										default: `ImageServer/ImageSearch/${res.id}.png`,
+									});
+								})
+								.catch((err) => {
+									console.log(err);
+								});
+						};
+					})
+			);
+		}
+	}
+
 	return (
 		<>
 			{editorLoaded ? (
-				<CKEditor
-					editor={ClassicEditor}
-					data={a}
-					onReady={(editor) => {
-						// You can store the "editor" and use when it is needed.
-						console.log('Editor is ready to use!', editor);
-					}}
-					onChange={(event, editor) => {
-						const data = editor.getData();
-						b(data);
-					}}
-				/>
+				<div style={{ width: '90%' }}>
+					<CKEditor
+						editor={ClassicEditor}
+						data={a}
+						onReady={(editor) => {
+							// You can store the "editor" and use when it is needed.
+							console.log('Editor is ready to use!', editor);
+							editor.plugins.get('FileRepository').createUploadAdapter = (
+								loader
+							) => {
+								return new MyUploadAdapter(loader);
+							};
+						}}
+						onChange={(event, editor) => {
+							const data = editor.getData();
+							b(data);
+						}}
+						style={{ width: '90%' }}
+					/>
+				</div>
 			) : (
 				<p>Carregando...</p>
 			)}

@@ -103,7 +103,7 @@ export default function Home({ test, results, arr }) {
 	const [data, setData] = useState(test);
 	const [result, setResult] = useState(results);
 	const [section, setSection] = useState(test.section_id[0]);
-	const [quesid, setQuesid] = useState(test.question_id[section.startindex]);
+	const [quesid, setQuesid] = useState(section.questions[0]._id);
 	const [quesarr, setQuesarr] = useState(arr);
 	const [modal, setModal] = useState(false);
 
@@ -126,7 +126,7 @@ export default function Home({ test, results, arr }) {
 		if (curr.title !== section.title) {
 			unstable(() => {
 				setSection(curr);
-				setQuesid(data.question_id[curr.startindex]);
+				setQuesid(curr.questions[0]._id);
 			});
 		}
 	};
@@ -134,18 +134,15 @@ export default function Home({ test, results, arr }) {
 		var i = 0;
 		console.log('quesid');
 
-		for (i = 0; i < result.user_response.length; i++) {
-			if (result.user_response[i]._id === id) {
-				if (i !== section.endindex) {
+		for (i = 0; i < section.questions.length; i++) {
+			if (section.questions[i]._id === id) {
+				if (i !== section.questions.length - 1) {
 					unstable(() => {
-						// setQuesarr(data)
-						if (next) setQuesid(result.user_response[i + 1]._id);
+						if (next) setQuesid(section.questions[i + 1]._id);
 						setResult(result);
 					});
 				} else {
 					unstable(() => {
-						// setQuesarr(data)
-						// if(next)setQuesid(result.user_response[i+1]._id);
 						setResult(result);
 					});
 				}
@@ -297,6 +294,7 @@ export default function Home({ test, results, arr }) {
 								result={result}
 								quesarr={quesarr}
 								changequesarr={changequesarr}
+								section={section}
 							/>
 						</div>
 						<RightDiv
@@ -365,13 +363,14 @@ export async function getServerSideProps(ctx) {
 	var result = data.result;
 	var arr = [];
 
-	result.user_response.map((res, i) => {
-		var a = {};
-		a['done'] = false;
-		a['_id'] = res._id;
-		a['content'] = {};
-		// a['response'] = []
-		arr.push(a);
+	result.sections.map((sec, i) => {
+		sec.questions.map((ques) => {
+			var a = {};
+			a['done'] = false;
+			a['_id'] = ques._id;
+			a['content'] = {};
+			arr.push(a);
+		});
 	});
 
 	// console.log(result);

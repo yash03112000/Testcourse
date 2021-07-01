@@ -9,22 +9,22 @@ router.get('/:id', (req, res) => {
 	Test.findById(req.params.id)
 		.exec()
 		.then((test) => {
-			var arr = [];
-			test.question_id.map((q, i) => {
-				var a = {};
-				a._id = q;
-				a.marks_correct = test.question_marks_correct[i];
-				a.marks_wrong = test.question_marks_wrong[i];
-				arr.push(a);
-			});
-			var arr2 = [];
-			test.section_id.map((sec) => {
-				var a = {};
-				a.title = sec.title;
-				a.startindex = sec.startindex;
-				a.endindex = sec.endindex;
-				arr2.push(a);
-			});
+			// var arr = [];
+			// test.question_id.map((q, i) => {
+			// 	var a = {};
+			// 	a._id = q;
+			// 	a.marks_correct = test.question_marks_correct[i];
+			// 	a.marks_wrong = test.question_marks_wrong[i];
+			// 	arr.push(a);
+			// });
+			// var arr2 = [];
+			// test.section_id.map((sec) => {
+			// 	var a = {};
+			// 	a.title = sec.title;
+			// 	a.startindex = sec.startindex;
+			// 	a.endindex = sec.endindex;
+			// 	arr2.push(a);
+			// });
 			// console.log(arr)
 			Result.find({ test_id: test._id, user_id: req.user.id })
 				.exec()
@@ -39,9 +39,9 @@ router.get('/:id', (req, res) => {
 						var result = new Result();
 						result.test_id = test._id;
 						result.user_id = req.user.id;
-						result.user_response = arr;
-						result.sections = arr2;
-						result.notvisited = test.question_id.length;
+						// result.user_response = arr;
+						result.sections = test.section_id;
+						result.notvisited = test.total_questions;
 						result.save().then(() => {
 							res.json({
 								test,
@@ -53,14 +53,36 @@ router.get('/:id', (req, res) => {
 		});
 });
 
-router.post('/question', (req, res) => {
+const middle = (req, res, next) => {
+	const { test, id, secid } = req.body;
+	console.log(req.body);
+	if (
+		typeof id === 'undefined' ||
+		typeof test === 'undefined' ||
+		typeof secid === 'undefined'
+	) {
+		res.json({
+			status: 400,
+			msg: 'send All Fields',
+		});
+	} else {
+		next();
+	}
+};
+
+router.post('/question', middle, (req, res) => {
 	Result.find({ test_id: req.body.test, user_id: req.user.id })
 		.exec()
 		.then((test) => {
-			// console.log(test)
+			// console.log(test);
 			if (test.length > 0) {
 				var test = test[0];
-				var ques = test.user_response.id(req.body.id);
+				var sec = test.sections.id(req.body.secid);
+				// console.log(sec);
+				if (sec == null) res.json({ status: 400, msg: 'Failed' });
+				var ques = sec.questions.id(req.body.id);
+				if (ques == null) res.json({ status: 400, msg: 'Failed' });
+				// console.log(ques);
 				if (!ques.visited) {
 					test.notvisited--;
 					test.notanswered++;
@@ -108,14 +130,19 @@ router.post('/question', (req, res) => {
 		});
 });
 
-router.post('/save', (req, res) => {
+router.post('/save', middle, (req, res) => {
+	if (typeof req.body.answer === 'undefined') res.json({ status: 400 });
 	Result.find({ test_id: req.body.test, user_id: req.user.id })
 		.exec()
 		.then((test) => {
 			// console.log(test)
 			if (test.length > 0) {
 				var test = test[0];
-				var ques = test.user_response.id(req.body.id);
+				var sec = test.sections.id(req.body.secid);
+				// console.log(sec);
+				if (sec == null) res.json({ status: 400, msg: 'Failed' });
+				var ques = sec.questions.id(req.body.id);
+				if (ques == null) res.json({ status: 400, msg: 'Failed' });
 				if (req.body.answer.length > 0) {
 					if (!ques.answered) {
 						if (ques.notanswered) {
@@ -198,14 +225,18 @@ router.post('/save', (req, res) => {
 		});
 });
 
-router.post('/clearresponse', (req, res) => {
+router.post('/clearresponse', middle, (req, res) => {
 	Result.find({ test_id: req.body.test, user_id: req.user.id })
 		.exec()
 		.then((test) => {
 			// console.log(test)
 			if (test.length > 0) {
 				var test = test[0];
-				var ques = test.user_response.id(req.body.id);
+				var sec = test.sections.id(req.body.secid);
+				// console.log(sec);
+				if (sec == null) res.json({ status: 400, msg: 'Failed' });
+				var ques = sec.questions.id(req.body.id);
+				if (ques == null) res.json({ status: 400, msg: 'Failed' });
 				if (ques.answered) {
 					test.notanswered++;
 					test.answered--;
@@ -258,14 +289,18 @@ router.post('/clearresponse', (req, res) => {
 		});
 });
 
-router.post('/review', (req, res) => {
+router.post('/review', middle, (req, res) => {
 	Result.find({ test_id: req.body.test, user_id: req.user.id })
 		.exec()
 		.then((test) => {
 			// console.log(test)
 			if (test.length > 0) {
 				var test = test[0];
-				var ques = test.user_response.id(req.body.id);
+				var sec = test.sections.id(req.body.secid);
+				// console.log(sec);
+				if (sec == null) res.json({ status: 400, msg: 'Failed' });
+				var ques = sec.questions.id(req.body.id);
+				if (ques == null) res.json({ status: 400, msg: 'Failed' });
 				if (ques.markedanswered) {
 					ques.response = req.body.answer;
 					if (!(req.body.answer.length > 0)) {
@@ -415,48 +450,52 @@ router.get('/result/:id', (req, res) => {
 							} else {
 								// computation(res,test,result)
 								Promise.all(
-									result.user_response.map(async (res) => {
-										// console.log('sbse phle')
-										if (res.answered || res.markedanswered) {
-											await Ques.findById(res._id)
-												.exec()
-												.then((ques) => {
-													// console.log(ques);
-													var answer = ques.answer;
-													answer.sort();
-													res.response.sort();
-													// console.log(i);
-													// console.log(answer);
-													// console.log("runfirst")
-													if (grading(answer, res.response)) {
-														// console.log("runned")
-														res.user_score = res.marks_correct;
-														res.iscorrect = true;
-														result.totalscore += res.marks_correct;
-													} else {
-														res.user_score = res.marks_wrong;
-														result.totalscore += res.marks_wrong;
-													}
-												})
-												.catch((err) => {
-													console.log(err);
-												});
-										}
+									result.sections.map(async (sec) => {
+										// console.log('check-1');
+										return Promise.all(
+											sec.questions.map(async (res) => {
+												if (res.answered || res.markedanswered) {
+													await Ques.findById(res._id)
+														.exec()
+														.then((ques) => {
+															// console.log('check-2');
+
+															var answer = ques.answer;
+															answer.sort();
+															res.response.sort();
+															if (grading(answer, res.response)) {
+																// console.log("runned")
+																res.user_score = res.marks_correct;
+																res.iscorrect = true;
+																result.totalscore += res.marks_correct;
+															} else {
+																res.user_score = res.marks_incorrect;
+																result.totalscore += res.marks_incorrect;
+															}
+														})
+														.catch((err) => {
+															console.log(err);
+														});
+												}
+											})
+										);
 									})
 								).then(() => {
+									// console.log('check-3');
+
 									result.sections.map((sec) => {
 										var i;
 										var secscore = 0;
 										var secattempt = 0;
 										var seccorrect = 0;
-										for (i = sec.startindex; i <= sec.endindex; i++) {
-											secscore += result.user_response[i].user_score;
+										for (i = 0; i < sec.questions.length; i++) {
+											secscore += sec.questions[i].user_score;
 											if (
-												result.user_response[i].answered ||
-												result.user_response[i].markedanswered
+												sec.questions[i].answered ||
+												sec.questions[i].markedanswered
 											)
 												secattempt++;
-											if (result.user_response[i].iscorrect) seccorrect++;
+											if (sec.questions[i].iscorrect) seccorrect++;
 										}
 										sec.score = secscore;
 										sec.attempt = secattempt;
@@ -507,20 +546,25 @@ router.post('/result/questions', (req, res) => {
 							if (result.computation) {
 								var quesarr = [];
 								Promise.all(
-									result.user_response.map(async (res) => {
-										await Ques.findById(res._id)
-											.exec()
-											.then((ques) => {
-												var a = {};
-												a.ques = ques;
-												a.marks_correct = res.marks_correct;
-												a.user_score = res.user_score;
-												a.user_response = res.response;
-												quesarr.push(a);
+									result.sections.map(async (sec) => {
+										return Promise.all(
+											sec.questions.map(async (res) => {
+												await Ques.findById(res._id)
+													.exec()
+													.then((ques) => {
+														var a = {};
+														a.ques = ques;
+														a.marks_correct = res.marks_correct;
+														a.user_score = res.user_score;
+														a.user_response = res.response;
+														a.secid = sec._id;
+														quesarr.push(a);
+													})
+													.catch((err) => {
+														console.log(err);
+													});
 											})
-											.catch((err) => {
-												console.log(err);
-											});
+										);
 									})
 								).then(() => {
 									// console.log(quesarr)

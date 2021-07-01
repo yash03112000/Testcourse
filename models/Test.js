@@ -1,18 +1,26 @@
 const mongoose = require('mongoose');
 
+const QuestionSchema = new mongoose.Schema({
+	marks_correct: {
+		type: Number,
+		default: 0,
+	},
+	marks_incorrect: {
+		type: Number,
+		default: 0,
+	},
+	marks_timings: {
+		type: Number,
+		default: 0,
+	},
+});
+
 const SectionSchema = new mongoose.Schema({
 	title: {
 		type: String,
 		default: ' ',
 	},
-	startindex: {
-		type: Number,
-		default: 0,
-	},
-	endindex: {
-		type: Number,
-		default: 0,
-	},
+	questions: [QuestionSchema],
 });
 
 const PaymentSchema = new mongoose.Schema({
@@ -50,10 +58,10 @@ const TestSchema = new mongoose.Schema({
 		type: Number,
 		default: 0,
 	},
-	question_id: [mongoose.Types.ObjectId],
-	question_marks_correct: [Number],
-	question_marks_wrong: [Number],
-	question_timings: [Number],
+	// question_id: [mongoose.Types.ObjectId],
+	// question_marks_correct: [Number],
+	// question_marks_wrong: [Number],
+	// question_timings: [Number],
 	section_id: [SectionSchema],
 	is_free: {
 		type: Boolean,
@@ -76,6 +84,10 @@ const TestSchema = new mongoose.Schema({
 		default: 0,
 	},
 	maximum_marks: {
+		type: Number,
+		default: 0,
+	},
+	total_questions: {
 		type: Number,
 		default: 0,
 	},

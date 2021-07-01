@@ -300,6 +300,7 @@ export default function TestCard({ test, router }) {
 									fontSize: confont,
 								}}
 							>
+								<span>&#8377;</span>
 								<span
 									style={
 										{
@@ -368,7 +369,7 @@ export default function TestCard({ test, router }) {
 							gutterBottom
 							style={{ color: 'black', fontSize: confont }}
 						>
-							{test.question_id.length}
+							{test.total_questions}
 						</Typography>
 					</div>
 					<div className={classes.randiv}>

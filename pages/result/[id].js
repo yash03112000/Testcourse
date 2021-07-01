@@ -518,16 +518,18 @@ export default function Home({ data }) {
 	const qdis = () => {
 		var i;
 		var a = [];
-		for (i = sec.startindex; i <= sec.endindex; i++) {
-			var ques = quesarr[i].ques;
-			// console.log(quesarr[i])
-			var b = (
-				<div key={i} className={classes.ques}>
-					{qtype(ques, quesarr[i])}
-				</div>
-			);
+		for (i = 0; i < quesarr.length; i++) {
+			if (sec._id === quesarr[i].secid) {
+				var ques = quesarr[i].ques;
+				// console.log(quesarr[i])
+				var b = (
+					<div key={i} className={classes.ques}>
+						{qtype(ques, quesarr[i])}
+					</div>
+				);
 
-			a.push(b);
+				a.push(b);
+			}
 		}
 
 		return a;
@@ -705,7 +707,7 @@ export default function Home({ data }) {
 								<Typography>Total Question</Typography>
 							</td>
 							<td>
-								<Typography>{sec.endindex - sec.startindex + 1}</Typography>
+								<Typography>{sec.questions.length}</Typography>
 							</td>
 						</tr>
 						<tr>

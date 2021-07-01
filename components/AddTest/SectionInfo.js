@@ -3,6 +3,8 @@ import Link from 'next/link';
 // import styles from '../styles/Home.module.css'
 import React, { useState, useEffect } from 'react';
 import ReactDOM, { unstable_batchedUpdates as unstable } from 'react-dom';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+
 import {
 	TextField,
 	Button,
@@ -23,7 +25,7 @@ import {
 } from '@material-ui/core';
 import { useRouter } from 'next/router';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-
+import AddQuestion from './AddQuestion';
 const useStyles = makeStyles((theme) => ({
 	main: {
 		width: '100vw',
@@ -50,11 +52,26 @@ const useStyles = makeStyles((theme) => ({
 		margin: 20,
 		alignItems: 'center',
 	},
+	accordhead: {
+		display: 'flex',
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		// backgroundColor: 'red',
+		width: '100%',
+	},
+	detail: {
+		display: 'flex',
+		flexDirection: 'row',
+		width: '100%',
+		justifyContent: 'space-between',
+	},
 }));
 
 export default function Home({ changestep, isNew, edit }) {
 	const [load, setLoad] = useState(false);
+	const [dis, setDis] = useState('none');
 	const [Name, setName] = useState('');
+	const [secid, setSecid] = useState('');
 	const [data, setData] = useState([]);
 	const router = useRouter();
 	const { id } = router.query;
@@ -75,11 +92,6 @@ export default function Home({ changestep, isNew, edit }) {
 			if (res.status === 200) {
 				res.json().then((res) => {
 					if (res.status === 200) {
-						// setPrice(res.test.price);
-						// setFree(res.test.free);
-						// setSalePrice(res.test.sale_price);
-						// setSale(res.test.is_on_sale);
-						// setTitle(res.test.title);
 						setData(res.sections);
 						setLoad(false);
 					}
@@ -88,6 +100,13 @@ export default function Home({ changestep, isNew, edit }) {
 				router.replace('/LogIn');
 			}
 		});
+	};
+
+	const changestates = (state, value) => {
+		if (state === 'data') setData(value);
+		else if (state === 'dis') setDis(value);
+		else if (state === 'secid') setSecid(value);
+		// else if (state === 'secid') setSecid(value);
 	};
 
 	const submit = () => {
@@ -121,7 +140,8 @@ export default function Home({ changestep, isNew, edit }) {
 
 	const next = () => {
 		// setMsg(false);
-		changestep(2);
+		// changestep(2);
+		router.replace('/dashboard');
 	};
 
 	return load ? (
@@ -186,42 +206,64 @@ export default function Home({ changestep, isNew, edit }) {
 				</div>
 				<div style={{ display: 'flex', flexDirection: 'column' }}>
 					{data.map((dat, i) => (
-						<div
-							key={i}
-							style={{
-								display: 'flex',
-								flexDirection: 'row',
-								width: '100%',
-								padding: 15,
-								backgroundColor: 'hsl(0,95%,95%)',
-								marginBottom: 15,
-								justifyContent: 'space-between',
-							}}
-						>
-							<Typography style={{}}>{dat.title}</Typography>
-							<Typography style={{}}>
-								{dat.endindex - dat.startindex}
-							</Typography>
-						</div>
+						<Accordion key={i}>
+							<AccordionSummary
+								expandIcon={<ExpandMoreIcon />}
+								aria-controls="panel1a-content"
+								id="panel1a-header"
+							>
+								<div className={classes.accordhead}>
+									<div>
+										<Typography style={{ fontSize: 15 }}>
+											{dat.title}
+										</Typography>
+									</div>
+									<div>
+										<Typography style={{ fontSize: 15 }}>
+											{dat.questions.length}
+										</Typography>
+									</div>
+								</div>
+							</AccordionSummary>
+							<AccordionDetails>
+								<div
+									style={{ color: 'grey', opacity: 0.5, cursor: 'pointer' }}
+									onClick={() => {
+										setDis('block');
+										setSecid(dat._id);
+									}}
+								>
+									Add Question...
+								</div>
+							</AccordionDetails>
+							{dat.questions.map((les, index) => (
+								<AccordionDetails key={index}>
+									<div className={classes.detail}>{les._id}</div>
+								</AccordionDetails>
+							))}
+						</Accordion>
 					))}
-					<div
-						style={{
-							display: 'flex',
-							flexDirection: 'row',
-							justifyContent: 'center',
-						}}
+				</div>
+				<div style={{ display: dis }}>
+					<AddQuestion {...{ secid, edit, changestates }} />
+				</div>
+				<div
+					style={{
+						display: 'flex',
+						flexDirection: 'row',
+						justifyContent: 'center',
+					}}
+				>
+					<Button
+						color="primary"
+						variant="contained"
+						type="submit"
+						style={{}}
+						className={classes.submit}
+						onClick={next}
 					>
-						<Button
-							color="primary"
-							variant="contained"
-							type="submit"
-							style={{}}
-							className={classes.submit}
-							onClick={next}
-						>
-							Next
-						</Button>
-					</div>
+						Submit
+					</Button>
 				</div>
 			</div>
 		</div>

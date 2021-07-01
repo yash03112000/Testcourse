@@ -61,6 +61,7 @@ export default function Question({
 	result,
 	quesarr,
 	changequesarr,
+	section,
 }) {
 	const [lang, setLang] = useState('');
 	const [loading, setLoading] = useState(true);
@@ -86,17 +87,18 @@ export default function Question({
 						setLoading(false);
 					});
 				} else {
+					// console.log('aa');
 					fetch(`${server}/Testserver/question`, {
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json',
 						},
-						body: JSON.stringify({ id, test }),
+						body: JSON.stringify({ id, test, secid: section._id }),
 					}).then((res) => {
 						// console.log(res.status)
 						if (res.status === 200) {
 							res.json().then((res) => {
-								// console.log(res)
+								// console.log(res);
 								unstable(() => {
 									data[i].content.quesbody = res.quesbody;
 									data[i].content.response = res.ques.response;
@@ -120,8 +122,8 @@ export default function Question({
 
 	const qnum = (id) => {
 		var i = 0;
-		for (i = 0; i < result.user_response.length; i++) {
-			if (result.user_response[i]._id === id) {
+		for (i = 0; i < section.questions.length; i++) {
+			if (section.questions[i]._id === id) {
 				return i + 1;
 			}
 		}
@@ -133,7 +135,7 @@ export default function Question({
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({ id, test, answer }),
+			body: JSON.stringify({ id, test, answer, secid: section._id }),
 		}).then((res) => {
 			// console.log(res.status)
 			if (res.status === 200) {
@@ -161,7 +163,7 @@ export default function Question({
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({ id, test }),
+			body: JSON.stringify({ id, test, secid: section._id }),
 		}).then((res) => {
 			// console.log(res.status)
 			if (res.status === 200) {
@@ -191,7 +193,7 @@ export default function Question({
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({ id, test, answer }),
+			body: JSON.stringify({ id, test, answer, secid: section._id }),
 		}).then((res) => {
 			// console.log(res.status)
 			if (res.status === 200) {

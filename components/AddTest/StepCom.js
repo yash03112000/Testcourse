@@ -86,9 +86,9 @@ export default function Home({ step }) {
 				<Step>
 					<StepLabel>Sections</StepLabel>
 				</Step>
-				<Step>
+				{/* <Step>
 					<StepLabel>Questions</StepLabel>
-				</Step>
+				</Step> */}
 			</Stepper>
 		</div>
 	);

@@ -74,14 +74,15 @@ export default function Home() {
 		});
 	};
 
-	const changestep = (id) => {
-		setStep(id);
+	const changestep = (a, id) => {
+		router.replace(`/add_test?edit=${id}`);
+		// setStep(id);
 	};
 
 	const stepfun = () => {
 		if (step === 0) return <BasicInfo {...{ changestep, isNew, edit }} />;
 		if (step === 1) return <SectionInfo {...{ changestep, isNew, edit }} />;
-		if (step === 2) return <AddQuestion {...{ changestep, isNew, edit }} />;
+		// if (step === 2) return <AddQuestion {...{ changestep, isNew, edit }} />;
 	};
 
 	return load ? (

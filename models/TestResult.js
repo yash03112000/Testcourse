@@ -29,7 +29,7 @@ const QuestionSchema = new mongoose.Schema({
 		type: Number,
 		default: 0,
 	},
-	marks_wrong: {
+	marks_incorrect: {
 		type: Number,
 		default: 0,
 	},
@@ -48,14 +48,6 @@ const SectionSchema = new mongoose.Schema({
 		type: String,
 		default: ' ',
 	},
-	startindex: {
-		type: Number,
-		default: 0,
-	},
-	endindex: {
-		type: Number,
-		default: 0,
-	},
 	score: {
 		type: Number,
 		default: 0,
@@ -68,6 +60,7 @@ const SectionSchema = new mongoose.Schema({
 		type: Number,
 		default: 0,
 	},
+	questions: [QuestionSchema],
 });
 
 const TestResultSchema = new mongoose.Schema({
@@ -85,7 +78,6 @@ const TestResultSchema = new mongoose.Schema({
 		type: Boolean,
 		default: false,
 	},
-	user_response: [QuestionSchema],
 	sections: [SectionSchema],
 	answered: {
 		type: Number,

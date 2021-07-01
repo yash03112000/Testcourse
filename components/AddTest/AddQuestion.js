@@ -26,7 +26,7 @@ import parse from 'html-react-parser';
 
 const useStyles = makeStyles((theme) => ({
 	main: {
-		width: '100vw',
+		width: '100%',
 		display: 'flex',
 		flexDirection: 'row',
 		// backgroundColor: 'red',
@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export default function Home({ changestep, isNew, edit }) {
+export default function Home({ secid, edit, changestates }) {
 	const [load, setLoad] = useState(false);
 	const [qtype, setQtype] = useState('SCQ');
 	const [quesBody, setQuesBody] = useState('');
@@ -60,6 +60,8 @@ export default function Home({ changestep, isNew, edit }) {
 	const [optionBody, setOptionBody] = useState('');
 	const [options, setOptions] = useState([]);
 	const [valid, setValid] = useState(false);
+	const [markCorrect, setMarkCorrect] = useState(0);
+	const [markIncorrect, setMarkIncorrect] = useState(0);
 	const router = useRouter();
 	const { id } = router.query;
 	const classes = useStyles();
@@ -93,7 +95,12 @@ export default function Home({ changestep, isNew, edit }) {
 
 	const uploadQues = () => {
 		var a = {};
-		if (quesBody !== '') {
+		if (
+			quesBody !== '' &&
+			secid !== '' &&
+			markCorrect > 0 &&
+			markIncorrect <= 0
+		) {
 			if (
 				(qtype === 'Fill' && answer !== '') ||
 				(options.length > 0 && hasAns())
@@ -109,14 +116,21 @@ export default function Home({ changestep, isNew, edit }) {
 						options: options,
 						qtype: qtype,
 						answer: answer,
+						secid,
+						markCorrect,
+						markIncorrect,
 					}),
 				}).then((res) => {
-					// console.log(res.status)
 					if (res.status === 200) {
 						res.json().then((res) => {
 							if (res.status === 200) {
-								setData(res.sections);
-								setLoad(false);
+								// setData(res.sections);
+								// setLoad(false);
+								changestates('data', res.sections);
+								changestates('dis', 'none');
+								changestates('secid', '');
+								setQuesBody('');
+								setOptions([]);
 							}
 						});
 					} else if (res.status == 403) {
@@ -248,8 +262,8 @@ export default function Home({ changestep, isNew, edit }) {
 				style={{
 					display: 'flex',
 					flexDirection: 'column',
-					width: '60%',
-					margin: 40,
+					// width: '60%',
+					// margin: 40,
 					// backgroundColor: 'red',
 				}}
 			>
@@ -262,7 +276,7 @@ export default function Home({ changestep, isNew, edit }) {
 					}}
 				>
 					<Typography style={{ fontSize: 25, margin: 20, fontWeight: 'bold' }}>
-						Question
+						Add Question
 					</Typography>
 				</div>
 				<div
@@ -293,9 +307,69 @@ export default function Home({ changestep, isNew, edit }) {
 						<MenuItem value={'Fill'}>Fill</MenuItem>
 					</Select>
 				</div>
+				<div
+					style={{
+						display: 'flex',
+						flexDirection: 'row',
+						justifyContent: 'space-between',
+						marginTop: 20,
+					}}
+				>
+					<Typography
+						component="span"
+						color="primary"
+						variant="subtitle1"
+						gutterBottom
+						style={{ color: 'black', margin: 6 }}
+					>
+						MarksCorrect:
+					</Typography>
+					<TextField
+						type="number"
+						required
+						label="Marks Correct"
+						name="username"
+						variant="outlined"
+						size="small"
+						autoFocus
+						value={markCorrect}
+						style={{ width: '20%' }}
+						onChange={(e) => setMarkCorrect(e.target.value)}
+					/>
+				</div>
+				<div
+					style={{
+						display: 'flex',
+						flexDirection: 'row',
+						justifyContent: 'space-between',
+						marginTop: 20,
+					}}
+				>
+					<Typography
+						component="span"
+						color="primary"
+						variant="subtitle1"
+						gutterBottom
+						style={{ color: 'black', margin: 6 }}
+					>
+						MarksInCorrect:
+					</Typography>
+					<TextField
+						type="number"
+						required
+						label="Marks Incorrect"
+						name="username"
+						variant="outlined"
+						size="small"
+						autoFocus
+						value={markIncorrect}
+						style={{ width: '20%' }}
+						onChange={(e) => setMarkIncorrect(e.target.value)}
+					/>
+				</div>
 				<div style={{ marginTop: 10 }}>
 					<Typography>Question:</Typography>
-					<Typography>{parse(quesBody)}</Typography>
+					<Typography component="div">{parse(quesBody)}</Typography>
 				</div>
 				{options.map((opt, i) => {
 					return (
@@ -327,16 +401,21 @@ export default function Home({ changestep, isNew, edit }) {
 						marginTop: 10,
 					}}
 				>
-					<Button
-						color="primary"
-						variant="contained"
-						type="submit"
-						style={{}}
-						className={classes.submit}
-						onClick={uploadOpt}
-					>
-						Upload Option
-					</Button>
+					{qtype !== 'Fill' ? (
+						<Button
+							color="primary"
+							variant="contained"
+							type="submit"
+							style={{}}
+							className={classes.submit}
+							onClick={uploadOpt}
+						>
+							Upload Option
+						</Button>
+					) : (
+						<></>
+					)}
+
 					<Button
 						color="primary"
 						variant="contained"

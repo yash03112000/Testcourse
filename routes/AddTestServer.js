@@ -66,6 +66,7 @@ router.post('/step0', (req, res) => {
 							.then((test) => {
 								res.json({
 									status: 200,
+									id: test._id,
 								});
 							})
 							.catch((err) => {
@@ -93,6 +94,7 @@ router.post('/step0', (req, res) => {
 			.then((test) => {
 				res.json({
 					status: 200,
+					id: test._id,
 				});
 			})
 			.catch((err) => {
@@ -152,7 +154,7 @@ router.get('/step0/:id', (req, res) => {
 			status: 400,
 			msg: 'Fill All Fields',
 		});
-	if (!mongoose.Types.ObjectId.isValid(edit)) {
+	if (!mongoose.Types.ObjectId.isValid(id)) {
 		res.json({
 			status: 400,
 			msg: 'Price Required',
@@ -239,7 +241,7 @@ router.post('/step1', (req, res) => {
 		});
 	} else {
 		console.log('here');
-		if (!mongoose.Types.ObjectId.isValid(edit)) {
+		if (!mongoose.Types.ObjectId.isValid(id)) {
 			res.json({
 				status: 400,
 				msg: 'Price Required',
@@ -284,26 +286,41 @@ router.post('/step1', (req, res) => {
 
 router.post('/addQuestion', (req, res) => {
 	console.log('hehe');
-	const { id, ques, options, qtype, answer } = req.body;
+	const {
+		id,
+		ques,
+		options,
+		qtype,
+		answer,
+		secid,
+		markCorrect,
+		markIncorrect,
+	} = req.body;
 	if (
 		typeof id === 'undefined' ||
 		typeof ques === 'undefined' ||
 		typeof options === 'undefined' ||
 		typeof qtype === 'undefined' ||
-		typeof answer === 'undefined'
+		typeof secid === 'undefined' ||
+		typeof answer === 'undefined' ||
+		typeof markCorrect === 'undefined' ||
+		typeof markIncorrect === 'undefined'
 	) {
 		res.json({
 			status: 400,
 			msg: 'Fill All Fields',
 		});
-	} else if (!mongoose.Types.ObjectId.isValid(id)) {
+	} else if (
+		!mongoose.Types.ObjectId.isValid(id) ||
+		!mongoose.Types.ObjectId.isValid(secid)
+	) {
 		res.json({
 			status: 400,
 			msg: 'Price Required',
 		});
 	} else {
 		Test.findById(id)
-			.select('title free price is_on_sale sale_price user_id')
+			.select('section_id user_id')
 			.exec()
 			.then((test) => {
 				if (test) {
@@ -313,7 +330,7 @@ router.post('/addQuestion', (req, res) => {
 						a.question = ques;
 						a.question_type = qtype;
 						a.answer = [];
-						if (qtype === 'Fill') a.answer.push(answer);
+						if (qtype === 'Fill') a.answer = answer;
 						else {
 							// var i;
 							options.map((opt, i) => {
@@ -328,10 +345,19 @@ router.post('/addQuestion', (req, res) => {
 						}
 						a.save().then((ques) => {
 							// console.log(ques);
-
-							res.json({
-								status: 200,
-								// test,
+							var sec = test.section_id.id(secid);
+							var c = {};
+							c._id = ques._id;
+							c['marks_correct'] = markCorrect;
+							c['marks_incorrect'] = markIncorrect;
+							sec.questions.push(c);
+							test.maximum_marks += markCorrect;
+							test.total_questions++;
+							test.save().then((test) => {
+								res.json({
+									status: 200,
+									sections: test.section_id,
+								});
 							});
 						});
 					} else {

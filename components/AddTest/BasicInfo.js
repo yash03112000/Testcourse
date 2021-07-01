@@ -123,7 +123,7 @@ export default function Home({ changestep, isNew, edit }) {
 				res.json().then((res) => {
 					// setTests(res.tests);
 					// setLoad(false);
-					changestep(1);
+					changestep(1, res.id);
 				});
 			} else if (res.status == 403) {
 				router.replace('/LogIn');
