@@ -83,7 +83,14 @@ export default function Home({ a, b }) {
 	return (
 		<>
 			{editorLoaded ? (
-				<div style={{ width: '90%' }}>
+				<div
+					style={{
+						width: '90%',
+						display: 'flex',
+						flexDirection: 'row',
+						justifyContent: 'center',
+					}}
+				>
 					<CKEditor
 						editor={ClassicEditor}
 						data={a}

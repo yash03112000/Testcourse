@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export default function Home({ secid, edit, changestates }) {
+export default function Home({ secid, edit, changestates, isTest }) {
 	const [load, setLoad] = useState(false);
 	const [qtype, setQtype] = useState('SCQ');
 	const [quesBody, setQuesBody] = useState('');
@@ -95,48 +95,76 @@ export default function Home({ secid, edit, changestates }) {
 
 	const uploadQues = () => {
 		var a = {};
-		if (
-			quesBody !== '' &&
-			secid !== '' &&
-			markCorrect > 0 &&
-			markIncorrect <= 0
-		) {
+		if (quesBody !== '' && markCorrect > 0 && markIncorrect <= 0) {
 			if (
 				(qtype === 'Fill' && answer !== '') ||
 				(options.length > 0 && hasAns())
 			) {
-				fetch(`/AddTestServer/addQuestion`, {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({
-						id: edit,
-						ques: quesBody,
-						options: options,
-						qtype: qtype,
-						answer: answer,
-						secid,
-						markCorrect,
-						markIncorrect,
-					}),
-				}).then((res) => {
-					if (res.status === 200) {
-						res.json().then((res) => {
-							if (res.status === 200) {
-								// setData(res.sections);
-								// setLoad(false);
-								changestates('data', res.sections);
-								changestates('dis', 'none');
-								changestates('secid', '');
-								setQuesBody('');
-								setOptions([]);
-							}
-						});
-					} else if (res.status == 403) {
-						router.replace('/LogIn');
-					}
-				});
+				if (!isTest) {
+					fetch(`/QuestionServer/addQuestion`, {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({
+							ques: quesBody,
+							options: options,
+							qtype: qtype,
+							answer: answer,
+							markCorrect,
+							markIncorrect,
+						}),
+					}).then((res) => {
+						if (res.status === 200) {
+							res.json().then((res) => {
+								if (res.status === 200) {
+									// setData(res.sections);
+									// setLoad(false);
+									// changestates('data', res.sections);
+									// changestates('dis', 'none');
+									// changestates('secid', '');
+									setQuesBody('');
+									setOptions([]);
+								}
+							});
+						} else if (res.status == 403) {
+							router.replace('/LogIn');
+						}
+					});
+				} else {
+					fetch(`/AddTestServer/addQuestion`, {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({
+							id: edit,
+							ques: quesBody,
+							options: options,
+							qtype: qtype,
+							answer: answer,
+							secid,
+							markCorrect,
+							markIncorrect,
+						}),
+					}).then((res) => {
+						if (res.status === 200) {
+							res.json().then((res) => {
+								if (res.status === 200) {
+									// setData(res.sections);
+									// setLoad(false);
+									changestates('data', res.sections);
+									changestates('dis', 'none');
+									changestates('secid', '');
+									setQuesBody('');
+									setOptions([]);
+								}
+							});
+						} else if (res.status == 403) {
+							router.replace('/LogIn');
+						}
+					});
+				}
 			}
 		}
 	};
@@ -262,7 +290,7 @@ export default function Home({ secid, edit, changestates }) {
 				style={{
 					display: 'flex',
 					flexDirection: 'column',
-					// width: '60%',
+					width: '60%',
 					// margin: 40,
 					// backgroundColor: 'red',
 				}}
@@ -385,7 +413,12 @@ export default function Home({ secid, edit, changestates }) {
 					);
 				})}
 				<div
-					style={{ display: 'flex', flexDirection: 'column', marginTop: 20 }}
+					style={{
+						display: 'flex',
+						flexDirection: 'column',
+						marginTop: 20,
+						width: '100%',
+					}}
 				>
 					<div style={{ marginTop: 10 }}>
 						<Typography>Upload the question:</Typography>

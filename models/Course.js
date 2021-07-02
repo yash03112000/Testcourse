@@ -78,6 +78,10 @@ const CourseSchema = new mongoose.Schema({
 		type: Boolean,
 		default: false,
 	},
+	dev_step: {
+		type: Number,
+		default: 0,
+	},
 	is_on_sale: {
 		type: Boolean,
 		default: false,

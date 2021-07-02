@@ -86,6 +86,16 @@ app.prepare().then(() => {
 		ensureAuthenciated,
 		require('./routes/AddTestServer')
 	);
+	server.use(
+		'/QuestionServer',
+		ensureAuthenciated,
+		require('./routes/QuestionServer')
+	);
+	server.use(
+		'/AddCourseServer',
+		ensureAuthenciated,
+		require('./routes/AddCourseServer')
+	);
 	server.use('/CourseServer', require('./routes/CourseServer'));
 	server.use('/ImageServer', require('./routes/ImageServer'));
 

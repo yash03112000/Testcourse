@@ -58,10 +58,6 @@ const TestSchema = new mongoose.Schema({
 		type: Number,
 		default: 0,
 	},
-	// question_id: [mongoose.Types.ObjectId],
-	// question_marks_correct: [Number],
-	// question_marks_wrong: [Number],
-	// question_timings: [Number],
 	section_id: [SectionSchema],
 	is_free: {
 		type: Boolean,

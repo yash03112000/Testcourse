@@ -25,7 +25,9 @@ import {
 } from '@material-ui/core';
 import { useRouter } from 'next/router';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import AddQuestion from './AddQuestion';
+import AddLesson from './AddLesson';
+import moment from 'moment';
+
 const useStyles = makeStyles((theme) => ({
 	main: {
 		width: '100vw',
@@ -82,7 +84,7 @@ export default function Home({ changestep, isNew, edit }) {
 	}, []);
 
 	const initial = () => {
-		fetch(`/AddTestServer/step1/${edit}`, {
+		fetch(`/AddCourseServer/step2/${edit}`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
@@ -111,7 +113,7 @@ export default function Home({ changestep, isNew, edit }) {
 
 	const submit = () => {
 		console.log('aa');
-		fetch(`/AddTestServer/step1`, {
+		fetch(`/AddCourseServer/step2`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -122,12 +124,6 @@ export default function Home({ changestep, isNew, edit }) {
 			if (res.status === 200) {
 				res.json().then((res) => {
 					if (res.status === 200) {
-						// setPrice(res.test.price);
-						// setFree(res.test.free);
-						// setSalePrice(res.test.sale_price);
-						// setSale(res.test.is_on_sale);
-						// setTitle(res.test.title);
-						// changestep(2);
 						setData(res.sections);
 						setLoad(false);
 					}
@@ -142,6 +138,13 @@ export default function Home({ changestep, isNew, edit }) {
 		// setMsg(false);
 		// changestep(2);
 		router.replace('/dashboard');
+	};
+	const sectime = (sec) => {
+		var sum = 0;
+		sec.lessons.map((les, i) => {
+			sum += les.secs;
+		});
+		return moment('1900-01-01 00:00:00').add(sum, 'seconds').format('HH:mm:ss');
 	};
 
 	return load ? (
@@ -220,7 +223,7 @@ export default function Home({ changestep, isNew, edit }) {
 									</div>
 									<div>
 										<Typography style={{ fontSize: 15 }}>
-											{dat.questions.length}
+											{sectime(dat)}
 										</Typography>
 									</div>
 								</div>
@@ -233,10 +236,10 @@ export default function Home({ changestep, isNew, edit }) {
 										setSecid(dat._id);
 									}}
 								>
-									Add Question...
+									Add Lesson...
 								</div>
 							</AccordionDetails>
-							{dat.questions.map((les, index) => (
+							{dat.lessons.map((les, index) => (
 								<AccordionDetails key={index}>
 									<div className={classes.detail}>{les._id}</div>
 								</AccordionDetails>
@@ -245,7 +248,7 @@ export default function Home({ changestep, isNew, edit }) {
 					))}
 				</div>
 				<div style={{ display: dis }}>
-					<AddQuestion {...{ secid, edit, changestates }} isTest={true} />
+					<AddLesson {...{ secid, edit, changestates }} />
 				</div>
 				<div
 					style={{
@@ -258,7 +261,7 @@ export default function Home({ changestep, isNew, edit }) {
 						color="primary"
 						variant="contained"
 						type="submit"
-						style={{}}
+						style={{ marginTop: 20 }}
 						className={classes.submit}
 						onClick={next}
 					>
