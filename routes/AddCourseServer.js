@@ -360,7 +360,7 @@ router.post('/step2', (req, res) => {
 						course.save().then(() => {
 							res.json({
 								status: 200,
-								sections: course.section_id,
+								sections: course.sections,
 							});
 						});
 					} else {
