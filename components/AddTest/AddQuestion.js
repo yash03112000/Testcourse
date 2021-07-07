@@ -1,6 +1,5 @@
 import Head from 'next/head';
 import Link from 'next/link';
-// import styles from '../styles/Home.module.css'
 import React, { useState, useEffect, useMemo } from 'react';
 import ReactDOM, { unstable_batchedUpdates as unstable } from 'react-dom';
 import {
@@ -397,7 +396,8 @@ export default function Home({ secid, edit, changestates, isTest }) {
 				</div>
 				<div style={{ marginTop: 10 }}>
 					<Typography>Question:</Typography>
-					<Typography component="div">{parse(quesBody)}</Typography>
+					<div className="ck-content">{parse(quesBody)}</div>
+					{/* <Typography component="div">{parse(quesBody)}</Typography> */}
 				</div>
 				{options.map((opt, i) => {
 					return (

@@ -40,8 +40,8 @@ export default function Home({ a, b }) {
 	useEffect(() => {
 		console.log('aa');
 		editorRef.current = {
-			CKEditor: require('@ckeditor/ckeditor5-react').CKEditor, //Added .CKEditor
-			ClassicEditor: require('@ckeditor/ckeditor5-build-classic'),
+			CKEditor: require('@ckeditor/ckeditor5-react').CKEditor,
+			ClassicEditor: require('ckeditor5-custom-build/build/ckeditor'),
 		};
 		setEditorLoaded(true);
 	}, []);
@@ -80,6 +80,80 @@ export default function Home({ a, b }) {
 		}
 	}
 
+	const editorConfiguration = {
+		toolbar: {
+			items: [
+				'heading',
+				'|',
+				'fontfamily',
+				'fontsize',
+				'|',
+				'alignment',
+				'|',
+				'fontColor',
+				'fontBackgroundColor',
+				'|',
+				'bold',
+				'italic',
+				'strikethrough',
+				'underline',
+				'subscript',
+				'superscript',
+				'|',
+				'link',
+				'|',
+				'outdent',
+				'indent',
+				'|',
+				'bulletedList',
+				'numberedList',
+				'todoList',
+				'|',
+				'code',
+				'codeBlock',
+				'|',
+				'insertTable',
+				'|',
+				'uploadImage',
+				'blockQuote',
+				'|',
+				'undo',
+				'redo',
+			],
+			shouldNotGroupWhenFull: true,
+		},
+		image: {
+			styles: ['alignLeft', 'alignCenter', 'alignRight'],
+			resizeUnit: '%',
+			resizeOptions: [
+				{
+					name: 'resizeImage:original',
+					label: 'Original',
+					value: null,
+				},
+				{
+					name: 'resizeImage:50',
+					label: '50%',
+					value: '50',
+				},
+				{
+					name: 'resizeImage:75',
+					label: '75%',
+					value: '75',
+				},
+			],
+			toolbar: [
+				'imageStyle:alignLeft',
+				'imageStyle:alignCenter',
+				'imageStyle:alignRight',
+				'|',
+				'resizeImage',
+				'|',
+				'imageTextAlternative',
+			],
+		},
+	};
+
 	return (
 		<>
 			{editorLoaded ? (
@@ -103,11 +177,45 @@ export default function Home({ a, b }) {
 								return new MyUploadAdapter(loader);
 							};
 						}}
+						config={editorConfiguration}
+						// config={{
+						// 	// plugins: [ImageResizer],
+						// 	image: {
+						// 		styles: ['alignLeft', 'alignCenter', 'alignRight'],
+						// 		resizeUnit: '%',
+						// 		resizeOptions: [
+						// 			{
+						// 				name: 'resizeImage:original',
+						// 				label: 'Original',
+						// 				value: null,
+						// 			},
+						// 			{
+						// 				name: 'resizeImage:50',
+						// 				label: '50%',
+						// 				value: '50',
+						// 			},
+						// 			{
+						// 				name: 'resizeImage:75',
+						// 				label: '75%',
+						// 				value: '75',
+						// 			},
+						// 		],
+						// 		toolbar: [
+						// 			'imageStyle:alignLeft',
+						// 			'imageStyle:alignCenter',
+						// 			'imageStyle:alignRight',
+						// 			'|',
+						// 			'resizeImage',
+						// 			'|',
+						// 			'imageTextAlternative',
+						// 		],
+						// 	},
+						// }}
 						onChange={(event, editor) => {
 							const data = editor.getData();
 							b(data);
 						}}
-						style={{ width: '90%' }}
+						// style={{ width: '90%' }}
 					/>
 				</div>
 			) : (

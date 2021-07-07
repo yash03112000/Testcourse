@@ -23,7 +23,7 @@ router.post('/imageupload', (req, res) => {
 			'base64'
 		);
 		sharp(base64Data)
-			.resize(150)
+			// .resize(150)
 			.toBuffer()
 			.then((data) => {
 				var id = uuid.v4();
