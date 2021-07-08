@@ -9,6 +9,8 @@ import {
 } from '@material-ui/core';
 import { useRouter } from 'next/router';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
+import AccountBoxIcon from '@material-ui/icons/AccountBox';
+// import Image from '@ckeditor/ckeditor5-image/src/image';
 const useStyles = makeStyles((theme) => ({
 	head: {
 		backgroundImage: 'url(/static/banner.jpg)',
@@ -85,7 +87,7 @@ export default function Home({ a, b }) {
 			items: [
 				'heading',
 				'|',
-				'fontfamily',
+				// 'fontfamily',
 				'fontsize',
 				'|',
 				'alignment',
@@ -95,7 +97,7 @@ export default function Home({ a, b }) {
 				'|',
 				'bold',
 				'italic',
-				'strikethrough',
+				// 'strikethrough',
 				'underline',
 				'subscript',
 				'superscript',
@@ -107,7 +109,7 @@ export default function Home({ a, b }) {
 				'|',
 				'bulletedList',
 				'numberedList',
-				'todoList',
+				// 'todoList',
 				'|',
 				'code',
 				'codeBlock',
@@ -123,7 +125,26 @@ export default function Home({ a, b }) {
 			shouldNotGroupWhenFull: true,
 		},
 		image: {
-			styles: ['alignLeft', 'alignCenter', 'alignRight'],
+			insert: {
+				type: 'inline',
+			},
+			style: {
+				options: [
+					'alignLeft',
+					'alignCenter',
+					'alignRight',
+					'inline',
+					'block',
+					// {
+					// 	name: 'inline2',
+					// 	// icon: AccountBoxIcon,
+					// 	title: 'Inline Image',
+					// 	className: 'image-inline',
+					// 	modelElements: ['imageInline'],
+					// },
+					'side',
+				],
+			},
 			resizeUnit: '%',
 			resizeOptions: [
 				{
@@ -143,9 +164,13 @@ export default function Home({ a, b }) {
 				},
 			],
 			toolbar: [
+				'imageStyle:inline',
+				'imageStyle:block',
+				'|',
 				'imageStyle:alignLeft',
 				'imageStyle:alignCenter',
 				'imageStyle:alignRight',
+				'imageStyle:side',
 				'|',
 				'resizeImage',
 				'|',

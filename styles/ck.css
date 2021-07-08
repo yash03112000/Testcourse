@@ -68,7 +68,7 @@
 }
 /* ckeditor5-image/theme/image.css */
 .ck-content .image img {
-	display: block;
+	display: inline;
 	margin: 0 auto;
 	max-width: 100%;
 	min-width: 100%;

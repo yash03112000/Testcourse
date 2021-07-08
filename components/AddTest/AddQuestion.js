@@ -397,7 +397,7 @@ export default function Home({ secid, edit, changestates, isTest }) {
 				<div style={{ marginTop: 10 }}>
 					<Typography>Question:</Typography>
 					<div className="ck-content">{parse(quesBody)}</div>
-					{/* <Typography component="div">{parse(quesBody)}</Typography> */}
+					{/* <Typography component="div">{quesBody}</Typography> */}
 				</div>
 				{options.map((opt, i) => {
 					return (
