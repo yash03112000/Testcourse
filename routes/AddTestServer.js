@@ -320,7 +320,7 @@ router.post('/addQuestion', (req, res) => {
 		});
 	} else {
 		Test.findById(id)
-			.select('section_id user_id')
+			.select('section_id user_id maximum_marks total_questions')
 			.exec()
 			.then((test) => {
 				if (test) {

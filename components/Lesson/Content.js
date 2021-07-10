@@ -11,6 +11,7 @@ import { useRouter } from 'next/router';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Vimeo from '@u-wave/react-vimeo';
 import Curriculum from './Curriculum';
+import VimeoPlayer from './VimeoPlayer';
 
 const useStyles = makeStyles((theme) => ({
 	head: {
@@ -97,14 +98,15 @@ export default function Home({}) {
 	) : (
 		<div className={classes.head}>
 			<div className={classes.left}>
-				<Vimeo
+				{/* <Vimeo
 					video={lesson}
 					// autoplay
 					responsive={true}
 					// style={{ width: 680, backgroundColor: 'red' }}
 					// width={600}
 					// height={800}
-				/>
+				/> */}
+				<VimeoPlayer {...{ lesson }} />
 			</div>
 			<div className={classes.right}>
 				<Curriculum data={data} />

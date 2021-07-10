@@ -69,6 +69,7 @@ export default function Home() {
 		<div className={classes.container}>
 			<Head>
 				<title>TestCourse</title>
+				<script src="https://player.vimeo.com/api/player.js"></script>
 			</Head>
 
 			<main className={classes.main}>
