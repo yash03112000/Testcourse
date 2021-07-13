@@ -384,12 +384,15 @@ router.post('/step2', (req, res) => {
 
 router.post('/addLesson', (req, res) => {
 	console.log('hehe');
-	const { id, secid, title, url, sec } = req.body;
+	const { id, secid, title, url, sec, HDurl, SDurl, Medurl } = req.body;
 	if (
 		typeof id === 'undefined' ||
 		typeof secid === 'undefined' ||
 		typeof title === 'undefined' ||
 		typeof url === 'undefined' ||
+		typeof HDurl === 'undefined' ||
+		typeof SDurl === 'undefined' ||
+		typeof Medurl === 'undefined' ||
 		typeof sec === 'undefined'
 	) {
 		res.json({
@@ -417,6 +420,18 @@ router.post('/addLesson', (req, res) => {
 						a.secs = sec;
 						a.video_url = url;
 						a.course_id = id;
+						if (HDurl !== '') {
+							a.app_urls.HD.uri = HDurl;
+							a.app_urls.HD.valid = true;
+						}
+						if (SDurl !== '') {
+							a.app_urls.SD.uri = SDurl;
+							a.app_urls.SD.valid = true;
+						}
+						if (Medurl !== '') {
+							a.app_urls.Med.uri = Medurl;
+							a.app_urls.Med.valid = true;
+						}
 						a.save().then((les) => {
 							// console.log(ques);
 							var sec = course.sections.id(secid);

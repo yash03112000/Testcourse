@@ -56,6 +56,9 @@ export default function Home({ secid, edit, changestates }) {
 	const [load, setLoad] = useState(false);
 	const [title, setTitle] = useState('');
 	const [url, setURL] = useState('');
+	const [HDurl, setHDURL] = useState('');
+	const [SDurl, setSDURL] = useState('');
+	const [Medurl, setMedURL] = useState('');
 	const [sec, setSec] = useState('');
 	const router = useRouter();
 	const { id } = router.query;
@@ -89,6 +92,9 @@ export default function Home({ secid, edit, changestates }) {
 					title,
 					url,
 					sec,
+					HDurl,
+					SDurl,
+					Medurl,
 				}),
 			}).then((res) => {
 				if (res.status === 200) {
@@ -99,6 +105,9 @@ export default function Home({ secid, edit, changestates }) {
 							changestates('secid', '');
 							setTitle('');
 							setURL('');
+							setHDURL('');
+							setSDURL('');
+							setMedURL('');
 							setSec('');
 						}
 					});
@@ -180,18 +189,105 @@ export default function Home({ secid, edit, changestates }) {
 						gutterBottom
 						style={{ color: 'black', margin: 6 }}
 					>
-						Vimeo URL:
+						Vimeo ID:
 					</Typography>
 					<TextField
 						type="username"
 						required
-						label="Vimeo URL"
+						label="Vimeo ID"
 						name="username"
 						variant="outlined"
 						size="small"
 						autoFocus
 						value={url}
 						onChange={(e) => setURL(e.target.value)}
+					/>
+				</div>
+				<div
+					style={{
+						display: 'flex',
+						flexDirection: 'row',
+						justifyContent: 'space-between',
+						marginTop: 20,
+					}}
+				>
+					<Typography
+						component="span"
+						color="primary"
+						variant="subtitle1"
+						gutterBottom
+						style={{ color: 'black', margin: 6 }}
+					>
+						Player Link For App(HD)
+					</Typography>
+					<TextField
+						type="username"
+						required
+						label="Player Link For App(HD)"
+						name="username"
+						variant="outlined"
+						size="small"
+						autoFocus
+						value={HDurl}
+						onChange={(e) => setHDURL(e.target.value)}
+					/>
+				</div>
+				<div
+					style={{
+						display: 'flex',
+						flexDirection: 'row',
+						justifyContent: 'space-between',
+						marginTop: 20,
+					}}
+				>
+					<Typography
+						component="span"
+						color="primary"
+						variant="subtitle1"
+						gutterBottom
+						style={{ color: 'black', margin: 6 }}
+					>
+						Player Link For App(Med)
+					</Typography>
+					<TextField
+						type="username"
+						required
+						label="Player Link For App(Med)"
+						name="username"
+						variant="outlined"
+						size="small"
+						autoFocus
+						value={Medurl}
+						onChange={(e) => setMedURL(e.target.value)}
+					/>
+				</div>
+				<div
+					style={{
+						display: 'flex',
+						flexDirection: 'row',
+						justifyContent: 'space-between',
+						marginTop: 20,
+					}}
+				>
+					<Typography
+						component="span"
+						color="primary"
+						variant="subtitle1"
+						gutterBottom
+						style={{ color: 'black', margin: 6 }}
+					>
+						Player Link For App(SD)
+					</Typography>
+					<TextField
+						type="username"
+						required
+						label="Player Link For App(SD)"
+						name="username"
+						variant="outlined"
+						size="small"
+						autoFocus
+						value={SDurl}
+						onChange={(e) => setSDURL(e.target.value)}
 					/>
 				</div>
 				<div

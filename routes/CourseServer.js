@@ -61,6 +61,7 @@ router.post('/lessondata', (req, res) => {
 							res.json({
 								data: course.sections,
 								lesson: les.video_url,
+								uris: les.app_urls,
 							});
 						} else {
 							res.sendStatus(404).end();

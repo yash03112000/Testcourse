@@ -68,32 +68,12 @@ export default function Home({ lesson }) {
 	}, [id]);
 
 	const initial = () => {
-		// setLoad(true);
-		// fetch(`https://vimeo.com/api/oembed.json?url=https://vimeo.com/${lesson}`, {
-		// 	method: 'GET',
-		// 	// headers: {
-		// 	// 	'Content-Type': 'application/json',
-		// 	// },
-		// }).then((res) => {
-		// 	// console.log(res.status)
-		// 	if (res.status === 200) {
-		// 		res.json().then((res) => {
-		// 			// setUser(res.user);
-		// 			// console.log(res);
-		// 			setData(res.html);
-		// 			// setLesson(res.lesson);
-		// 			// setStatus(true);
-		// 			setLoad(false);
-		// 		});
-		// 	} else if (res.status == 403) {
-		// 		router.replace('/LogIn');
-		// 	}
-		// });
-		console.log(aa.current.offsetWidth);
+		// console.log(aa.current.offsetWidth);
 		var video01Player = new Vimeo.Player('player', {
 			id: lesson,
 			width: aa.current.offsetWidth,
 		});
+		// setLoad(false);
 	};
 
 	return load ? (

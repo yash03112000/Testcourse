@@ -1,5 +1,31 @@
 const mongoose = require('mongoose');
 
+const uriSchema = new mongoose.Schema({
+	valid: {
+		type: Boolean,
+		default: false,
+	},
+	uri: {
+		type: String,
+		default: ' ',
+	},
+});
+
+const URLSchema = new mongoose.Schema({
+	HD: {
+		type: uriSchema,
+		default: () => ({}),
+	},
+	SD: {
+		type: uriSchema,
+		default: () => ({}),
+	},
+	Med: {
+		type: uriSchema,
+		default: () => ({}),
+	},
+});
+
 const LessonSchema = new mongoose.Schema({
 	title: {
 		type: String,
@@ -15,6 +41,10 @@ const LessonSchema = new mongoose.Schema({
 	video_url: {
 		type: String,
 		default: ' ',
+	},
+	app_urls: {
+		type: URLSchema,
+		default: () => ({}),
 	},
 });
 
