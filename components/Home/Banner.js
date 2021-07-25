@@ -43,7 +43,7 @@ export default function Home() {
 	return (
 		<div>
 			<div className={classes.head}>
-				<div>
+				<div style={{ padding: 10 }}>
 					<Typography
 						component="h4"
 						color="primary"
@@ -54,7 +54,7 @@ export default function Home() {
 						Learn on your schedule
 					</Typography>
 				</div>
-				<div>
+				<div style={{ padding: 10 }}>
 					<Typography
 						component="h4"
 						color="primary"

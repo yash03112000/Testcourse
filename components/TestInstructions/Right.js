@@ -89,25 +89,25 @@ export default function Home({ data }) {
 	const [status, setStatus] = useState(false);
 	const [fresh, setFresh] = useState([]);
 	const [msg, setMsg] = useState('');
-	const { id: slug } = router.query;
-	const [id, setID] = useState('');
+	const { id } = router.query;
+	// const [id, setID] = useState('');
 
 	useEffect(() => {
 		initial();
 	}, []);
 
 	const initial = () => {
-		fetch(`/CourseServer/permit`, {
+		fetch(`/CourseServer/test/permit`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({ slug }),
+			body: JSON.stringify({ id }),
 		}).then((res) => {
 			// console.log(res.status)
 			if (res.status === 200) {
 				res.json().then((res) => {
-					setID(res.data._id);
+					// setID(res.data._id);
 					setStatus(res.status);
 					setFresh(res.data);
 					setLoad(false);
@@ -232,7 +232,7 @@ export default function Home({ data }) {
 						</Typography>
 					</div> */}
 					<div className={classes.rest}>
-						{/* <Button
+						<Button
 							style={{
 								backgroundColor: 'hsl(0,60%,60%)',
 								width: '80%',
@@ -242,11 +242,11 @@ export default function Home({ data }) {
 								margin: 10,
 								// border: '0.2px solid black',
 							}}
-							// onClick={pay}
+							onClick={() => router.replace(`/test/${id}`)}
 						>
 							Enter
-						</Button> */}
-						You Are Registered
+						</Button>
+						{/* You Are Registered */}
 					</div>
 				</>
 			);

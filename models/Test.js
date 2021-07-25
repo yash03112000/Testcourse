@@ -47,6 +47,10 @@ const TestSchema = new mongoose.Schema({
 		type: String,
 		default: '',
 	},
+	short_description: {
+		type: String,
+		default: '',
+	},
 	thumbnail: {
 		type: String,
 		default: '',
@@ -89,6 +93,10 @@ const TestSchema = new mongoose.Schema({
 	},
 	payments: [PaymentSchema],
 	reports: [ReportSchema],
+	tags: [String],
+	languages: [String],
+	outcomes: [String],
+	requirements: [String],
 });
 
 const User = mongoose.model('Test', TestSchema);

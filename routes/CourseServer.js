@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Test = require('../models/Test');
 const Course = require('../models/Course');
+const Digital = require('../models/Digital');
 const Lesson = require('../models/Lesson');
 const { ensureAuthenciated } = require('../middleware/auth');
 
@@ -14,10 +15,15 @@ router.get('/', (req, res) => {
 			Test.find({})
 				.exec()
 				.then((tests) => {
-					res.json({
-						courses,
-						tests,
-					});
+					Digital.find({})
+						.exec()
+						.then((digitals) => {
+							res.json({
+								courses,
+								tests,
+								digitals,
+							});
+						});
 				})
 				.catch((err) => {
 					console.log(err);
@@ -29,7 +35,25 @@ router.get('/', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
-	Course.findById(req.params.id)
+	Course.findOne({ slug: req.params.id })
+		.exec()
+		.then((course) => {
+			// console.log(course);
+			if (course) {
+				res.json({
+					routes: course,
+				});
+			} else {
+				res.sendStatus(404).end();
+			}
+		})
+		.catch((err) => {
+			console.log(err);
+		});
+});
+
+router.get('/testdetails/:id', (req, res) => {
+	Test.findById(req.params.id)
 		.exec()
 		.then((course) => {
 			// console.log(course);
@@ -48,7 +72,7 @@ router.get('/:id', (req, res) => {
 
 router.post('/lessondata', (req, res) => {
 	// console.log(req.body.id);
-	Lesson.findById(req.body.id)
+	Lesson.findOne({ slug: req.body.id })
 		.exec()
 		.then((les) => {
 			// console.log(course);
@@ -78,7 +102,35 @@ router.post('/lessondata', (req, res) => {
 
 router.post('/permit', async (req, res) => {
 	try {
-		var course = await Course.findById(req.body.id).exec();
+		var course = await Course.findOne({ slug: req.body.slug }).exec();
+		var i;
+		var flag = false;
+		if (course) {
+			if (req.isAuthenticated()) {
+				for (i = 0; i < course.payments.length; i++) {
+					if (course.payments[i].userid.equals(req.user.id)) flag = true;
+				}
+				res.json({
+					status: flag,
+					data: course,
+				});
+			} else {
+				res.json({
+					status: false,
+					data: course,
+				});
+			}
+		} else {
+			res.sendStatus(404).end();
+		}
+	} catch (err) {
+		console.log(err);
+	}
+});
+
+router.post('/test/permit', async (req, res) => {
+	try {
+		var course = await Test.findById(req.body.id).exec();
 		var i;
 		var flag = false;
 		if (course) {

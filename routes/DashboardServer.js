@@ -3,24 +3,106 @@ const router = express.Router();
 const mongoose = require('mongoose');
 var User = require('../models/User');
 var Test = require('../models/Test');
+var Course = require('../models/Course');
+var Digital = require('../models/Digital');
 
-router.get('/', async (req, res) => {
-	var tests = await Test.find({}).exec();
-	res.json({
-		tests,
-	});
+router.get('/user', async (req, res) => {
+	// var user = await User.findById(req.user.id).exec();
+	var user = req.user;
+	if (user.type !== 'User') {
+		res.sendStatus(403);
+	} else {
+		var tests = [];
+		var courses = [];
+		var digitals = [];
+		await Promise.all(
+			user.payments.map(async (pay) => {
+				if (pay.entitytype === 'Course') {
+					var course = await Course.findById(pay.entityid).exec();
+					if (course) courses.push(course);
+				} else if (pay.entitytype === 'Test') {
+					var test = await Test.findById(pay.entityid).exec();
+					if (test) tests.push(test);
+				} else if (pay.entitytype === 'Digital') {
+					var test = await Digital.findById(pay.entityid).exec();
+					if (test) digitals.push(test);
+				}
+			})
+		);
+
+		res.json({
+			tests,
+			courses,
+			digitals,
+		});
+	}
 });
 
-router.post('/permit', async (req, res) => {
-	var test = await Test.findById(req.body.testid).exec();
-	var i;
-	var flag = false;
-	for (i = 0; i < test.payments.length; i++) {
-		if (test.payments[i].userid.equals(req.user.id)) flag = true;
+router.get('/teacher', async (req, res) => {
+	// var user = await User.findById(req.user.id).exec();
+	var user = req.user;
+	if (user.type !== 'Teacher') {
+		res.sendStatus(403);
+	} else {
+		var tests = [];
+		var courses = [];
+		var digitals = [];
+
+		await Promise.all(
+			user.courseposted.map(async (pay) => {
+				var course = await Course.findById(pay).exec();
+				if (course) courses.push(course);
+			})
+		);
+		await Promise.all(
+			user.testposted.map(async (pay) => {
+				var test = await Test.findById(pay).exec();
+				if (test) tests.push(test);
+			})
+		);
+		await Promise.all(
+			user.digitalposted.map(async (pay) => {
+				var test = await Digital.findById(pay).exec();
+				if (test) digitals.push(test);
+			})
+		);
+
+		res.json({
+			tests,
+			courses,
+			digitals,
+		});
 	}
-	res.json({
-		status: flag,
-	});
+});
+
+router.get('/admin', async (req, res) => {
+	// var user = await User.findById(req.user.id).exec();
+	var user = req.user;
+	if (user.type !== 'Admin') {
+		res.sendStatus(403);
+	} else {
+		var tests = [];
+		var courses = [];
+		var digitals = [];
+
+		await Promise.all(
+			user.payments.map(async (pay) => {
+				if (pay.entitytype === 'Course') {
+					var course = await Course.findById(pay.entityid).exec();
+					if (course) courses.push(course);
+				} else if (pay.entitytype === 'Test') {
+					var test = await Test.findById(pay.entityid).exec();
+					if (test) tests.push(test);
+				}
+			})
+		);
+
+		res.json({
+			tests,
+			courses,
+			digitals,
+		});
+	}
 });
 
 module.exports = router;

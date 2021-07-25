@@ -15,6 +15,9 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Header from '../components/Header';
 import Banner from '../components/Home/Banner';
 import CourseCard from '../components/Home/CourseCard';
+import TestCard from '../components/Home/TestCard';
+import DigitalCard from '../components/Home/DigitalCard';
+
 import Footer from '../components/Footer';
 import { server } from '../config';
 
@@ -32,9 +35,11 @@ const useStyles = makeStyles((theme) => ({
 	carddiv: {
 		display: 'flex',
 		flexDirection: 'row',
-		justifyContent: 'center',
+		// justifyContent: 'center',
 		// maxWidth: '100vw',
 		overflow: 'scroll',
+		marginBottom: 20,
+		// scrollMargin: 20,
 	},
 }));
 
@@ -61,7 +66,7 @@ export default function Home({ data }) {
 							gutterBottom
 							className={classes.header}
 						>
-							Top Courses
+							Courses
 						</Typography>
 					</div>
 					<div className={classes.carddiv}>
@@ -70,7 +75,7 @@ export default function Home({ data }) {
 						})}
 					</div>
 				</div>
-				{/* <div className={classes.heading}>
+				<div className={classes.heading}>
 					<div>
 						<Typography
 							component="p"
@@ -79,13 +84,33 @@ export default function Home({ data }) {
 							gutterBottom
 							className={classes.header}
 						>
-							Top 10 Courses
+							Tests
 						</Typography>
 					</div>
 					<div className={classes.carddiv}>
-						<CourseCard />
+						{data.tests.map((course, i) => {
+							return <TestCard key={i} data={course} />;
+						})}
 					</div>
-				</div> */}
+				</div>
+				<div className={classes.heading}>
+					<div>
+						<Typography
+							component="p"
+							color="primary"
+							variant="subtitle1"
+							gutterBottom
+							className={classes.header}
+						>
+							Digital Products
+						</Typography>
+					</div>
+					<div className={classes.carddiv}>
+						{data.digitals.map((course, i) => {
+							return <DigitalCard key={i} data={course} />;
+						})}
+					</div>
+				</div>
 				<Footer />
 			</main>
 		</div>

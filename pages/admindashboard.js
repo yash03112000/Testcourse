@@ -45,10 +45,6 @@ const useStyles = makeStyles((theme) => ({
 		color: 'black',
 		marginTop: 20,
 	},
-	main: {
-		// backgroundColor:'green',
-		width: 250,
-	},
 	btnbox: {
 		display: 'flex',
 		flexDirection: 'column',
@@ -58,14 +54,15 @@ const useStyles = makeStyles((theme) => ({
 	main: {
 		display: 'flex',
 		flexDirection: 'column',
-		justifyContent: 'center',
-		alignItems: 'center',
+		// justifyContent: 'center',
+		// alignItems: 'center',
+		width: '100vw',
 	},
 }));
 
 export default function Home() {
 	const [load, setLoad] = useState(true);
-	const [tests, setTests] = useState([]);
+	const [data, setData] = useState({});
 	const router = useRouter();
 	const classes = useStyles();
 
@@ -74,7 +71,7 @@ export default function Home() {
 	}, []);
 
 	const initial = () => {
-		fetch(`/DashboardServer`, {
+		fetch(`/DashboardServer/admin`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
@@ -83,7 +80,8 @@ export default function Home() {
 			// console.log(res.status)
 			if (res.status === 200) {
 				res.json().then((res) => {
-					setTests(res.tests);
+					// console.log(res);
+					setData(res);
 					setLoad(false);
 				});
 			} else if (res.status == 403) {
@@ -104,23 +102,57 @@ export default function Home() {
 			</Head>
 
 			<main className={classes.main}>
-				<h1>Dashboard</h1>
-				<div
-					style={{
-						display: 'flex',
-						flexDirection: 'row',
-						flexWrap: 'wrap',
-						alignItems: 'center',
-						justifyContent: 'center',
-					}}
-				>
-					{tests.map((test, i) => {
-						return (
-							<div key={i} style={{ margin: 20 }}>
-								<TestCard {...{ test, router }} />
-							</div>
-						);
-					})}
+				<div>
+					<div
+						style={{
+							display: 'flex',
+							flexDirection: 'row',
+							justifyContent: 'center',
+						}}
+					>
+						<h1>Test Bought</h1>
+					</div>
+					<div
+						style={{
+							display: 'flex',
+							flexDirection: 'row',
+							overflow: 'scroll',
+						}}
+					>
+						{data.tests.map((test, i) => {
+							return (
+								<div key={i} style={{ margin: 20 }}>
+									<TestCard {...{ test, router }} />
+								</div>
+							);
+						})}
+					</div>
+				</div>
+				<div>
+					<div
+						style={{
+							display: 'flex',
+							flexDirection: 'row',
+							justifyContent: 'center',
+						}}
+					>
+						<h1>Courses Bought</h1>
+					</div>
+					<div
+						style={{
+							display: 'flex',
+							flexDirection: 'row',
+							overflow: 'scroll',
+						}}
+					>
+						{data.courses.map((test, i) => {
+							return (
+								<div key={i} style={{ margin: 20 }}>
+									<TestCard {...{ test, router }} />
+								</div>
+							);
+						})}
+					</div>
 				</div>
 			</main>
 		</div>

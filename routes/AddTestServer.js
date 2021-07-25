@@ -2,6 +2,7 @@ const express = require('express');
 const Test = require('../models/Test');
 const Ques = require('../models/Question');
 const Result = require('../models/TestResult');
+const User = require('../models/User');
 const mongoose = require('mongoose');
 
 const router = express.Router();
@@ -64,6 +65,17 @@ router.post('/step0', (req, res) => {
 						test
 							.save()
 							.then((test) => {
+								// User.findById(req.user.id)
+								// 	.exec()
+								// 	.then((user) => {
+								// 		user.testposted.push(test._id);
+								// 		user.save().then(() => {
+								// 			res.json({
+								// 				status: 200,
+								// 				id: test._id,
+								// 			});
+								// 		});
+								// 	});
 								res.json({
 									status: 200,
 									id: test._id,
@@ -92,10 +104,21 @@ router.post('/step0', (req, res) => {
 		test
 			.save()
 			.then((test) => {
-				res.json({
-					status: 200,
-					id: test._id,
-				});
+				// res.json({
+				// 	status: 200,
+				// 	id: test._id,
+				// });
+				User.findById(req.user.id)
+					.exec()
+					.then((user) => {
+						user.testposted.push(test._id);
+						user.save().then(() => {
+							res.json({
+								status: 200,
+								id: test._id,
+							});
+						});
+					});
 			})
 			.catch((err) => {
 				console.log(err);

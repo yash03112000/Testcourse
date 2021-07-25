@@ -1,6 +1,7 @@
 const express = require('express');
 const Course = require('../models/Course');
 const Lesson = require('../models/Lesson');
+const User = require('../models/User');
 const mongoose = require('mongoose');
 
 const router = express.Router();
@@ -42,6 +43,10 @@ router.post('/step0', (req, res) => {
 			}
 		}
 	}
+	var slug = title
+		.toLowerCase()
+		.replace(/ /g, '-')
+		.replace(/[^\w-]+/g, '');
 	if (!(typeof edit === 'undefined')) {
 		if (!mongoose.Types.ObjectId.isValid(edit)) {
 			res.json({
@@ -49,55 +54,103 @@ router.post('/step0', (req, res) => {
 				msg: 'Price Required',
 			});
 		} else {
-			Course.findById(edit)
+			Course.findOne({ slug: slug })
 				.exec()
 				.then((course) => {
+					// console.log(course);
 					if (course) {
-						course.title = title;
-						course.is_free = free;
-						course.is_on_sale = sale;
-						course.price = price;
-						course.sale_price = saleprice;
-						course.dev_step = 1;
-						course.user_id = req.user.id;
-						course
-							.save()
-							.then((course) => {
-								res.json({
-									status: 200,
-									id: course._id,
-								});
-							})
-							.catch((err) => {
-								console.log(err);
-							});
-					} else {
 						res.json({
 							status: 400,
-							msg: 'Wrong ID',
+							msg: 'Unique Title',
 						});
+					} else {
+						Course.findById(edit)
+							.exec()
+							.then((course) => {
+								if (course) {
+									course.title = title;
+									course.slug = slug;
+									course.is_free = free;
+									course.is_on_sale = sale;
+									course.price = price;
+									course.sale_price = saleprice;
+									course.dev_step = 1;
+									course.user_id = req.user.id;
+									course
+										.save()
+										.then((course) => {
+											// User.findById(req.user.id)
+											// 	.exec()
+											// 	.then((user) => {
+											// 		user.courseposted.push(course._id);
+											// 		user.save().then(() => {
+											// 			res.json({
+											// 				status: 200,
+											// 				id: course._id,
+											// 			});
+											// 		});
+											// 	});
+											res.json({
+												status: 200,
+												id: course._id,
+											});
+										})
+										.catch((err) => {
+											console.log(err);
+										});
+								} else {
+									res.json({
+										status: 400,
+										msg: 'Wrong ID',
+									});
+								}
+							});
 					}
 				});
 		}
 	} else {
-		var course = new Course();
-		course.title = title;
-		course.is_free = free;
-		course.is_on_sale = sale;
-		course.price = price;
-		course.sale_price = saleprice;
-		course.dev_step = 1;
-		course.user_id = req.user.id;
-		course
-			.save()
+		Course.findOne({ slug: slug })
+			.exec()
 			.then((course) => {
-				res.json({
-					status: 200,
-					id: course._id,
-				});
-			})
-			.catch((err) => {
-				console.log(err);
+				console.log(slug);
+				if (course) {
+					res.json({
+						status: 400,
+						msg: 'Unique Title',
+					});
+				} else {
+					var course = new Course();
+					course.title = title;
+					course.slug = slug;
+					course.is_free = free;
+					course.is_on_sale = sale;
+					course.price = price;
+					course.sale_price = saleprice;
+					course.dev_step = 1;
+					course.user_id = req.user.id;
+					course
+						.save()
+						.then((course) => {
+							User.findById(req.user.id)
+								.exec()
+								.then((user) => {
+									user.courseposted.push(course._id);
+									user.save().then(() => {
+										res.json({
+											status: 200,
+											id: course._id,
+										});
+									});
+								});
+							// res.json({
+							// 	status: 200,
+							// 	id: course._id,
+							// });
+						})
+						.catch((err) => {
+							console.log(err);
+						});
+				}
 			});
 	}
 });
@@ -383,7 +436,7 @@ router.post('/step2', (req, res) => {
 });
 
 router.post('/addLesson', (req, res) => {
-	console.log('hehe');
+	// console.log('hehe');
 	const { id, secid, title, url, sec, HDurl, SDurl, Medurl } = req.body;
 	if (
 		typeof id === 'undefined' ||
@@ -408,58 +461,78 @@ router.post('/addLesson', (req, res) => {
 			msg: 'Price Required',
 		});
 	} else {
-		Course.findById(id)
-			.select('sections user_id')
+		var slug = title
+			.toLowerCase()
+			.replace(/ /g, '-')
+			.replace(/[^\w-]+/g, '');
+		Lesson.findOne({ slug: slug, course_id: id })
 			.exec()
-			.then((course) => {
-				if (course) {
-					if (course.user_id.equals(req.user.id)) {
-						var a = new Lesson();
-						// console.log(a);
-						a.title = title;
-						a.secs = sec;
-						a.video_url = url;
-						a.course_id = id;
-						if (HDurl !== '') {
-							a.app_urls.HD.uri = HDurl;
-							a.app_urls.HD.valid = true;
-						}
-						if (SDurl !== '') {
-							a.app_urls.SD.uri = SDurl;
-							a.app_urls.SD.valid = true;
-						}
-						if (Medurl !== '') {
-							a.app_urls.Med.uri = Medurl;
-							a.app_urls.Med.valid = true;
-						}
-						a.save().then((les) => {
-							// console.log(ques);
-							var sec = course.sections.id(secid);
-							var c = {};
-							c._id = les._id;
-							c.video_url = les.video_url;
-							c.secs = les.secs;
-							c.title = les.title;
-							sec.total_secs += les.sec;
-							sec.lessons.push(c);
-							course.save().then((course) => {
-								res.json({
-									status: 200,
-									sections: course.sections,
-								});
-							});
-						});
-					} else {
-						res.json({
-							status: 400,
-							msg: 'Not Authorized',
-						});
-					}
-				} else {
+			.then((lesson) => {
+				if (lesson) {
 					res.json({
 						status: 400,
-						msg: 'Invalid ID',
+						msg: 'Unique Title',
 					});
+				} else {
+					Course.findById(id)
+						.select('sections user_id')
+						.exec()
+						.then((course) => {
+							if (course) {
+								if (course.user_id.equals(req.user.id)) {
+									var a = new Lesson();
+									// console.log(a);
+									a.title = title;
+									a.slug = slug;
+									a.secs = sec;
+									a.video_url = url;
+									a.course_id = id;
+									if (HDurl !== '') {
+										a.app_urls.HD.uri = HDurl;
+										a.app_urls.HD.valid = true;
+									}
+									if (SDurl !== '') {
+										a.app_urls.SD.uri = SDurl;
+										a.app_urls.SD.valid = true;
+									}
+									if (Medurl !== '') {
+										a.app_urls.Med.uri = Medurl;
+										a.app_urls.Med.valid = true;
+									}
+									a.save().then((les) => {
+										// console.log(ques);
+										var sec = course.sections.id(secid);
+										var c = {};
+										c._id = les._id;
+										// c.video_url = les.video_url;
+										c.secs = les.secs;
+										c.title = les.title;
+										c.slug = les.slug;
+										sec.total_secs += les.sec;
+										sec.lessons.push(c);
+										course.save().then((course) => {
+											res.json({
+												status: 200,
+												sections: course.sections,
+											});
+										});
+									});
+								} else {
+									res.json({
+										status: 400,
+										msg: 'Not Authorized',
+									});
+								}
+							} else {
+								res.json({
+									status: 400,
+									msg: 'Invalid ID',
+								});
+							}
+						})
+						.catch((err) => {
+							console.log(err);
+						});
 				}
 			})
 			.catch((err) => {

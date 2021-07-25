@@ -15,10 +15,9 @@ import {
 } from '@material-ui/core';
 import { useRouter } from 'next/router';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ChatBubbleOutlineIcon from '@material-ui/icons/ChatBubbleOutline';
-import PersonIcon from '@material-ui/icons/Person';
-import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
+import axios from 'axios';
+import fileDownload from 'js-file-download';
+
 const useStyles = makeStyles((theme) => ({
 	main: {
 		flex: 1,
@@ -89,25 +88,25 @@ export default function Home({ data }) {
 	const [status, setStatus] = useState(false);
 	const [fresh, setFresh] = useState([]);
 	const [msg, setMsg] = useState('');
-	const { id: slug } = router.query;
-	const [id, setID] = useState('');
+	const { id } = router.query;
+	// const [id, setID] = useState('');
 
 	useEffect(() => {
 		initial();
 	}, []);
 
 	const initial = () => {
-		fetch(`/CourseServer/permit`, {
+		fetch(`/DigitalServer/permit`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({ slug }),
+			body: JSON.stringify({ id }),
 		}).then((res) => {
 			// console.log(res.status)
 			if (res.status === 200) {
 				res.json().then((res) => {
-					setID(res.data._id);
+					// setID(res.data._id);
 					setStatus(res.status);
 					setFresh(res.data);
 					setLoad(false);
@@ -120,7 +119,7 @@ export default function Home({ data }) {
 
 	const register = (e) => {
 		e.preventDefault();
-		fetch(`/payment/course/registerfree`, {
+		fetch(`/payment/digital/registerfree`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -141,7 +140,7 @@ export default function Home({ data }) {
 	const pay = (e) => {
 		// console.log('aa');
 		e.preventDefault();
-		fetch(`/payment/orders/course`, {
+		fetch(`/payment/orders/digital`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -157,7 +156,7 @@ export default function Home({ data }) {
 							amount: amount.toString(),
 							currency: currency,
 							name: 'Soumya Corp.',
-							description: 'Course Transaction',
+							description: 'Digital Product Transaction',
 							// image: { logo },
 							order_id: order_id,
 							handler: async function (response) {
@@ -168,7 +167,7 @@ export default function Home({ data }) {
 									razorpaySignature: response.razorpay_signature,
 								};
 
-								fetch(`/payment/course/success`, {
+								fetch(`/payment/digital/success`, {
 									method: 'POST',
 									headers: {
 										'Content-Type': 'application/json',
@@ -208,6 +207,17 @@ export default function Home({ data }) {
 		});
 	};
 
+	const download = async () => {
+		const config = { responseType: 'blob' };
+		var res = await axios.get('/DigitalServer/download/' + id, config);
+		// console.log(res);
+		// blob = res.blob();
+		// const url = window.URL.createObjectURL(new Blob([res.data]));
+		// console.log(url);
+		fileDownload(res.data, data._id + '.' + data.ext);
+		// router.replace('/')
+	};
+
 	const botfun = (test) => {
 		if (status) {
 			return (
@@ -232,7 +242,7 @@ export default function Home({ data }) {
 						</Typography>
 					</div> */}
 					<div className={classes.rest}>
-						{/* <Button
+						<Button
 							style={{
 								backgroundColor: 'hsl(0,60%,60%)',
 								width: '80%',
@@ -242,11 +252,11 @@ export default function Home({ data }) {
 								margin: 10,
 								// border: '0.2px solid black',
 							}}
-							// onClick={pay}
+							onClick={download}
 						>
-							Enter
-						</Button> */}
-						You Are Registered
+							Download
+						</Button>
+						{/* You Are Registered */}
 					</div>
 				</>
 			);

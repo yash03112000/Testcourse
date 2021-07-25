@@ -12,7 +12,8 @@ const isDev = process.env.NODE_ENV !== 'production';
 const MongoStore = require('connect-mongo')(session);
 const { ensureAuthenciated } = require('./middleware/auth');
 const morgan = require('morgan');
-
+// const formidableMiddleware = require('express-formidable');
+const fileUpload = require('express-fileupload');
 // const config = isDev?require('./config/config'):'';
 var cors = require('cors');
 require('dotenv').config();
@@ -27,6 +28,7 @@ app.prepare().then(() => {
 				useNewUrlParser: true,
 				useUnifiedTopology: true,
 				useFindAndModify: false,
+				useCreateIndex: true,
 			});
 
 			mongoose.Promise = global.Promise;
@@ -57,9 +59,10 @@ app.prepare().then(() => {
 			})
 		);
 	}
-
 	server.use(express.urlencoded({ extended: true, limit: '10mb' }));
 	server.use(express.json({ limit: '10mb' }));
+	server.use(fileUpload());
+	// server.use(formidableMiddleware());
 	var idk = session({
 		secret: 'keyboard cat',
 		resave: false,
@@ -96,8 +99,14 @@ app.prepare().then(() => {
 		ensureAuthenciated,
 		require('./routes/AddCourseServer')
 	);
+	server.use(
+		'/AddDigitalServer',
+		ensureAuthenciated,
+		require('./routes/AddDigitalServer')
+	);
 	server.use('/CourseServer', require('./routes/CourseServer'));
 	server.use('/ImageServer', require('./routes/ImageServer'));
+	server.use('/DigitalServer', require('./routes/DigitalServer'));
 
 	server.all('*', (req, res) => {
 		return handle(req, res);

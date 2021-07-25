@@ -16,8 +16,8 @@ import parse from 'html-react-parser';
 
 const useStyles = makeStyles((theme) => ({
 	head: {
-		height: 300,
-		width: 200,
+		height: 180,
+		width: 300,
 		// backgroundColor: 'red',
 		margin: 20,
 		boxShadow: '10px 10px 30px silver',
@@ -25,12 +25,15 @@ const useStyles = makeStyles((theme) => ({
 			// transcale: 3,
 			// backgroundColor: 'red',
 			// height: 500,
-			transform: 'scaleY(1.2) scaleX(1.3)',
+			transform: 'scaleY(1.1) scaleX(1.2)',
 		},
+		display: 'flex',
+		flexDirection: 'row',
 	},
 	imgdiv: {
-		height: 150,
+		// height: 150,
 		cursor: 'pointer',
+		width: '50%',
 	},
 	img: {
 		height: '100%',
@@ -80,7 +83,7 @@ export default function Home({ data }) {
 			<div className={classes.head}>
 				<div
 					className={classes.imgdiv}
-					onClick={() => router.replace(`/course/${data.slug}`)}
+					onClick={() => router.replace(`/testinstructions/${data._id}`)}
 				>
 					{data.thumbnail == '' ? (
 						<img src="/static/banner.jpg" className={classes.img} />

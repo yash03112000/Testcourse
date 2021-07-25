@@ -64,6 +64,7 @@ const useStyles = makeStyles((theme) => ({
 		flexDirection: 'row',
 		width: '100%',
 		justifyContent: 'space-between',
+		cursor: 'pointer',
 	},
 	row: {
 		display: 'flex',
@@ -168,7 +169,7 @@ export default function Home({ data }) {
 							<AccordionDetails key={index}>
 								<div className={classes.detail}>
 									{/* <div className={classes.row}> */}
-									<Link href={`/lesson/${les._id}`}>
+									<Link href={`/lesson/${les.slug}`}>
 										<div sty>{les.title}</div>
 									</Link>
 									<div>

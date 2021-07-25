@@ -78,10 +78,14 @@ export default function Home() {
 		}).then((res) => {
 			if (res.status === 200) {
 				res.json().then((res) => {
+					console.log(res);
 					if (!res.status) {
 						setMsg(res.msg);
 					} else {
-						router.replace('/dashboard');
+						if (res.type === 'User') router.replace('/userdashboard');
+						else if (res.type === 'Teacher')
+							router.replace('/teacherdashboard');
+						else if (res.type === 'Admin') router.replace('/admindashboard');
 					}
 				});
 			} else if (res.status == 403) {

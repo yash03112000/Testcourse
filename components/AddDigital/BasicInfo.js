@@ -20,6 +20,7 @@ import {
 } from '@material-ui/core';
 import { useRouter } from 'next/router';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
+import axios from 'axios';
 
 const useStyles = makeStyles((theme) => ({
 	main: {
@@ -57,8 +58,8 @@ export default function Home({ changestep, isNew, edit }) {
 	const [price, setPrice] = useState(0);
 	const [saleprice, setSalePrice] = useState(0);
 	const [msg, setMsg] = useState(false);
-	const [msg2, setMsg2] = useState('');
 	const router = useRouter();
+	const [file, setFile] = useState(null);
 	// const { id } = router.query;
 	const classes = useStyles();
 
@@ -67,7 +68,7 @@ export default function Home({ changestep, isNew, edit }) {
 	}, []);
 
 	const initial = () => {
-		fetch(`/AddCourseServer/step0/${edit}`, {
+		fetch(`/AddDigitalServer/step0/${edit}`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
@@ -77,11 +78,11 @@ export default function Home({ changestep, isNew, edit }) {
 			if (res.status === 200) {
 				res.json().then((res) => {
 					if (res.status === 200) {
-						setPrice(res.course.price);
-						setFree(res.course.free);
-						setSalePrice(res.course.sale_price);
-						setSale(res.course.is_on_sale);
-						setTitle(res.course.title);
+						setPrice(res.test.price);
+						setFree(res.test.free);
+						setSalePrice(res.test.sale_price);
+						setSale(res.test.is_on_sale);
+						setTitle(res.test.title);
 						setLoad(false);
 					}
 				});
@@ -92,7 +93,7 @@ export default function Home({ changestep, isNew, edit }) {
 	};
 
 	const next = () => {
-		if (title === '') {
+		if (title === '' && file === null) {
 			setMsg(true);
 			return;
 		} else {
@@ -112,23 +113,38 @@ export default function Home({ changestep, isNew, edit }) {
 		}
 
 		setMsg(false);
-		fetch(`/AddCourseServer/step0`, {
+		const formData = new FormData();
+		// formData.append('name', title);
+		formData.append('file', file);
+		fetch(`/AddDigitalServer/step0`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({ free, sale, title, price, saleprice, edit }),
+			body: JSON.stringify({
+				free,
+				sale,
+				title,
+				price,
+				saleprice,
+				edit,
+			}),
 		}).then((res) => {
 			// console.log(res.status)
 			if (res.status === 200) {
 				res.json().then((res) => {
-					// setcourses(res.courses);
-					// setLoad(false);
-					if (res.status === 200) changestep(1, res.id);
-					else {
-						setMsg(true);
-						setMsg2(res.msg);
-					}
+					axios
+						.post('/AddDigitalServer/uploadfile/' + res.id, formData)
+						.then((res) => {
+							// console.log(res.status)
+							if (res.status === 200) {
+								// res.json().then((res) => {
+								router.replace('/teacherdashboard');
+								// });
+							} else if (res.status == 403) {
+								router.replace('/LogIn');
+							}
+						});
 				});
 			} else if (res.status == 403) {
 				router.replace('/LogIn');
@@ -153,7 +169,9 @@ export default function Home({ changestep, isNew, edit }) {
 			>
 				{msg ? (
 					<div className={classes.row}>
-						<Typography style={{ color: 'red' }}>{msg2}</Typography>
+						<Typography style={{ color: 'red' }}>
+							Please Fill All Fields
+						</Typography>
 					</div>
 				) : (
 					<></>
@@ -280,6 +298,25 @@ export default function Home({ changestep, isNew, edit }) {
 					</div>
 				)}
 				<div className={classes.row}>
+					<Typography>Upload File</Typography>
+					{/* <TextField
+						type="username"
+						required
+						label=""
+						name="Password"
+						variant="outlined"
+						size="small"
+						value={title}
+						onChange={(e) => setTitle(e.target.value)}
+					/> */}
+					<input
+						type="file"
+						// value={file}
+						onChange={(e) => setFile(e.target.files[0])}
+					/>
+				</div>
+
+				<div className={classes.row}>
 					<Button
 						color="primary"
 						variant="contained"
@@ -288,7 +325,7 @@ export default function Home({ changestep, isNew, edit }) {
 						className={classes.submit}
 						onClick={next}
 					>
-						Next
+						Upload
 					</Button>
 				</div>
 			</div>

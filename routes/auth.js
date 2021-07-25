@@ -67,6 +67,7 @@ router.post('/local', (req, res, next) => {
 			return res.json({
 				msg: 'success',
 				status: true,
+				type: user.type,
 			});
 		});
 	})(req, res, next);

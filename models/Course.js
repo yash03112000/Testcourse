@@ -5,6 +5,11 @@ const LessonSchema = new mongoose.Schema({
 		type: String,
 		default: ' ',
 	},
+	slug: {
+		type: String,
+		default: ' ',
+		// unique: true,
+	},
 	secs: {
 		type: Number,
 		default: 0,
@@ -61,6 +66,11 @@ const PaymentSchema = new mongoose.Schema({
 const CourseSchema = new mongoose.Schema({
 	user_id: {
 		type: mongoose.Types.ObjectId,
+	},
+	slug: {
+		type: String,
+		default: ' ',
+		// unique: true,
 	},
 	title: {
 		type: String,

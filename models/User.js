@@ -34,6 +34,13 @@ const UserSchema = new mongoose.Schema({
 		name: String,
 	},
 	payments: [PaymentSchema],
+	type: {
+		type: String,
+		default: 'User',
+	},
+	courseposted: [mongoose.Types.ObjectId],
+	testposted: [mongoose.Types.ObjectId],
+	digitalposted: [mongoose.Types.ObjectId],
 });
 
 const User = mongoose.model('User', UserSchema);

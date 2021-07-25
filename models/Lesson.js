@@ -31,6 +31,11 @@ const LessonSchema = new mongoose.Schema({
 		type: String,
 		default: ' ',
 	},
+	slug: {
+		type: String,
+		default: ' ',
+		unique: true,
+	},
 	secs: {
 		type: Number,
 		default: 0,

@@ -13,9 +13,9 @@ import {
 import { useRouter } from 'next/router';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Header from '../../components/Header';
-import Banner from '../../components/Course/Banner';
-import Left from '../../components/Course/Left';
-import Right from '../../components/Course/Right';
+import Banner from '../../components/Digital/Banner';
+import Left from '../../components/Digital/Left';
+import Right from '../../components/Digital/Right';
 import Footer from '../../components/Footer';
 import { server } from '../../config';
 
@@ -63,13 +63,13 @@ export default function Home({ data }) {
 
 export async function getStaticPaths() {
 	// console.log(server)
-	var res = await fetch(`${server}/CourseServer/`);
+	var res = await fetch(`${server}/DigitalServer/`);
 	var data = await res.json();
 
-	var a = data.courses;
+	// var a = data.courses;
 	// console.log(a);
-	const paths = data.courses.map((route) => ({
-		params: { id: route.slug },
+	const paths = data.digitals.map((route) => ({
+		params: { id: route._id },
 	}));
 
 	return {
@@ -80,7 +80,7 @@ export async function getStaticPaths() {
 
 export async function getStaticProps(ctx) {
 	// console.log(server)
-	var res = await fetch(`${server}/CourseServer/${ctx.params.id}`);
+	var res = await fetch(`${server}/DigitalServer/details/${ctx.params.id}`);
 	if (res.status == 404) {
 		return {
 			redirect: {
@@ -88,7 +88,7 @@ export async function getStaticProps(ctx) {
 				permanent: false,
 			},
 		};
-	}
+	} else if (res.status == 403) console.log('403');
 	var data = await res.json();
 
 	// var a = data.courses;

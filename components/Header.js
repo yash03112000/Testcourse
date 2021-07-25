@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
 		backgroundColor: 'hsl(0,95%,95%)',
 		justifyContent: 'center',
 		alignItems: 'center',
-		flex: 3,
+		flex: 1,
 		// backgroundColor: 'red',
 		[theme.breakpoints.down('sm')]: {
 			// flexDirection: 'column',
@@ -67,8 +67,11 @@ const useStyles = makeStyles((theme) => ({
 	course: {
 		color: 'black',
 	},
+	heading: {
+		margin: 5,
+	},
 	logodiv: {
-		flex: 1,
+		flex: 0.5,
 		// backgroundColor: 'red',
 		margin: 5,
 		display: 'flex',
@@ -86,7 +89,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 	searchdiv: {
 		flex: 1.5,
-		// backgroundColor: 'green',
+		// backgroundColor: 'blue',
 		margin: 5,
 	},
 	cartdiv: {
@@ -264,6 +267,11 @@ export default function Home() {
 						</div>
 					</div>
 					<div className={classes.part2}>
+						<div style={{ display: 'flex', flexDirection: 'row', flex: 1 }}>
+							<Typography className={classes.heading}>My Courses</Typography>
+							<Typography className={classes.heading}>My Tests</Typography>
+							<Typography className={classes.heading}>Downloads</Typography>
+						</div>
 						{/* <div className={classes.cartdiv}>
 							<Badge badgeContent="0" color="primary">
 								<ShoppingCartIcon />

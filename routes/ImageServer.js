@@ -56,11 +56,12 @@ router.get('/ImageSearch/:id', (req, res) => {
 			// Key: 't3qWG.png'
 		};
 		s3.getObject(params, (err, data) => {
-			const b64 = Buffer.from(data.Body).toString('base64');
+			// const b64 = Buffer.from(data.Body).toString('base64');
 			// res.send(`data:image/png;base64,${b64}`);
 			// console.log(data.Body);
 
-			res.send(data.Body);
+			if (data) res.send(data.Body);
+			else res.sendStatus(404);
 		});
 	}
 });
