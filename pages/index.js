@@ -117,14 +117,18 @@ export default function Home({ data }) {
 	);
 }
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
 	// console.log(server)
-	var res = await fetch(`${server}/CourseServer/`);
-	var data = await res.json();
+	try {
+		var res = await fetch(`${server}/CourseServer/`);
+		var data = await res.json();
 
-	// var a = data.courses;
+		// var a = data.courses;
 
-	return {
-		props: { data }, // will be passed to the page component as props
-	};
+		return {
+			props: { data }, // will be passed to the page component as props
+		};
+	} catch (e) {
+		console.log('Fetch Request is not returning JSON File');
+	}
 }

@@ -61,39 +61,47 @@ export default function Home({ data }) {
 	);
 }
 
-export async function getStaticPaths() {
+// export async function getStaticPaths() {
+// 	// console.log(server)
+// 	try {
+// 		var res = await fetch(`${server}/DigitalServer/`);
+// 		var data = await res.json();
+
+// 		// var a = data.courses;
+// 		// console.log(a);
+// 		const paths = data.digitals.map((route) => ({
+// 			params: { id: route._id },
+// 		}));
+
+// 		return {
+// 			paths,
+// 			fallback: false, // will be passed to the page component as props
+// 		};
+// 	} catch (err) {
+// 		console.log('Fetch Request is not returning JSON File');
+// 	}
+// }
+
+export async function getServerSideProps(ctx) {
 	// console.log(server)
-	var res = await fetch(`${server}/DigitalServer/`);
-	var data = await res.json();
+	try {
+		var res = await fetch(`${server}/DigitalServer/details/${ctx.params.id}`);
+		if (res.status == 404) {
+			return {
+				redirect: {
+					destination: '/404',
+					permanent: false,
+				},
+			};
+		} else if (res.status == 403) console.log('403');
+		var data = await res.json();
 
-	// var a = data.courses;
-	// console.log(a);
-	const paths = data.digitals.map((route) => ({
-		params: { id: route._id },
-	}));
+		// var a = data.courses;
 
-	return {
-		paths,
-		fallback: false, // will be passed to the page component as props
-	};
-}
-
-export async function getStaticProps(ctx) {
-	// console.log(server)
-	var res = await fetch(`${server}/DigitalServer/details/${ctx.params.id}`);
-	if (res.status == 404) {
 		return {
-			redirect: {
-				destination: '/404',
-				permanent: false,
-			},
+			props: { data }, // will be passed to the page component as props
 		};
-	} else if (res.status == 403) console.log('403');
-	var data = await res.json();
-
-	// var a = data.courses;
-
-	return {
-		props: { data }, // will be passed to the page component as props
-	};
+	} catch (err) {
+		console.log('Fetch Request is not returning JSON File');
+	}
 }

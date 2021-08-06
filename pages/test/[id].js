@@ -344,38 +344,42 @@ export default function Home({ test, results, arr }) {
 
 export async function getServerSideProps(ctx) {
 	// console.log(server)
-	var res = await fetch(`${server}/Testserver/${ctx.params.id}`, {
-		method: 'GET',
-		headers: ctx.req
-			? { cookie: ctx.req.headers.cookie, 'User-Agent': '*' }
-			: undefined,
-	});
-	if (res.status === 403) {
-		return {
-			redirect: {
-				destination: '/LogIn',
-				permanent: false,
-			},
-		};
-	}
-	var data = await res.json();
-	var test = data.test;
-	var result = data.result;
-	var arr = [];
-
-	result.sections.map((sec, i) => {
-		sec.questions.map((ques) => {
-			var a = {};
-			a['done'] = false;
-			a['_id'] = ques._id;
-			a['content'] = {};
-			arr.push(a);
+	try {
+		var res = await fetch(`${server}/Testserver/${ctx.params.id}`, {
+			method: 'GET',
+			headers: ctx.req
+				? { cookie: ctx.req.headers.cookie, 'User-Agent': '*' }
+				: undefined,
 		});
-	});
+		if (res.status === 403) {
+			return {
+				redirect: {
+					destination: '/LogIn',
+					permanent: false,
+				},
+			};
+		}
+		var data = await res.json();
+		var test = data.test;
+		var result = data.result;
+		var arr = [];
 
-	// console.log(result);
+		result.sections.map((sec, i) => {
+			sec.questions.map((ques) => {
+				var a = {};
+				a['done'] = false;
+				a['_id'] = ques._id;
+				a['content'] = {};
+				arr.push(a);
+			});
+		});
 
-	return {
-		props: { test, results: result, arr }, // will be passed to the page component as props
-	};
+		// console.log(result);
+
+		return {
+			props: { test, results: result, arr }, // will be passed to the page component as props
+		};
+	} catch (err) {
+		console.log('Fetch Request is not returning JSON File');
+	}
 }

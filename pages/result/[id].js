@@ -748,25 +748,29 @@ export default function Home({ data }) {
 
 export async function getServerSideProps(ctx) {
 	// console.log(server)
-	var res = await fetch(`${server}/Testserver/result/${ctx.params.id}`, {
-		method: 'GET',
-		headers: ctx.req
-			? { cookie: ctx.req.headers.cookie, 'User-Agent': '*' }
-			: undefined,
-	});
-	if (res.status == 403) {
+	try {
+		var res = await fetch(`${server}/Testserver/result/${ctx.params.id}`, {
+			method: 'GET',
+			headers: ctx.req
+				? { cookie: ctx.req.headers.cookie, 'User-Agent': '*' }
+				: undefined,
+		});
+		if (res.status == 403) {
+			return {
+				redirect: {
+					destination: '/LogIn',
+					permanent: false,
+				},
+			};
+		}
+		var data = await res.json();
+
+		var a = data.result;
+
 		return {
-			redirect: {
-				destination: '/LogIn',
-				permanent: false,
-			},
+			props: { data: a }, // will be passed to the page component as props
 		};
+	} catch (err) {
+		console.log('Fetch Request is not returning JSON File');
 	}
-	var data = await res.json();
-
-	var a = data.result;
-
-	return {
-		props: { data: a }, // will be passed to the page component as props
-	};
 }
