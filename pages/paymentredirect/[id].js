@@ -66,7 +66,7 @@ export default function Home() {
 									if (res.status == 400) {
 										setMsg('Failure');
 									} else if (res.status == 403) {
-										router.replace('/LogIn');
+										router.push('/LogIn');
 									} else {
 										setMsg('success');
 										router.reload();
@@ -91,7 +91,7 @@ export default function Home() {
 					}
 				});
 			} else if (res.status == 403) {
-				router.replace('/LogIn');
+				router.push('/LogIn');
 			}
 		});
 	};

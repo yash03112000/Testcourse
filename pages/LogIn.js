@@ -82,10 +82,7 @@ export default function Home() {
 					if (!res.status) {
 						setMsg(res.msg);
 					} else {
-						if (res.type === 'User') router.replace('/userdashboard');
-						else if (res.type === 'Teacher')
-							router.replace('/teacherdashboard');
-						else if (res.type === 'Admin') router.replace('/admindashboard');
+						router.replace('/dashboard');
 					}
 				});
 			} else if (res.status == 403) {

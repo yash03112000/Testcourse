@@ -47,6 +47,7 @@ export default function Home({ data }) {
 	const router = useRouter();
 	const classes = useStyles();
 	const [courses, setCourses] = useState(data.courses);
+	// console.log(router);
 
 	return (
 		<div className={classes.container}>

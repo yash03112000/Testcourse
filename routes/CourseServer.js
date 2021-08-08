@@ -141,11 +141,13 @@ router.post('/test/permit', async (req, res) => {
 				res.json({
 					status: flag,
 					data: course,
+					// type: req.user.type,
 				});
 			} else {
 				res.json({
 					status: false,
 					data: course,
+					// type: 'none',
 				});
 			}
 		} else {

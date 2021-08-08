@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import Link from 'next/link';
-import styles from '../styles/Home.module.css';
+// import styles from '../styles/Home.module.css';
 import React, { useState, useEffect } from 'react';
 import {
 	TextField,
@@ -15,9 +15,9 @@ import { useRouter } from 'next/router';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { GetStaticProps } from 'next';
 import FacebookIcon from '@material-ui/icons/Facebook';
-import TestCard from '../components/dashboard/TestCard';
-import CourseCard from '../components/dashboard/CourseCard';
-import DigitalCard from '../components/dashboard/DigitalCard';
+import TestCard from './TestCard';
+import CourseCard from './CourseCard';
+import DigitalCard from './/DigitalCard';
 
 const useStyles = makeStyles((theme) => ({
 	msg: {
@@ -62,47 +62,14 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export default function Home() {
-	const [load, setLoad] = useState(true);
-	const [data, setData] = useState({});
+export default function Home({ data }) {
+	// const [load, setLoad] = useState(true);
+	// const [data, setData] = useState({});
 	const router = useRouter();
 	const classes = useStyles();
 
-	useEffect(() => {
-		initial();
-	}, []);
-
-	const initial = () => {
-		fetch(`/DashboardServer/user`, {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		}).then((res) => {
-			// console.log(res.status)
-			if (res.status === 200) {
-				res.json().then((res) => {
-					// console.log(res);
-					setData(res);
-					setLoad(false);
-				});
-			} else if (res.status == 403) {
-				router.replace('/LogIn');
-			}
-		});
-	};
-
-	return load ? (
-		<div>
-			<h1>Loading...</h1>
-		</div>
-	) : (
+	return (
 		<div className={classes.container}>
-			<Head>
-				<title>TestCourse</title>
-				<script src="https://checkout.razorpay.com/v1/checkout.js" />
-			</Head>
-
 			<main className={classes.main}>
 				<div>
 					<div
@@ -112,7 +79,7 @@ export default function Home() {
 							justifyContent: 'center',
 						}}
 					>
-						<h1>Courses Bought</h1>
+						<h1>Courses Published</h1>
 					</div>
 					<div
 						style={{
@@ -124,7 +91,7 @@ export default function Home() {
 						{data.courses.map((course, i) => {
 							return (
 								<div key={i} style={{ margin: 20 }}>
-									<CourseCard data={course} />
+									<CourseCard data={course} type={data.type} />
 								</div>
 							);
 						})}
@@ -138,7 +105,7 @@ export default function Home() {
 							justifyContent: 'center',
 						}}
 					>
-						<h1>Test Bought</h1>
+						<h1>Test Published</h1>
 					</div>
 					<div
 						style={{
@@ -150,7 +117,7 @@ export default function Home() {
 						{data.tests.map((test, i) => {
 							return (
 								<div key={i} style={{ margin: 20 }}>
-									<TestCard data={test} />
+									<TestCard data={test} type={data.type} />
 								</div>
 							);
 						})}
@@ -164,7 +131,7 @@ export default function Home() {
 							justifyContent: 'center',
 						}}
 					>
-						<h1>Digital Products Bought</h1>
+						<h1>Digital Product Published</h1>
 					</div>
 					<div
 						style={{
@@ -176,10 +143,61 @@ export default function Home() {
 						{data.digitals.map((course, i) => {
 							return (
 								<div key={i} style={{ margin: 20 }}>
-									<DigitalCard data={course} />
+									<DigitalCard data={course} type={data.type} />
 								</div>
 							);
 						})}
+					</div>
+				</div>
+
+				<div>
+					<div
+						style={{
+							display: 'flex',
+							flexDirection: 'row',
+							justifyContent: 'center',
+						}}
+					>
+						<h1>Options</h1>
+					</div>
+					<div
+						style={{
+							display: 'flex',
+							flexDirection: 'row',
+							width: '100%',
+							justifyContent: 'space-around',
+							// overflow: 'scroll',
+						}}
+					>
+						<div style={{ cursor: 'pointer' }}>
+							<Link href="/add_test">
+								<div>
+									<Typography>Add Test</Typography>
+								</div>
+							</Link>
+						</div>
+
+						<div style={{ cursor: 'pointer' }}>
+							<Link href="/add_course">
+								<div>
+									<Typography>Add Course</Typography>
+								</div>
+							</Link>
+						</div>
+						<div style={{ cursor: 'pointer' }}>
+							<Link href="/add_digital">
+								<div>
+									<Typography>Add Digital Product</Typography>
+								</div>
+							</Link>
+						</div>
+						<div style={{ cursor: 'pointer' }}>
+							<Link href="/add_question">
+								<div>
+									<Typography>Add Question</Typography>
+								</div>
+							</Link>
+						</div>
 					</div>
 				</div>
 			</main>

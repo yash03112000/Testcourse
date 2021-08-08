@@ -90,6 +90,7 @@ export default function Home({ data }) {
 	const [fresh, setFresh] = useState([]);
 	const [msg, setMsg] = useState('');
 	const { id } = router.query;
+	// const [type, setType] = useState('');
 	// const [id, setID] = useState('');
 
 	useEffect(() => {
@@ -110,6 +111,7 @@ export default function Home({ data }) {
 					// setID(res.data._id);
 					setStatus(res.status);
 					setFresh(res.data);
+					// setType(res.type);
 					setLoad(false);
 				});
 			} else if (res.status == 403) {
@@ -212,25 +214,6 @@ export default function Home({ data }) {
 		if (status) {
 			return (
 				<>
-					{/* <div className={classes.row}>
-						<Typography
-							component="p"
-							color="primary"
-							variant="subtitle1"
-							gutterBottom
-							className={classes.pricetext}
-						>
-							<span
-								style={{
-									// textDecoration: 'line-through',
-									// color: 'grey',
-									fontWeight: 'bolder',
-								}}
-							>
-								FREE
-							</span>
-						</Typography>
-					</div> */}
 					<div className={classes.rest}>
 						<Button
 							style={{
@@ -286,7 +269,7 @@ export default function Home({ data }) {
 								}}
 								onClick={register}
 							>
-								Buy Now
+								Register
 							</Button>
 						</div>
 					</>

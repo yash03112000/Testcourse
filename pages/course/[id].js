@@ -37,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Home({ data }) {
 	const router = useRouter();
 	const classes = useStyles();
+	// console.log(router);
 
 	// console.log(data);
 

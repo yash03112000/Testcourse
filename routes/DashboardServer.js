@@ -6,12 +6,9 @@ var Test = require('../models/Test');
 var Course = require('../models/Course');
 var Digital = require('../models/Digital');
 
-router.get('/user', async (req, res) => {
-	// var user = await User.findById(req.user.id).exec();
+router.get('/', async (req, res) => {
 	var user = req.user;
-	if (user.type !== 'User') {
-		res.sendStatus(403);
-	} else {
+	if (user.type == 'User') {
 		var tests = [];
 		var courses = [];
 		var digitals = [];
@@ -34,16 +31,9 @@ router.get('/user', async (req, res) => {
 			tests,
 			courses,
 			digitals,
+			type: 'User',
 		});
-	}
-});
-
-router.get('/teacher', async (req, res) => {
-	// var user = await User.findById(req.user.id).exec();
-	var user = req.user;
-	if (user.type !== 'Teacher') {
-		res.sendStatus(403);
-	} else {
+	} else if (user.type == 'Teacher') {
 		var tests = [];
 		var courses = [];
 		var digitals = [];
@@ -71,16 +61,9 @@ router.get('/teacher', async (req, res) => {
 			tests,
 			courses,
 			digitals,
+			type: 'Teacher',
 		});
-	}
-});
-
-router.get('/admin', async (req, res) => {
-	// var user = await User.findById(req.user.id).exec();
-	var user = req.user;
-	if (user.type !== 'Admin') {
-		res.sendStatus(403);
-	} else {
+	} else if (user.type == 'Admin') {
 		var tests = [];
 		var courses = [];
 		var digitals = [];
@@ -101,7 +84,10 @@ router.get('/admin', async (req, res) => {
 			tests,
 			courses,
 			digitals,
+			type: 'Admin',
 		});
+	} else {
+		res.sendStatus(403);
 	}
 });
 

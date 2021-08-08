@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 var User = require('../models/User');
 // var id = require('../config/credentials.json');
 var bcrypt = require('bcryptjs');
+const dev = process.env.NODE_ENV !== 'production';
 
 const middlefun = (req, res, next) => {
 	// console.log(req.headers)
@@ -88,7 +89,9 @@ passport.use(
 		{
 			clientID: process.env.FB_CLIENTID,
 			clientSecret: process.env.FB_CLIENTSECRET,
-			callbackURL: 'http://localhost:8080/auth/facebook/callback',
+			callbackURL: dev
+				? 'http://localhost:8080/auth/facebook/callback'
+				: process.env.FB_CALLBACKURL,
 		},
 		function (accessToken, refreshToken, profile, done) {
 			// console.log(profile)
@@ -118,7 +121,9 @@ passport.use(
 		{
 			clientID: process.env.GOOGLE_CLIENTID,
 			clientSecret: process.env.GOOGLE_CLIENTSECRET,
-			callbackURL: 'http://localhost:8080/auth/google/callback',
+			callbackURL: dev
+				? 'http://localhost:8080/auth/google/callback'
+				: process.env.GOOGLE_CALLBACK,
 		},
 		function (accessToken, refreshToken, profile, done) {
 			// console.log(profile.id)

@@ -1,6 +1,5 @@
-import Head from 'next/head';
 import Link from 'next/link';
-import styles from '../styles/Home.module.css';
+// import styles from '../styles/Home.module.css';
 import React, { useState, useEffect } from 'react';
 import {
 	TextField,
@@ -15,7 +14,9 @@ import { useRouter } from 'next/router';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { GetStaticProps } from 'next';
 import FacebookIcon from '@material-ui/icons/Facebook';
-import TestCard from '../components/TestCard';
+import TestCard from './TestCard';
+import CourseCard from './CourseCard';
+import DigitalCard from './/DigitalCard';
 
 const useStyles = makeStyles((theme) => ({
 	msg: {
@@ -60,48 +61,41 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export default function Home() {
-	const [load, setLoad] = useState(true);
-	const [data, setData] = useState({});
+export default function Home({ data }) {
+	// const [load, setLoad] = useState(true);
+	// const [data, setData] = useState({});
 	const router = useRouter();
 	const classes = useStyles();
 
-	useEffect(() => {
-		initial();
-	}, []);
-
-	const initial = () => {
-		fetch(`/DashboardServer/admin`, {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		}).then((res) => {
-			// console.log(res.status)
-			if (res.status === 200) {
-				res.json().then((res) => {
-					// console.log(res);
-					setData(res);
-					setLoad(false);
-				});
-			} else if (res.status == 403) {
-				router.replace('/LogIn');
-			}
-		});
-	};
-
-	return load ? (
-		<div>
-			<h1>Loading...</h1>
-		</div>
-	) : (
+	return (
 		<div className={classes.container}>
-			<Head>
-				<title>TestCourse</title>
-				<script src="https://checkout.razorpay.com/v1/checkout.js" />
-			</Head>
-
 			<main className={classes.main}>
+				<div>
+					<div
+						style={{
+							display: 'flex',
+							flexDirection: 'row',
+							justifyContent: 'center',
+						}}
+					>
+						<h1>Courses Bought</h1>
+					</div>
+					<div
+						style={{
+							display: 'flex',
+							flexDirection: 'row',
+							overflow: 'scroll',
+						}}
+					>
+						{data.courses.map((course, i) => {
+							return (
+								<div key={i} style={{ margin: 20 }}>
+									<CourseCard data={course} type={data.type} />
+								</div>
+							);
+						})}
+					</div>
+				</div>
 				<div>
 					<div
 						style={{
@@ -122,7 +116,7 @@ export default function Home() {
 						{data.tests.map((test, i) => {
 							return (
 								<div key={i} style={{ margin: 20 }}>
-									<TestCard {...{ test, router }} />
+									<TestCard data={test} type={data.type} />
 								</div>
 							);
 						})}
@@ -136,7 +130,7 @@ export default function Home() {
 							justifyContent: 'center',
 						}}
 					>
-						<h1>Courses Bought</h1>
+						<h1>Digital Products Bought</h1>
 					</div>
 					<div
 						style={{
@@ -145,10 +139,10 @@ export default function Home() {
 							overflow: 'scroll',
 						}}
 					>
-						{data.courses.map((test, i) => {
+						{data.digitals.map((course, i) => {
 							return (
 								<div key={i} style={{ margin: 20 }}>
-									<TestCard {...{ test, router }} />
+									<DigitalCard data={course} type={data.type} />
 								</div>
 							);
 						})}

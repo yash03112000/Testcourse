@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export default function Home({ data }) {
+export default function Home({ data, type }) {
 	// const router = useRouter();
 	const classes = useStyles();
 	const router = useRouter();
@@ -83,7 +83,7 @@ export default function Home({ data }) {
 			<div className={classes.head}>
 				<div
 					className={classes.imgdiv}
-					onClick={() => router.replace(`/testinstructions/${data._id}`)}
+					onClick={() => router.push(`/testinstructions/${data._id}`)}
 				>
 					{data.thumbnail == '' ? (
 						<img src="/static/banner.jpg" className={classes.img} />
@@ -183,6 +183,21 @@ export default function Home({ data }) {
 							</>
 						)}
 					</div>
+					{type === 'Teacher' ? (
+						<div
+							style={{
+								display: 'flex',
+								flexDirection: 'row',
+								justifyContent: 'center',
+							}}
+						>
+							<Button onClick={() => router.push(`/add_test?edit=${data._id}`)}>
+								Edit
+							</Button>
+						</div>
+					) : (
+						<></>
+					)}
 				</div>
 			</div>
 		</div>

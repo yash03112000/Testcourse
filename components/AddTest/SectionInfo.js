@@ -4,6 +4,7 @@ import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
 import ReactDOM, { unstable_batchedUpdates as unstable } from 'react-dom';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import axios from 'axios';
 
 import {
 	TextField,
@@ -73,6 +74,10 @@ export default function Home({ changestep, isNew, edit }) {
 	const [Name, setName] = useState('');
 	const [secid, setSecid] = useState('');
 	const [data, setData] = useState([]);
+	const [old, setOld] = useState({});
+	const [isold, setisOld] = useState(false);
+	const [isles, setisLes] = useState({});
+	const [quesid, setQuesid] = useState('');
 	const router = useRouter();
 	const { id } = router.query;
 	const classes = useStyles();
@@ -97,7 +102,7 @@ export default function Home({ changestep, isNew, edit }) {
 					}
 				});
 			} else if (res.status == 403) {
-				router.replace('/LogIn');
+				router.push('/LogIn');
 			}
 		});
 	};
@@ -107,6 +112,29 @@ export default function Home({ changestep, isNew, edit }) {
 		else if (state === 'dis') setDis(value);
 		else if (state === 'secid') setSecid(value);
 		// else if (state === 'secid') setSecid(value);
+	};
+
+	const editfun = (secid, quesid, les) => {
+		// try {
+		// 	var res = await axios.get(`/AddTestServer/question/edit/${quesid}`);
+		// 	if (res.status == 404) {
+		// 	} else if (res.status == 403) {
+		// 		router.push('/LogIn');
+		// 	} else {
+		// 		// console.log(res.data.ques);
+		// 		setOld(res.data.ques);
+		// 		// setisOld(true);
+		// 		// setDis('block');
+		// 		setisLes(les);
+		// 	}
+		// } catch (e) {
+		// 	console.log(e);
+		// }
+		setisLes(les);
+		setQuesid(quesid);
+		setisOld(true);
+		setSecid(secid);
+		setDis('block');
 	};
 
 	const submit = () => {
@@ -133,7 +161,7 @@ export default function Home({ changestep, isNew, edit }) {
 					}
 				});
 			} else if (res.status == 403) {
-				router.replace('/LogIn');
+				router.push('/LogIn');
 			}
 		});
 	};
@@ -238,14 +266,42 @@ export default function Home({ changestep, isNew, edit }) {
 							</AccordionDetails>
 							{dat.questions.map((les, index) => (
 								<AccordionDetails key={index}>
-									<div className={classes.detail}>{les._id}</div>
+									<div
+										style={{
+											display: 'flex',
+											flexDirection: 'row',
+											justifyContent: 'space-between',
+											// backgroundColor: 'red',
+											width: '100%',
+										}}
+									>
+										<div>{les._id}</div>
+										<div
+											onClick={() => {
+												editfun(dat._id, les._id, les);
+											}}
+										>
+											Edit
+										</div>
+									</div>
 								</AccordionDetails>
 							))}
 						</Accordion>
 					))}
 				</div>
 				<div style={{ display: dis }}>
-					<AddQuestion {...{ secid, edit, changestates }} isTest={true} />
+					<AddQuestion
+						{...{
+							secid,
+							edit,
+							changestates,
+							olddetail: old,
+							isold,
+							les: isles,
+							quesid,
+						}}
+						isTest={true}
+					/>
 				</div>
 				<div
 					style={{

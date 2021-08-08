@@ -308,7 +308,7 @@ router.post('/step1', (req, res) => {
 });
 
 router.post('/addQuestion', (req, res) => {
-	console.log('hehe');
+	// console.log(req.body);
 	const {
 		id,
 		ques,
@@ -318,6 +318,8 @@ router.post('/addQuestion', (req, res) => {
 		secid,
 		markCorrect,
 		markIncorrect,
+		isold,
+		quesid,
 	} = req.body;
 	if (
 		typeof id === 'undefined' ||
@@ -327,7 +329,8 @@ router.post('/addQuestion', (req, res) => {
 		typeof secid === 'undefined' ||
 		typeof answer === 'undefined' ||
 		typeof markCorrect === 'undefined' ||
-		typeof markIncorrect === 'undefined'
+		typeof markIncorrect === 'undefined' ||
+		typeof isold === 'undefined'
 	) {
 		res.json({
 			status: 400,
@@ -348,41 +351,93 @@ router.post('/addQuestion', (req, res) => {
 			.then((test) => {
 				if (test) {
 					if (test.user_id.equals(req.user.id)) {
-						var a = new Ques();
-						// console.log(a);
-						a.question = ques;
-						a.question_type = qtype;
-						a.answer = [];
-						if (qtype === 'Fill') a.answer = answer;
-						else {
-							// var i;
-							options.map((opt, i) => {
-								var b = {};
-								b.valid = true;
-								b.content = opt.body;
-								a[`option_${i + 1}`] = b;
-								if (opt.correct) {
-									a.answer.push(a[`option_${i + 1}`]._id);
-								}
-							});
-						}
-						a.save().then((ques) => {
-							// console.log(ques);
-							var sec = test.section_id.id(secid);
-							var c = {};
-							c._id = ques._id;
-							c['marks_correct'] = markCorrect;
-							c['marks_incorrect'] = markIncorrect;
-							sec.questions.push(c);
-							test.maximum_marks += markCorrect;
-							test.total_questions++;
-							test.save().then((test) => {
-								res.json({
-									status: 200,
-									sections: test.section_id,
+						console.log('hehe');
+
+						if (isold) {
+							Ques.findById(quesid)
+								.exec()
+								.then((a) => {
+									a.question = ques;
+									a.question_type = qtype;
+									a.answer = [];
+									if (qtype === 'Fill') a.answer = answer;
+									else {
+										// var i;
+										options.map((opt, i) => {
+											var b = {};
+											b.valid = true;
+											b.content = opt.body;
+											a[`option_${i + 1}`] = b;
+											if (opt.correct) {
+												a.answer.push(a[`option_${i + 1}`]._id);
+											}
+										});
+									}
+									a.save().then((ques) => {
+										// console.log(ques);
+										var sec = test.section_id.id(secid);
+										// var c = {};
+										// c._id = ques._id;
+										// c['marks_correct'] = markCorrect;
+										// c['marks_incorrect'] = markIncorrect;
+										var markc = 0;
+										for (var i = 0; i < sec.questions.length; i++) {
+											if (sec.questions[i]._id === ques._id) {
+												markc = sec.questions[i]['marks_correct'];
+												sec.questions[i]['marks_correct'] = markCorrect;
+												sec.questions[i]['marks_incorrect'] = markIncorrect;
+											}
+										}
+										// sec.questions.push(c);
+										test.maximum_marks += markCorrect;
+										test.maximum_marks -= markc;
+										// test.total_questions++;
+										test.save().then((test) => {
+											res.json({
+												status: 200,
+												sections: test.section_id,
+											});
+										});
+									});
+								});
+							// console.log(a);
+						} else {
+							var a = new Ques();
+							// console.log(a);
+							a.question = ques;
+							a.question_type = qtype;
+							a.answer = [];
+							if (qtype === 'Fill') a.answer = answer;
+							else {
+								// var i;
+								options.map((opt, i) => {
+									var b = {};
+									b.valid = true;
+									b.content = opt.body;
+									a[`option_${i + 1}`] = b;
+									if (opt.correct) {
+										a.answer.push(a[`option_${i + 1}`]._id);
+									}
+								});
+							}
+							a.save().then((ques) => {
+								// console.log(ques);
+								var sec = test.section_id.id(secid);
+								var c = {};
+								c._id = ques._id;
+								c['marks_correct'] = markCorrect;
+								c['marks_incorrect'] = markIncorrect;
+								sec.questions.push(c);
+								test.maximum_marks += markCorrect;
+								test.total_questions++;
+								test.save().then((test) => {
+									res.json({
+										status: 200,
+										sections: test.section_id,
+									});
 								});
 							});
-						});
+						}
 					} else {
 						res.json({
 							status: 400,
@@ -399,6 +454,26 @@ router.post('/addQuestion', (req, res) => {
 			.catch((err) => {
 				console.log(err);
 			});
+	}
+});
+
+router.get('/question/edit/:id', async (req, res) => {
+	try {
+		if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+			res.sendStatus(404);
+		} else {
+			// console.log(req.params.id);
+
+			var ques = await Ques.findById(req.params.id).exec();
+			// console.log(ques);
+			if (ques) {
+				res.json({ ques });
+			} else {
+				res.sendStatus(404);
+			}
+		}
+	} catch (e) {
+		console.log(e);
 	}
 });
 

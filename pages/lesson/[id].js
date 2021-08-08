@@ -56,7 +56,7 @@ export default function Home() {
 					setLoad(false);
 				});
 			} else if (res.status == 403) {
-				router.replace('/LogIn');
+				router.push('/LogIn');
 			}
 		});
 	};

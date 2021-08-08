@@ -22,6 +22,8 @@ import { useRouter } from 'next/router';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Editor from '../editor';
 import parse from 'html-react-parser';
+import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
 
 const useStyles = makeStyles((theme) => ({
 	main: {
@@ -51,7 +53,16 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export default function Home({ secid, edit, changestates, isTest }) {
+export default function AddQuestion({
+	secid,
+	edit,
+	changestates,
+	isTest,
+	isold,
+	olddetail,
+	les,
+	quesid,
+}) {
 	const [load, setLoad] = useState(false);
 	const [qtype, setQtype] = useState('SCQ');
 	const [quesBody, setQuesBody] = useState('');
@@ -60,7 +71,9 @@ export default function Home({ secid, edit, changestates, isTest }) {
 	const [options, setOptions] = useState([]);
 	const [valid, setValid] = useState(false);
 	const [markCorrect, setMarkCorrect] = useState(0);
+	const [optid, setOptid] = useState('');
 	const [markIncorrect, setMarkIncorrect] = useState(0);
+	// const [old, setOld] = useState(olddetail);
 	const router = useRouter();
 	const { id } = router.query;
 	const classes = useStyles();
@@ -72,15 +85,114 @@ export default function Home({ secid, edit, changestates, isTest }) {
 		setOptionBody(value);
 	};
 
+	const initial = async () => {
+		// console.log(les);
+		// setQtype(old.question_type);
+		// setQuesBody(old.question);
+		// // setAnswer(old.answer[0]);
+		// var a = [];
+		// old.option_1.valid ? a.push(option_1) : 'a';
+		// old.option_2.valid ? a.push(option_2) : 'a';
+		// old.option_3.valid ? a.push(option_3) : 'a';
+		// old.option_4.valid ? a.push(option_4) : 'a';
+		// setOptions(a);
+		// setMarkIncorrect(les.marks_incorrect);
+		// setMarkCorrect(les.marks_correct);
+		try {
+			var res = await axios.get(`/AddTestServer/question/edit/${quesid}`);
+			if (res.status == 404) {
+			} else if (res.status == 403) {
+				router.push('/LogIn');
+			} else {
+				// console.log(res.data.ques);
+				const old = res.data.ques;
+				setQtype(old.question_type);
+				setQuesBody(old.question);
+				setAnswer(old.answer[0]);
+				var a = [];
+				if (old.option_1.valid) {
+					var b = {};
+					b.body = old.option_1.content;
+					b.correct = false;
+					b._id = old.option_1._id;
+					var i;
+					for (i = 0; i < old.answer.length; i++) {
+						if (old.option_1._id == old.answer[i]) b.correct = true;
+					}
+					a.push(b);
+				}
+				if (old.option_2.valid) {
+					var b = {};
+					b.body = old.option_2.content;
+					b.correct = false;
+					b._id = old.option_3._id;
+
+					var i;
+					for (i = 0; i < old.answer.length; i++) {
+						if (old.option_2._id == old.answer[i]) b.correct = true;
+					}
+					a.push(b);
+				}
+				if (old.option_3.valid) {
+					var b = {};
+					b.body = old.option_3.content;
+					b.correct = false;
+					b._id = old.option_3._id;
+
+					var i;
+					for (i = 0; i < old.answer.length; i++) {
+						if (old.option_3._id == old.answer[i]) b.correct = true;
+					}
+					a.push(b);
+				}
+				if (old.option_4.valid) {
+					var b = {};
+					b.body = old.option_4.content;
+					b.correct = false;
+					b._id = old.option_4._id;
+					var i;
+					for (i = 0; i < old.answer.length; i++) {
+						if (old.option_4._id == old.answer[i]) b.correct = true;
+					}
+					a.push(b);
+				}
+				// console.log(les);
+				setOptions(a);
+				setMarkIncorrect(les.marks_incorrect);
+				setMarkCorrect(les.marks_correct);
+			}
+		} catch (e) {
+			console.log(e);
+		}
+	};
+
+	useMemo(() => {
+		if (isold) initial();
+	}, [isold]);
+
+	// console.log(old);
+
 	const uploadOpt = () => {
 		// setMsg(false);
 		if (quesBody !== '') {
 			var a = {};
 			a['body'] = optionBody;
 			a['correct'] = valid;
-			setOptions((options) => [...options, a]);
+			a['_id'] = uuidv4();
+			var opts = [...options];
+			if (optid !== '') {
+				for (var i = 0; i < opts.length; i++) {
+					if (opts[i]._id === optid) {
+						opts[i] = a;
+					}
+				}
+			} else {
+				opts.push(a);
+			}
+			setOptions(opts);
 			setOptionBody('');
 			setValid(false);
+			setOptid('');
 		}
 	};
 
@@ -112,6 +224,8 @@ export default function Home({ secid, edit, changestates, isTest }) {
 							answer: answer,
 							markCorrect,
 							markIncorrect,
+							isold,
+							quesid,
 						}),
 					}).then((res) => {
 						if (res.status === 200) {
@@ -145,6 +259,8 @@ export default function Home({ secid, edit, changestates, isTest }) {
 							secid,
 							markCorrect,
 							markIncorrect,
+							isold,
+							quesid,
 						}),
 					}).then((res) => {
 						if (res.status === 200) {
@@ -172,7 +288,7 @@ export default function Home({ secid, edit, changestates, isTest }) {
 		var i;
 		var bool = false;
 		for (i = 0; i < options.length; i++) {
-			if (options[i].correct === true) bool = true;
+			if (options[i].correct === true && options[i]._id !== optid) bool = true;
 		}
 		if (!bool) {
 			return (
@@ -401,13 +517,31 @@ export default function Home({ secid, edit, changestates, isTest }) {
 				</div>
 				{options.map((opt, i) => {
 					return (
-						<div key={i}>
+						<div
+							key={i}
+							style={{
+								display: 'flex',
+								flexDirection: 'row',
+								width: '100%',
+								justifyContent: 'space-around',
+								alignItems: 'center',
+							}}
+						>
 							<div>
 								<FormControlLabel
 									control={<Checkbox checked={opt.correct} disabled />}
 									label={parse(opt.body)}
 								/>
 								{/* <Typography>{parse(opt.body)}</Typography> */}
+							</div>
+							<div
+								onClick={() => {
+									setOptionBody(opt.body);
+									setValid(opt.correct);
+									setOptid(opt._id);
+								}}
+							>
+								Edit
 							</div>
 						</div>
 					);
