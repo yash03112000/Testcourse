@@ -102,7 +102,9 @@ export default function AddQuestion({
 			var res = await axios.get(`/AddTestServer/question/edit/${quesid}`);
 			if (res.status == 404) {
 			} else if (res.status == 403) {
-				router.push('/LogIn');
+				router.push(`/LogIn?next=${router.asPath}`);
+
+				// router.push('/LogIn');
 			} else {
 				// console.log(res.data.ques);
 				const old = res.data.ques;
@@ -241,7 +243,9 @@ export default function AddQuestion({
 								}
 							});
 						} else if (res.status == 403) {
-							router.replace('/LogIn');
+							router.push(`/LogIn?next=${router.asPath}`);
+
+							// router.replace('/LogIn');
 						}
 					});
 				} else {
@@ -276,7 +280,9 @@ export default function AddQuestion({
 								}
 							});
 						} else if (res.status == 403) {
-							router.replace('/LogIn');
+							router.push(`/LogIn?next=${router.asPath}`);
+
+							// router.replace('/LogIn');
 						}
 					});
 				}

@@ -86,7 +86,9 @@ export default function Home({ changestep, isNew, edit }) {
 					}
 				});
 			} else if (res.status == 403) {
-				router.replace('/LogIn');
+				router.push(`/LogIn?next=${router.asPath}`);
+
+				// router.replace('/LogIn');
 			}
 		});
 	};
@@ -131,7 +133,9 @@ export default function Home({ changestep, isNew, edit }) {
 					}
 				});
 			} else if (res.status == 403) {
-				router.replace('/LogIn');
+				router.push(`/LogIn?next=${router.asPath}`);
+
+				// router.replace('/LogIn');
 			}
 		});
 	};
@@ -210,6 +214,7 @@ export default function Home({ changestep, isNew, edit }) {
 					<></>
 				) : (
 					<div>
+						<div style={{ color: 'red' }}>All Prices are GST included</div>
 						<div className={classes.row}>
 							<Typography>Price</Typography>
 							<TextField

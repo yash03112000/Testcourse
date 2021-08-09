@@ -102,7 +102,9 @@ export default function Home({ changestep, isNew, edit }) {
 					}
 				});
 			} else if (res.status == 403) {
-				router.push('/LogIn');
+				router.push(`/LogIn?next=${router.asPath}`);
+
+				// router.push('/LogIn');
 			}
 		});
 	};
@@ -161,7 +163,9 @@ export default function Home({ changestep, isNew, edit }) {
 					}
 				});
 			} else if (res.status == 403) {
-				router.push('/LogIn');
+				router.push(`/LogIn?next=${router.asPath}`);
+
+				// router.push('/LogIn');
 			}
 		});
 	};

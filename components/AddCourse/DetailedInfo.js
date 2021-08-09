@@ -94,7 +94,9 @@ export default function Home({ changestep, isNew, edit }) {
 					changestep(2, res.id);
 				});
 			} else if (res.status == 403) {
-				router.replace('/LogIn');
+				router.push(`/LogIn?next=${router.asPath}`);
+
+				// router.replace('/LogIn');
 			}
 		});
 	};

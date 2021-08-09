@@ -171,7 +171,9 @@ export default function Home({ test, results, arr }) {
 					}
 				});
 			} else if (res.status == 403) {
-				router.replace('/LogIn');
+				router.push(`/LogIn?next=${router.asPath}`);
+
+				// router.replace('/LogIn');
 			}
 		});
 	};

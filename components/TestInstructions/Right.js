@@ -115,7 +115,9 @@ export default function Home({ data }) {
 					setLoad(false);
 				});
 			} else if (res.status == 403) {
-				router.replace('/LogIn');
+				router.push(`/LogIn?next=${router.asPath}`);
+
+				// router.replace('/LogIn');
 			}
 		});
 	};
@@ -135,7 +137,9 @@ export default function Home({ data }) {
 					router.reload();
 				});
 			} else if (res.status == 403) {
-				router.replace('/LogIn');
+				router.push(`/LogIn?next=${router.asPath}`);
+
+				// router.replace('/LogIn');
 			}
 		});
 	};
@@ -180,7 +184,9 @@ export default function Home({ data }) {
 									if (res.status == 400) {
 										setMsg('Failure');
 									} else if (res.status == 403) {
-										router.replace('/LogIn');
+										router.push(`/LogIn?next=${router.asPath}`);
+
+										// router.replace('/LogIn');
 									} else {
 										setMsg('success');
 										router.reload();
@@ -205,7 +211,9 @@ export default function Home({ data }) {
 					}
 				});
 			} else if (res.status == 403) {
-				router.replace('/LogIn');
+				router.push(`/LogIn?next=${router.asPath}`);
+
+				// router.replace('/LogIn');
 			}
 		});
 	};

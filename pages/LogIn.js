@@ -62,6 +62,8 @@ export default function Home() {
 	const [status, setStatus] = useState(false);
 	const router = useRouter();
 	const classes = useStyles();
+	// console.log(router);
+	// console.log(router.query);
 
 	const googlelgn = () => {
 		fetch('/auth/google', { method: 'GET' });
@@ -82,12 +84,15 @@ export default function Home() {
 					if (!res.status) {
 						setMsg(res.msg);
 					} else {
-						router.replace('/dashboard');
+						if (router.query.next) {
+							router.replace(router.query.next);
+						} else router.replace('/dashboard');
 					}
 				});
-			} else if (res.status == 403) {
-				router.replace('/LogIn');
 			}
+			//  else if (res.status == 403) {
+			// 	router.replace('/LogIn');
+			// }
 		});
 	};
 

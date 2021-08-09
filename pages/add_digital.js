@@ -66,7 +66,8 @@ export default function Home() {
 					}
 				});
 			} else if (res.status == 403) {
-				router.replace('/LogIn');
+				router.push(`/LogIn?next=${router.asPath}`);
+				// router.replace('/LogIn');
 			}
 		});
 	};
