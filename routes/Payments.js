@@ -346,6 +346,7 @@ router.post('/digital/success', (req, res) => {
 });
 
 router.post('/test/registerfree', (req, res) => {
+	console.log(req.body.testid);
 	Test.findById(req.body.testid)
 		.exec()
 		.then((test) => {
@@ -390,10 +391,11 @@ router.post('/test/registerfree', (req, res) => {
 					res.status(400).json({ msg: 'Some Error Occured' });
 				}
 			} else {
-				res.status(400).json({ msg: 'Some Error Occured' });
+				res.status(404).json({ msg: 'Some Error Occured' });
 			}
 		})
 		.catch((err) => {
+			console.log(err);
 			res.status(400).json({ msg: 'Transaction not legit!' });
 		});
 });
@@ -440,13 +442,14 @@ router.post('/course/registerfree', (req, res) => {
 						});
 					});
 				} else {
-					res.status(400).json({ msg: 'Some Error Occured' });
+					res.status(404).json({ msg: 'Some Error Occured' });
 				}
 			} else {
 				res.status(400).json({ msg: 'Some Error Occured' });
 			}
 		})
 		.catch((err) => {
+			console.log(err);
 			res.status(400).json({ msg: 'Transaction not legit!' });
 		});
 });

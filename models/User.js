@@ -13,8 +13,15 @@ const PaymentSchema = new mongoose.Schema({
 });
 
 const UserSchema = new mongoose.Schema({
-	username: String,
-	password: String,
+	username: {
+		type: String,
+		default: '',
+	},
+	password: {
+		type: String,
+		default: '',
+	},
+	email: String,
 	facebook: {
 		id: String,
 		token: String,
@@ -41,6 +48,10 @@ const UserSchema = new mongoose.Schema({
 	courseposted: [mongoose.Types.ObjectId],
 	testposted: [mongoose.Types.ObjectId],
 	digitalposted: [mongoose.Types.ObjectId],
+	otp: {
+		id: String,
+		time: Date,
+	},
 });
 
 const User = mongoose.model('User', UserSchema);

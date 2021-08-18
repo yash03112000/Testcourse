@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import styles from '../styles/Home.module.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
 	TextField,
 	Button,
@@ -15,6 +15,7 @@ import { useRouter } from 'next/router';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import GTranslateIcon from '@material-ui/icons/GTranslate';
+import axios from 'axios';
 const useStyles = makeStyles((theme) => ({
 	msg: {
 		color: 'red',
@@ -58,37 +59,49 @@ const useStyles = makeStyles((theme) => ({
 export default function Home() {
 	const [Name, setName] = useState('');
 	const [Password, setPassword] = useState('');
-	const [email, setEmail] = useState('');
+	const [otp, setOTP] = useState('');
 	const [msg, setMsg] = useState('');
-	const [status, setStatus] = useState(false);
+	const [load, setLoad] = useState(false);
 	const router = useRouter();
 	const classes = useStyles();
+	// console.log(router);
+	// console.log(router.query);
 
-	const googlelgn = () => {
-		fetch('/auth/google', { method: 'GET' });
-	};
-
-	const login = (e) => {
+	const login = async (e) => {
 		e.preventDefault();
-		fetch(`/auth/SignUp`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ username: Name, password: Password, email }),
-		}).then((res) => {
-			if (res.status === 200) {
-				res.json().then((res) => {
-					if (res.msg === 'Username Exist') {
-						setMsg(res.msg);
-					} else {
-						router.replace('/LogIn');
-					}
-				});
+		if (load) {
+			if (Name === '') {
+				setMsg('Please fill Email Detail');
+			} else {
+				const res = await axios.post(`/auth/forget`, { email: Name });
+				if (res.data.status === 404) {
+					setMsg(res.data.msg);
+				} else {
+					setLoad(false);
+				}
 			}
-		});
+		} else {
+			if (password === '' || OTP === '' || Name === '') {
+				setMsg('Please fill Email Detail');
+			} else {
+				const res = await axios.post(`/auth/forget/set`, {
+					otp,
+					password,
+					email: Name,
+				});
+				if (res.data.status === 404) {
+					setMsg(res.data.msg);
+				} else {
+					setMsg('Password Changed');
+					router.replace('/LogIn');
+				}
+			}
+		}
 	};
-	return (
+
+	return load ? (
+		<div>Loading..</div>
+	) : (
 		<div className={styles.container}>
 			<Head>
 				<title>TestCourse</title>
@@ -108,44 +121,22 @@ export default function Home() {
 								>
 									{msg}
 								</Typography>
-								<Typography
+								{/* <Typography
 									component="p"
 									color="primary"
 									variant="subtitle1"
 									gutterBottom
 									className={classes.header}
 								>
-									Create Your TestCourse Account
-								</Typography>
+									New Password is sent to your email id
+								</Typography> */}
 								<Divider />
-								<div className={classes.btnbox}>
-									<Link href="/auth/facebook">
-										<Button
-											variant="contained"
-											type="submit"
-											className={classes.fb}
-											startIcon={<FacebookIcon />}
-										>
-											SignIn with FaceBook
-										</Button>
-									</Link>
-									<Link href="/auth/google">
-										<Button
-											variant="contained"
-											type="submit"
-											className={classes.google}
-											startIcon={<GTranslateIcon />}
-										>
-											SignIn with Google
-										</Button>
-									</Link>
-								</div>
 								<form onSubmit={login}>
 									<div className={styles.btnbox}>
 										<TextField
-											type="username"
+											type="email"
 											required
-											label="Username"
+											label="Email"
 											name="username"
 											variant="outlined"
 											size="small"
@@ -160,40 +151,48 @@ export default function Home() {
 												),
 											}}
 										/>
-										<TextField
-											type="password"
-											required
-											label="Password"
-											name="Password"
-											variant="outlined"
-											size="small"
-											value={Password}
-											onChange={(e) => setPassword(e.target.value)}
-											InputProps={{
-												startAdornment: (
-													<InputAdornment position="start">
-														<LockIcon />
-													</InputAdornment>
-												),
-											}}
-										/>
-										<TextField
-											type="email"
-											required
-											label="EmailId"
-											name="Password"
-											variant="outlined"
-											size="small"
-											value={email}
-											onChange={(e) => setEmail(e.target.value)}
-											InputProps={{
-												startAdornment: (
-													<InputAdornment position="start">
-														<MailOutlineIcon />
-													</InputAdornment>
-												),
-											}}
-										/>
+										{load ? (
+											<div>
+												<TextField
+													type="passowrd"
+													required
+													label="OTP"
+													name="password"
+													variant="outlined"
+													size="small"
+													autoFocus
+													value={otp}
+													onChange={(e) => setOTP(e.target.value)}
+													InputProps={{
+														startAdornment: (
+															<InputAdornment position="start">
+																<LockIcon />
+															</InputAdornment>
+														),
+													}}
+												/>
+												<TextField
+													type="passowrd"
+													required
+													label="New Password"
+													name="password"
+													variant="outlined"
+													size="small"
+													autoFocus
+													value={password}
+													onChange={(e) => setPassword(e.target.value)}
+													InputProps={{
+														startAdornment: (
+															<InputAdornment position="start">
+																<LockIcon />
+															</InputAdornment>
+														),
+													}}
+												/>
+											</div>
+										) : (
+											<></>
+										)}
 									</div>
 									<div>
 										<Button
@@ -203,21 +202,11 @@ export default function Home() {
 											style={{}}
 											className={classes.submit}
 										>
-											SignUp
+											Advance
 										</Button>
 									</div>
 								</form>
 								<Divider />
-								<Typography
-									component="h4"
-									color="primary"
-									variant="subtitle1"
-									className={classes.header}
-									gutterBottom
-								>
-									Already Have An Account?Sign In
-									<Link href="/LogIn">Here</Link>
-								</Typography>
 							</div>
 						</div>
 					</div>

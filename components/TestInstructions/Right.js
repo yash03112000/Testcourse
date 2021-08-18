@@ -94,8 +94,8 @@ export default function Home({ data }) {
 	// const [id, setID] = useState('');
 
 	useEffect(() => {
-		initial();
-	}, []);
+		if (typeof id !== 'undefined') initial();
+	}, [id]);
 
 	const initial = () => {
 		fetch(`/CourseServer/test/permit`, {
@@ -124,12 +124,13 @@ export default function Home({ data }) {
 
 	const register = (e) => {
 		e.preventDefault();
-		fetch(`/payment/course/registerfree`, {
+		console.log(id);
+		fetch(`/payment/test/registerfree`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({ id }),
+			body: JSON.stringify({ testid: id }),
 		}).then((res) => {
 			// console.log(res.status)
 			if (res.status === 200) {
@@ -147,12 +148,12 @@ export default function Home({ data }) {
 	const pay = (e) => {
 		// console.log('aa');
 		e.preventDefault();
-		fetch(`/payment/orders/course`, {
+		fetch(`/payment/orders/test`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({ id }),
+			body: JSON.stringify({ testid: id }),
 		}).then((res) => {
 			if (res.status === 200) {
 				res.json().then((res) => {
@@ -163,7 +164,7 @@ export default function Home({ data }) {
 							amount: amount.toString(),
 							currency: currency,
 							name: 'Soumya Corp.',
-							description: 'Course Transaction',
+							description: 'Test Transaction',
 							// image: { logo },
 							order_id: order_id,
 							handler: async function (response) {
@@ -174,7 +175,7 @@ export default function Home({ data }) {
 									razorpaySignature: response.razorpay_signature,
 								};
 
-								fetch(`/payment/course/success`, {
+								fetch(`/payment/test/success`, {
 									method: 'POST',
 									headers: {
 										'Content-Type': 'application/json',
@@ -277,7 +278,7 @@ export default function Home({ data }) {
 								}}
 								onClick={register}
 							>
-								Register
+								Register for Free now!
 							</Button>
 						</div>
 					</>

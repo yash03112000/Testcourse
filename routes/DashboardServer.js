@@ -91,4 +91,86 @@ router.get('/', async (req, res) => {
 	}
 });
 
+router.post('/admin/role', async (req, res) => {
+	// console.log('bulla');
+	try {
+		const { usersearch } = req.body;
+		if (typeof usersearch === 'undefined' || usersearch === '') {
+			res.json({
+				status: 404,
+				msg: ' Error Occured',
+			});
+		} else {
+			if (req.user.type !== 'Admin') {
+				res.json({
+					status: 403,
+					msg: 'No Access',
+				});
+			} else {
+				const user = await User.findOne({ username: usersearch })
+					.select('username type')
+					.exec();
+				console.log(user);
+				if (user) {
+					res.json({
+						status: 200,
+						user,
+					});
+				} else {
+					res.json({ status: 404, msg: 'No User found' });
+				}
+			}
+		}
+	} catch (e) {
+		res.json({
+			status: 404,
+			msg: ' Error Occured',
+		});
+	}
+});
+
+router.post('/admin/rolechange', async (req, res) => {
+	// console.log('bulla');
+	try {
+		const { user } = req.body;
+		if (
+			typeof user.username === 'undefined' ||
+			typeof user.type === 'undefined'
+		) {
+			res.json({
+				status: 404,
+				msg: 'Undefined',
+			});
+		} else {
+			if (req.user.type !== 'Admin') {
+				res.json({
+					status: 403,
+					msg: 'No Access',
+				});
+			} else {
+				const user2 = await User.findById(user._id)
+					.select('username type')
+					.exec();
+				// console.log(user);
+				if (user2) {
+					user2.type = user.type;
+					const user3 = await user2.save();
+					res.json({
+						status: 200,
+						// user,
+					});
+				} else {
+					res.json({ status: 404, msg: 'No User found' });
+				}
+			}
+		}
+	} catch (e) {
+		console.log(e.message);
+		res.json({
+			status: 404,
+			msg: ' Error Occured',
+		});
+	}
+});
+
 module.exports = router;

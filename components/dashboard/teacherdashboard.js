@@ -18,6 +18,7 @@ import FacebookIcon from '@material-ui/icons/Facebook';
 import TestCard from './TestCard';
 import CourseCard from './CourseCard';
 import DigitalCard from './/DigitalCard';
+import ChangePassword from './changepassword';
 
 const useStyles = makeStyles((theme) => ({
 	msg: {
@@ -200,6 +201,7 @@ export default function Home({ data }) {
 						</div>
 					</div>
 				</div>
+				<ChangePassword />
 			</main>
 		</div>
 	);

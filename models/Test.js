@@ -21,6 +21,10 @@ const SectionSchema = new mongoose.Schema({
 		default: ' ',
 	},
 	questions: [QuestionSchema],
+	timeleft: {
+		type: Number,
+		default: 0,
+	},
 });
 
 const PaymentSchema = new mongoose.Schema({

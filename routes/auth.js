@@ -9,6 +9,18 @@ var User = require('../models/User');
 // var id = require('../config/credentials.json');
 var bcrypt = require('bcryptjs');
 const dev = process.env.NODE_ENV !== 'production';
+const uuid = require('uuid');
+const moment = require('moment');
+var nodemailer = require('nodemailer');
+const { ensureAuthenciated } = require('../middleware/auth');
+
+var transporter = nodemailer.createTransport({
+	service: process.env.EMAIL_SERVICE,
+	auth: {
+		user: process.env.EMAIL_ADDRESS,
+		pass: process.env.EMAIL_PASSWORD,
+	},
+});
 
 const middlefun = (req, res, next) => {
 	// console.log(req.headers)
@@ -41,7 +53,7 @@ router.get(
 router.get(
 	'/facebook',
 	middlefun,
-	passport.authenticate('facebook', { scope: ['email'] })
+	passport.authenticate('facebook', { scope: ['email'] }, { scope: ['email'] })
 );
 router.get(
 	'/facebook/callback',
@@ -92,6 +104,7 @@ passport.use(
 			callbackURL: dev
 				? 'http://localhost:8080/auth/facebook/callback'
 				: process.env.FB_CALLBACKURL,
+			profileFields: ['id', 'emails', 'name'],
 		},
 		function (accessToken, refreshToken, profile, done) {
 			// console.log(profile)
@@ -104,7 +117,10 @@ passport.use(
 					newUser.facebook.id = profile.id;
 					newUser.facebook.token = accessToken;
 					newUser.facebook.name = profile.displayName;
-					// newUser.facebook.email = profile.emails[0].value;
+					if (user.emails !== undefined) {
+						newUser.facebook.email = profile.emails[0].value;
+						newUser.email = profile.emails[0].value;
+					}
 
 					newUser.save().then((newUser) => {
 						return done(null, newUser);
@@ -138,6 +154,7 @@ passport.use(
 					user.google.token = accessToken;
 					// newUser.google.name = profile.name.givenName + ' ' + profile.name.familyName;
 					user.google.email = profile.emails[0].value;
+					user.email = profile.emails[0].value;
 
 					user.save().then((user) => {
 						return done(null, user);
@@ -186,6 +203,7 @@ router.post('/SignUp', (req, res, next) => {
 						var newuser = new User();
 						newuser.username = req.body.username;
 						newuser.password = hash;
+						newuser.email = req.body.email;
 						newuser
 							.save()
 							.then(() => {
@@ -219,6 +237,162 @@ router.get('/', (req, res) => {
 router.get('/logout', (req, res) => {
 	req.logout();
 	res.status(200).end();
+});
+
+router.post('/forget', async (req, res) => {
+	try {
+		const { email } = req.body;
+		if (typeof email === 'undefined') {
+			res.json({
+				status: 404,
+				msg: ' Not Found',
+			});
+		} else {
+			const user = await User.findOne({ email: email }).exec();
+			if (user) {
+				// console.log(process.env.EMAIL_PASSWORD);
+				var otp = {};
+				otp.id = uuid.v4();
+				otp.time = new Date().getTime();
+				user.otp = otp;
+				user.save().then((user) => {
+					const mailOptions = {
+						from: process.env.EMAIL_ADDRESS, // sender address
+						to: user.email, // list of receivers
+						subject: 'Forget Password', // Subject line
+						html: `<p>Your OTP is ${user.otp.id}</p>`, // plain text body
+					};
+					transporter.sendMail(mailOptions, function (err, info) {
+						if (err) console.log(err);
+						else {
+							console.log(info);
+							res.json({
+								status: 200,
+							});
+						}
+					});
+				});
+			} else {
+				res.json({
+					status: 404,
+					msg: ' Not Found',
+				});
+			}
+		}
+	} catch (e) {
+		console.log(e);
+		res.json({
+			status: 404,
+			msg: ' Error Occured',
+		});
+	}
+});
+
+router.post('/forget/set', async (req, res) => {
+	try {
+		const { password, otp, email } = req.body;
+		if (
+			typeof otp === 'undefined' ||
+			typeof password === 'undefined' ||
+			typeof email === 'undefined'
+		) {
+			res.json({
+				status: 404,
+				msg: ' Not Found',
+			});
+		} else {
+			const user = await User.findOne({ email: email }).exec();
+			if (user) {
+				// console.log(process.env.EMAIL_PASSWORD);
+				if (
+					moment(user.otp.time).add(5, 'minute').isAfter(new Date().getTime())
+				) {
+					if (otp == user.otp.id) {
+						bcrypt.genSalt(10, (err, salt) => {
+							bcrypt.hash(req.body.password, salt, (err, hash) => {
+								user.password = hash;
+								user.save().then((user) => {
+									res.json({
+										status: 200,
+									});
+								});
+							});
+						});
+					} else {
+						res.json({
+							status: 404,
+							msg: 'Invalid',
+						});
+					}
+				} else {
+					res.json({
+						status: 404,
+						msg: 'Expired',
+					});
+				}
+			} else {
+				res.json({
+					status: 404,
+					msg: ' Not Found',
+				});
+			}
+		}
+	} catch (e) {
+		console.log(e);
+		res.json({
+			status: 404,
+			msg: ' Error Occured',
+		});
+	}
+});
+
+router.post('/change', ensureAuthenciated, async (req, res) => {
+	try {
+		const { oldPassword, newPassword } = req.body;
+		if (
+			typeof oldPassword === 'undefined' ||
+			typeof newPassword === 'undefined'
+		) {
+			res.json({
+				status: 404,
+				msg: 'Fill All Fields',
+			});
+		} else {
+			const user = await User.findById(req.user.id).exec();
+			// console.log(user);
+			if (user) {
+				bcrypt.compare(oldPassword, user.password).then((valid) => {
+					if (!valid) {
+						res.json({
+							status: 403,
+							msg: 'Wrong Password',
+						});
+					} else {
+						bcrypt.genSalt(10, (err, salt) => {
+							bcrypt.hash(newPassword, salt, (err, hash) => {
+								user.password = hash;
+								user.save().then((user) => {
+									res.json({
+										status: 200,
+									});
+								});
+							});
+						});
+					}
+				});
+			} else {
+				res.json({
+					status: 404,
+					msg: 'Error',
+				});
+			}
+		}
+	} catch (e) {
+		res.json({
+			status: 404,
+			msg: ' Error Occured',
+		});
+	}
 });
 
 module.exports = router;

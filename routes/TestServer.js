@@ -2,54 +2,55 @@ const express = require('express');
 const Test = require('../models/Test');
 const Ques = require('../models/Question');
 const Result = require('../models/TestResult');
+const moment = require('moment');
 
 const router = express.Router();
+
+const allowed = (test, id) => {
+	var i = 0;
+	for (i = 0; i < test.payments.length; i++) {
+		if (test.payments[i].userid.equals(id)) {
+			return true;
+		}
+	}
+	return false;
+};
 
 router.get('/:id', (req, res) => {
 	Test.findById(req.params.id)
 		.exec()
 		.then((test) => {
-			// var arr = [];
-			// test.question_id.map((q, i) => {
-			// 	var a = {};
-			// 	a._id = q;
-			// 	a.marks_correct = test.question_marks_correct[i];
-			// 	a.marks_wrong = test.question_marks_wrong[i];
-			// 	arr.push(a);
-			// });
-			// var arr2 = [];
-			// test.section_id.map((sec) => {
-			// 	var a = {};
-			// 	a.title = sec.title;
-			// 	a.startindex = sec.startindex;
-			// 	a.endindex = sec.endindex;
-			// 	arr2.push(a);
-			// });
-			// console.log(arr)
-			Result.find({ test_id: test._id, user_id: req.user.id })
-				.exec()
-				.then((result) => {
-					if (result.length > 0) {
-						var a = result[0];
-						res.json({
-							test,
-							result: a,
-						});
-					} else {
-						var result = new Result();
-						result.test_id = test._id;
-						result.user_id = req.user.id;
-						// result.user_response = arr;
-						result.sections = test.section_id;
-						result.notvisited = test.total_questions;
-						result.save().then(() => {
+			if (allowed(test, req.user.id)) {
+				Result.find({ test_id: test._id, user_id: req.user.id })
+					.exec()
+					.then((result) => {
+						if (result.length > 0) {
+							var a = result[0];
 							res.json({
 								test,
-								result,
+								result: a,
 							});
-						});
-					}
+						} else {
+							var result = new Result();
+							result.test_id = test._id;
+							result.user_id = req.user.id;
+							// result.user_response = arr;
+							result.sections = test.section_id;
+							result.notvisited = test.total_questions;
+							result.save().then(() => {
+								res.json({
+									test,
+									result,
+									status: 200,
+								});
+							});
+						}
+					});
+			} else {
+				res.json({
+					status: 403,
 				});
+			}
 		});
 });
 
@@ -287,6 +288,81 @@ router.post('/clearresponse', middle, (req, res) => {
 		.catch((err) => {
 			console.log(err);
 		});
+});
+
+router.post('/section/change', async (req, res) => {
+	try {
+		var result = await Result.findOne({
+			test_id: req.body.testid,
+			user_id: req.user.id,
+		}).exec();
+		if (result) {
+			// console.log(result.sections);
+			// console.log(req.body.oldsec);
+			var oldsec = result.sections.id(req.body.oldsec);
+			// console.log(oldsec);
+			var newsec = result.sections.id(req.body.newsec);
+			var start = moment(oldsec.timestarted * 1000);
+			var endTime = moment();
+			var duration = moment.duration(endTime.diff(start)).get('seconds');
+			// duration = parseInt(duration.asSeconds()) % 60;
+			console.log(duration);
+			oldsec.timeleft -= duration;
+			newsec.timestarted = endTime;
+			var resultupd = await result.save();
+			// if (newsec.timeleft > 0) {
+			// 	res.json({});
+			// }
+			res.json({
+				status: 200,
+				timeleft: oldsec.timeleft,
+			});
+		} else {
+			res.json({
+				status: 404,
+				msg: 'Some Error occurred',
+			});
+		}
+	} catch (e) {
+		console.log(e);
+	}
+});
+router.post('/section/change2', async (req, res) => {
+	try {
+		var result = await Result.findOne({
+			test_id: req.body.testid,
+			user_id: req.user.id,
+		}).exec();
+		if (result) {
+			// console.log(result.sections);
+			// console.log(req.body.oldsec);
+			// var oldsec = result.sections.id(req.body.oldsec);
+			// console.log(oldsec);
+			var newsec = result.sections.id(req.body.newsec);
+			// var start = moment(oldsec.timestarted * 1000);
+			var endTime = moment();
+			// var duration = moment.duration(endTime.diff(start)).get('seconds');
+			// duration = parseInt(duration.asSeconds()) % 60;
+			// console.log(duration);
+			// oldsec.timeleft -= duration;
+			newsec.timestarted = endTime;
+			var resultupd = await result.save();
+			// if (newsec.timeleft > 0) {
+			// 	res.json({});
+			// }
+			res.json({
+				status: 200,
+				timeleft: oldsec.timeleft,
+			});
+		} else {
+			res.json({
+				status: 404,
+				msg: 'Some Error occurred',
+			});
+		}
+	} catch (e) {
+		console.log(e);
+	}
 });
 
 router.post('/review', middle, (req, res) => {

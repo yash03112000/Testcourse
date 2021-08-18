@@ -96,6 +96,10 @@ export default function Home() {
 		});
 	};
 
+	const forget = () => {
+		router.push('/Forget');
+	};
+
 	return (
 		<div className={styles.container}>
 			<Head>
@@ -206,7 +210,19 @@ export default function Home() {
 									className={classes.header}
 									gutterBottom
 								>
-									New User?Sign Up <Link href="/SignUp">Here</Link>
+									Forget Password?Click
+									<span style={{ cursor: 'pointer' }} onClick={forget}>
+										Here
+									</span>
+								</Typography>
+								<Typography
+									component="h4"
+									color="primary"
+									variant="subtitle1"
+									className={classes.header}
+									gutterBottom
+								>
+									New User?Sign Up <Link href="/SignUp"> Here</Link>
 								</Typography>
 							</div>
 						</div>

@@ -294,7 +294,7 @@ export default function Home({ data }) {
 								}}
 								onClick={register}
 							>
-								Buy Now
+								Register Now
 							</Button>
 						</div>
 					</>

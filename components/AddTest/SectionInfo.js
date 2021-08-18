@@ -77,6 +77,7 @@ export default function Home({ changestep, isNew, edit }) {
 	const [old, setOld] = useState({});
 	const [isold, setisOld] = useState(false);
 	const [isles, setisLes] = useState({});
+	const [time, setTime] = useState(0);
 	const [quesid, setQuesid] = useState('');
 	const router = useRouter();
 	const { id } = router.query;
@@ -146,7 +147,7 @@ export default function Home({ changestep, isNew, edit }) {
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({ id: edit, name: Name }),
+			body: JSON.stringify({ id: edit, name: Name, time }),
 		}).then((res) => {
 			// console.log(res.status)
 			if (res.status === 200) {
@@ -158,6 +159,7 @@ export default function Home({ changestep, isNew, edit }) {
 						// setSale(res.test.is_on_sale);
 						// setTitle(res.test.title);
 						// changestep(2);
+
 						setData(res.sections);
 						setLoad(false);
 					}
@@ -191,20 +193,45 @@ export default function Home({ changestep, isNew, edit }) {
 					// backgroundColor: 'red',
 				}}
 			>
-				<div style={{ width: '100%' }}>
-					<TextField
-						type="username"
-						required
-						label="Section"
-						name="username"
-						variant="outlined"
-						size="small"
-						autoFocus
-						value={Name}
-						style={{ width: '100%' }}
-						onChange={(e) => setName(e.target.value)}
-					/>
+				<div
+					style={{
+						display: 'flex',
+						flexDirection: 'row',
+						// width: '60%',
+						margin: 40,
+						// backgroundColor: 'red',
+					}}
+				>
+					<div style={{ width: '100%' }}>
+						<TextField
+							type="username"
+							required
+							label="Section"
+							name="username"
+							variant="outlined"
+							size="small"
+							autoFocus
+							value={Name}
+							style={{ width: '100%' }}
+							onChange={(e) => setName(e.target.value)}
+						/>
+					</div>
+					<div style={{ width: '100%' }}>
+						<TextField
+							type="number"
+							required
+							label="Time Left"
+							name="time"
+							variant="outlined"
+							size="small"
+							autoFocus
+							value={time}
+							style={{ width: '100%' }}
+							onChange={(e) => setTime(e.target.value)}
+						/>
+					</div>
 				</div>
+
 				<div
 					style={{
 						width: '100%',

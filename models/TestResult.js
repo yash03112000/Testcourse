@@ -61,6 +61,13 @@ const SectionSchema = new mongoose.Schema({
 		default: 0,
 	},
 	questions: [QuestionSchema],
+	timeleft: {
+		type: Number,
+		default: 0,
+	},
+	timestarted: {
+		type: Date,
+	},
 });
 
 const TestResultSchema = new mongoose.Schema({

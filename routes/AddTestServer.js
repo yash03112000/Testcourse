@@ -256,8 +256,13 @@ router.get('/step1/:id', (req, res) => {
 });
 
 router.post('/step1', (req, res) => {
-	const { id, name } = req.body;
-	if (typeof id === 'undefined' || typeof name === 'undefined' || name === '') {
+	const { id, name, time } = req.body;
+	if (
+		typeof id === 'undefined' ||
+		typeof name === 'undefined' ||
+		name === '' ||
+		typeof time === 'undefined'
+	) {
 		res.json({
 			status: 400,
 			msg: 'Fill All Fields',
@@ -281,6 +286,7 @@ router.post('/step1', (req, res) => {
 						a.title = name;
 						a.startindex = 0;
 						a.endindex = 0;
+						a.timeleft = time;
 						test.section_id.push(a);
 						test.save().then(() => {
 							res.json({

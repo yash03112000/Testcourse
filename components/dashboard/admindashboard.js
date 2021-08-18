@@ -8,6 +8,8 @@ import {
 	Typography,
 	Divider,
 	InputAdornment,
+	Select,
+	MenuItem,
 } from '@material-ui/core';
 import MailOutlineIcon from '@material-ui/icons/MailOutline';
 import LockIcon from '@material-ui/icons/Lock';
@@ -18,6 +20,8 @@ import FacebookIcon from '@material-ui/icons/Facebook';
 import TestCard from './TestCard';
 import CourseCard from './CourseCard';
 import DigitalCard from './/DigitalCard';
+import ChangePassword from './changepassword';
+import axios from 'axios';
 
 const useStyles = makeStyles((theme) => ({
 	msg: {
@@ -64,9 +68,73 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Home({ data }) {
 	// const [load, setLoad] = useState(true);
-	// const [data, setData] = useState({});
+	const [usersearch, setUsersearch] = useState('');
+	const [msg, setMsg] = useState('');
+	const [user, setUser] = useState({});
 	const router = useRouter();
 	const classes = useStyles();
+
+	const search = async () => {
+		try {
+			if (usersearch === '') setMsg('Plz fill All The fields');
+			else {
+				setMsg('');
+				try {
+					const res = await axios.post(`/DashboardServer/admin/role`, {
+						usersearch,
+					});
+					// console.log('hehe');
+					console.log(res);
+					if (res.data.status == 403) {
+						setMsg(res.data.msg);
+					} else if (res.data.status == 404) {
+						setMsg(res.data.msg);
+					} else {
+						setMsg('');
+						setUser(res.data.user);
+					}
+				} catch (e) {
+					console.log(e.message);
+					if (e.response.status === 403) {
+						router.replace('/LogIn');
+						setMsg(e.message);
+					}
+				}
+			}
+		} catch (e) {
+			console.log(e);
+			setMsg(e.message);
+		}
+	};
+
+	const change = async () => {
+		try {
+			setMsg('');
+			try {
+				const res = await axios.post(`/DashboardServer/admin/rolechange`, {
+					user,
+				});
+				if (res.data.status == 403) {
+					setMsg(res.data.msg);
+				} else if (res.data.status == 404) {
+					setMsg(res.data.msg);
+				} else {
+					setMsg('Changed');
+					setUser({});
+					setUsersearch('');
+				}
+			} catch (e) {
+				console.log(e.message);
+				if (e.response.status === 403) {
+					router.replace('/LogIn');
+					setMsg(e.message);
+				}
+			}
+		} catch (e) {
+			console.log(e);
+			setMsg(e.message);
+		}
+	};
 
 	return (
 		<div className={classes.container}>
@@ -121,6 +189,86 @@ export default function Home({ data }) {
 								</div>
 							);
 						})}
+					</div>
+				</div>
+				<ChangePassword />
+				<div>
+					<div
+						style={{
+							display: 'flex',
+							flexDirection: 'row',
+							justifyContent: 'center',
+						}}
+					>
+						<h1>Admin Roles</h1>
+					</div>
+					<div
+						style={{
+							display: 'flex',
+							flexDirection: 'row',
+							justifyContent: 'center',
+						}}
+					>
+						{msg}
+					</div>
+					<div
+						style={{
+							display: 'flex',
+							flexDirection: 'row',
+							justifyContent: 'center',
+						}}
+					>
+						<TextField
+							type="username"
+							label="Type Unique ID"
+							value={usersearch}
+							onChange={(e) => setUsersearch(e.target.value)}
+						/>
+					</div>
+					{typeof user.username !== 'undefined' ? (
+						<div
+							style={{
+								display: 'flex',
+								flexDirection: 'row',
+								justifyContent: 'space-around',
+								padding: 20,
+							}}
+						>
+							<div>{user.username}</div>
+							<div>
+								<Select
+									labelId="demo-simple-select-helper-label"
+									id="demo-simple-select-helper"
+									onChange={(e) => {
+										setUser((prevState) => ({
+											...prevState,
+											type: e.target.value,
+										}));
+									}}
+									value={user.type}
+									// style={{ width: 100 }}
+								>
+									<MenuItem value={'User'}>User</MenuItem>
+									<MenuItem value={'Teacher'}>Teacher</MenuItem>
+									<MenuItem value={'Admin'}>Admin</MenuItem>
+								</Select>
+							</div>
+							<div>
+								<Button onClick={change}>Change</Button>
+							</div>
+						</div>
+					) : (
+						<></>
+					)}
+
+					<div
+						style={{
+							display: 'flex',
+							flexDirection: 'row',
+							justifyContent: 'center',
+						}}
+					>
+						<Button onClick={search}>Submit</Button>
 					</div>
 				</div>
 			</main>

@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import Link from 'next/link';
 // import styles from '../styles/Home.module.css'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM, { unstable_batchedUpdates as unstable } from 'react-dom';
 import {
 	TextField,
@@ -28,6 +28,7 @@ import Drawer from '../../components/Test/Drawer';
 import RightDiv from '../../components/Test/RightDiv';
 import Question from '../../components/Test/Question';
 import { server } from '../../config';
+import axios from 'axios';
 
 const useStyles = makeStyles((theme) => ({
 	mainform: {
@@ -105,6 +106,7 @@ export default function Home({ test, results, arr }) {
 	const [section, setSection] = useState(test.section_id[0]);
 	const [quesid, setQuesid] = useState(section.questions[0]._id);
 	const [quesarr, setQuesarr] = useState(arr);
+	const [time, setTime] = useState(section.timeleft);
 	const [modal, setModal] = useState(false);
 
 	//   const [sanswer,setSanswer] = useState('')
@@ -116,18 +118,77 @@ export default function Home({ test, results, arr }) {
 
 	//   console.log(data)
 
+	useEffect(() => {
+		const x = setInterval(() => {
+			// var a = time;
+			// console.log(time);
+			// console.log(--a);
+			setTime((time) => time - 1);
+			if (time <= 0) {
+				clearInterval(x);
+			}
+		}, 1000);
+
+		return () => {
+			clearInterval(x);
+		};
+	}, []);
+
 	const changeqid = (id) => {
 		console.log('quesid');
 		if (quesid !== id) setQuesid(id);
 	};
-	const secChange = (curr) => {
-		console.log('quesid');
+	const secChange = async (curr) => {
+		// console.log('quesid');
 
 		if (curr.title !== section.title) {
-			unstable(() => {
-				setSection(curr);
-				setQuesid(curr.questions[0]._id);
+			var res = await axios.post(`/TestServer/section/change`, {
+				newsec: curr._id,
+				oldsec: section._id,
+				testid,
 			});
+			if (res.data.status == 200) {
+				var da = [...data];
+				var secs = da.section_id;
+				for (var i = 0; i < secs.length; i++) {
+					if (secs[i]._id === section._id) {
+						secs[i].timeleft = res.body.timeleft;
+					}
+				}
+				for (var i = 0; i < secs.length; i++) {
+					if (secs[i]._id === curr._id) {
+						if (secs[i].timeleft > 0) {
+							unstable(() => {
+								setData(da);
+								setSection(curr);
+								setTime(section.timeleft);
+								setQuesid(curr.questions[0]._id);
+							});
+						} else {
+							for (var j = 0; j < secs.length; j++) {
+								if (secs[j].timeleft > 0) {
+									unstable(() => {
+										setData(da);
+										var res2 = await axios.post(`/TestServer/section/change2`, {
+											newsec: curr._id,
+											oldsec: section._id,
+											testid,
+										});
+										if (res2.status === 200) {
+											setSection(secs[j]);
+											setTime(section.timeleft);
+											setQuesid(secs[j]._id);
+										}
+									});
+									return;
+								}
+							}
+							submitTest();
+						}
+						break;
+					}
+				}
+			}
 		}
 	};
 	const changeresult = (result, id, data, next) => {
@@ -218,12 +279,13 @@ export default function Home({ test, results, arr }) {
 							<div className={classes.sec1}>
 								{data.section_id.map((sec, index) => {
 									return (
-										<div
+										<Button
 											style={{ padding: 5 }}
 											key={index}
 											onClick={() => {
 												secChange(sec);
 											}}
+											disabled={sec.timeleft <= 0}
 										>
 											<Typography
 												component="span"
@@ -240,7 +302,7 @@ export default function Home({ test, results, arr }) {
 											>
 												{sec.title}
 											</Typography>
-										</div>
+										</Button>
 									);
 								})}
 							</div>
@@ -267,7 +329,7 @@ export default function Home({ test, results, arr }) {
 											gutterBottom
 											style={{ color: 'black', margin: 5 }}
 										>
-											Time Left:00:00
+											Time Left:{time}
 										</Typography>
 									</div>
 								</div>
@@ -362,25 +424,34 @@ export async function getServerSideProps(ctx) {
 			};
 		}
 		var data = await res.json();
-		var test = data.test;
-		var result = data.result;
-		var arr = [];
+		if (data.status == 403) {
+			return {
+				redirect: {
+					destination: '/404',
+					permanent: false,
+				},
+			};
+		} else {
+			var test = data.test;
+			var result = data.result;
+			var arr = [];
 
-		result.sections.map((sec, i) => {
-			sec.questions.map((ques) => {
-				var a = {};
-				a['done'] = false;
-				a['_id'] = ques._id;
-				a['content'] = {};
-				arr.push(a);
+			result.sections.map((sec, i) => {
+				sec.questions.map((ques) => {
+					var a = {};
+					a['done'] = false;
+					a['_id'] = ques._id;
+					a['content'] = {};
+					arr.push(a);
+				});
 			});
-		});
 
-		// console.log(result);
+			// console.log(result);
 
-		return {
-			props: { test, results: result, arr }, // will be passed to the page component as props
-		};
+			return {
+				props: { test, results: result, arr }, // will be passed to the page component as props
+			};
+		}
 	} catch (err) {
 		console.log('Fetch Request is not returning JSON File');
 	}
