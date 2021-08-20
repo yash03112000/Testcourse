@@ -27,6 +27,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Drawer from '../../components/Test/Drawer';
 import RightDiv from '../../components/Test/RightDiv';
 import Question from '../../components/Test/Question';
+import Timer from '../../components/Test/Timer';
 import { server } from '../../config';
 import axios from 'axios';
 
@@ -103,10 +104,10 @@ export default function Home({ test, results, arr }) {
 	const [status, setStatus] = useState(false);
 	const [data, setData] = useState(test);
 	const [result, setResult] = useState(results);
-	const [section, setSection] = useState(test.section_id[0]);
+	const [section, setSection] = useState(result.sections[0]);
 	const [quesid, setQuesid] = useState(section.questions[0]._id);
 	const [quesarr, setQuesarr] = useState(arr);
-	const [time, setTime] = useState(section.timeleft);
+	// const [time, setTime] = useState(section.timeleft);
 	const [modal, setModal] = useState(false);
 
 	//   const [sanswer,setSanswer] = useState('')
@@ -118,76 +119,48 @@ export default function Home({ test, results, arr }) {
 
 	//   console.log(data)
 
-	useEffect(() => {
-		const x = setInterval(() => {
-			// var a = time;
-			// console.log(time);
-			// console.log(--a);
-			setTime((time) => time - 1);
-			if (time <= 0) {
-				clearInterval(x);
-			}
-		}, 1000);
-
-		return () => {
-			clearInterval(x);
-		};
-	}, []);
-
 	const changeqid = (id) => {
 		console.log('quesid');
 		if (quesid !== id) setQuesid(id);
 	};
 	const secChange = async (curr) => {
-		// console.log('quesid');
+		console.log('quesid');
 
-		if (curr.title !== section.title) {
+		if (curr._id !== section._id) {
 			var res = await axios.post(`/TestServer/section/change`, {
 				newsec: curr._id,
 				oldsec: section._id,
 				testid,
 			});
 			if (res.data.status == 200) {
-				var da = [...data];
-				var secs = da.section_id;
+				var da = result;
+				var secs = da.sections;
+				// console.log(secs);
 				for (var i = 0; i < secs.length; i++) {
 					if (secs[i]._id === section._id) {
-						secs[i].timeleft = res.body.timeleft;
+						secs[i].timeleft = res.data.timeleft;
 					}
 				}
-				for (var i = 0; i < secs.length; i++) {
-					if (secs[i]._id === curr._id) {
-						if (secs[i].timeleft > 0) {
-							unstable(() => {
-								setData(da);
-								setSection(curr);
-								setTime(section.timeleft);
-								setQuesid(curr.questions[0]._id);
-							});
-						} else {
-							for (var j = 0; j < secs.length; j++) {
-								if (secs[j].timeleft > 0) {
-									unstable(() => {
-										setData(da);
-										var res2 = await axios.post(`/TestServer/section/change2`, {
-											newsec: curr._id,
-											oldsec: section._id,
-											testid,
-										});
-										if (res2.status === 200) {
-											setSection(secs[j]);
-											setTime(section.timeleft);
-											setQuesid(secs[j]._id);
-										}
-									});
-									return;
-								}
-							}
-							submitTest();
-						}
-						break;
-					}
-				}
+				unstable(() => {
+					setResult(da);
+					setSection(curr);
+					setQuesid(curr.questions[0]._id);
+				});
+			}
+		}
+	};
+
+	const timeover = () => {
+		var da = result;
+		var secs = da.sections;
+		for (var i = 0; i < secs.length; i++) {
+			if (secs[i]._id === section._id) {
+				secs[i].timeleft = 0;
+				unstable(() => {
+					setResult(da);
+					setSection(secs[i]);
+				});
+				break;
 			}
 		}
 	};
@@ -277,7 +250,7 @@ export default function Home({ test, results, arr }) {
 					<div className={classes.maindiv}>
 						<div className={classes.maindivleft}>
 							<div className={classes.sec1}>
-								{data.section_id.map((sec, index) => {
+								{result.sections.map((sec, index) => {
 									return (
 										<Button
 											style={{ padding: 5 }}
@@ -285,7 +258,7 @@ export default function Home({ test, results, arr }) {
 											onClick={() => {
 												secChange(sec);
 											}}
-											disabled={sec.timeleft <= 0}
+											// disabled={sec.timeleft <= 0}
 										>
 											<Typography
 												component="span"
@@ -320,19 +293,7 @@ export default function Home({ test, results, arr }) {
 										</Typography>
 									</div>
 								</div>
-								<div>
-									<div>
-										<Typography
-											component="span"
-											color="primary"
-											variant="subtitle1"
-											gutterBottom
-											style={{ color: 'black', margin: 5 }}
-										>
-											Time Left:{time}
-										</Typography>
-									</div>
-								</div>
+								<Timer timeleft={section.timeleft} timeover={timeover} />
 							</div>
 							<div className={classes.sec3}>
 								<div>
@@ -352,14 +313,22 @@ export default function Home({ test, results, arr }) {
 									</Typography>
 								</div>
 							</div>
-							<Question
-								id={quesid}
-								changeresult={changeresult}
-								result={result}
-								quesarr={quesarr}
-								changequesarr={changequesarr}
-								section={section}
-							/>
+							{section.timeleft > 0 ? (
+								<Question
+									id={quesid}
+									changeresult={changeresult}
+									result={result}
+									quesarr={quesarr}
+									changequesarr={changequesarr}
+									section={section}
+								/>
+							) : (
+								<div>
+									<h1>
+										Time Over for this section. Please Change section or submit
+									</h1>
+								</div>
+							)}
 						</div>
 						<RightDiv
 							result={result}

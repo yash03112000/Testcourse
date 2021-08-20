@@ -67,6 +67,7 @@ const SectionSchema = new mongoose.Schema({
 	},
 	timestarted: {
 		type: Date,
+		default: Date.now(),
 	},
 });
 
@@ -75,6 +76,9 @@ const TestResultSchema = new mongoose.Schema({
 		type: mongoose.Types.ObjectId,
 	},
 	user_id: {
+		type: mongoose.Types.ObjectId,
+	},
+	activesec: {
 		type: mongoose.Types.ObjectId,
 	},
 	is_test_completed: {

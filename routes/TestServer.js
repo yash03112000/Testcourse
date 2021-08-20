@@ -21,20 +21,38 @@ router.get('/:id', (req, res) => {
 		.exec()
 		.then((test) => {
 			if (allowed(test, req.user.id)) {
-				Result.find({ test_id: test._id, user_id: req.user.id })
+				Result.findOne({ test_id: test._id, user_id: req.user.id })
 					.exec()
 					.then((result) => {
-						if (result.length > 0) {
-							var a = result[0];
-							res.json({
-								test,
-								result: a,
+						if (result) {
+							var a = result;
+							// console.log(a);
+							var sec = a.sections.id(a.activesec);
+							// console.log(sec);
+							var start = moment(sec.timestarted);
+							var endTime = moment();
+							var duration = moment
+								.duration(endTime.diff(start))
+								.get('seconds');
+							console.log(start);
+							console.log(endTime);
+							console.log(duration);
+							sec.timeleft -= duration;
+							sec.timestarted = endTime;
+							// result.activesec = req.body.newssec;
+							result.save().then((result) => {
+								res.json({
+									test,
+									result,
+								});
 							});
 						} else {
+							// console.log(test.section_id[0]);
 							var result = new Result();
 							result.test_id = test._id;
 							result.user_id = req.user.id;
 							// result.user_response = arr;
+							result.activesec = test.section_id[0]._id;
 							result.sections = test.section_id;
 							result.notvisited = test.total_questions;
 							result.save().then(() => {
@@ -302,50 +320,15 @@ router.post('/section/change', async (req, res) => {
 			var oldsec = result.sections.id(req.body.oldsec);
 			// console.log(oldsec);
 			var newsec = result.sections.id(req.body.newsec);
-			var start = moment(oldsec.timestarted * 1000);
+			var start = moment(oldsec.timestarted);
 			var endTime = moment();
 			var duration = moment.duration(endTime.diff(start)).get('seconds');
-			// duration = parseInt(duration.asSeconds()) % 60;
-			console.log(duration);
+			// console.log(start);
+			// console.log(endTime);
+			// console.log(duration);
 			oldsec.timeleft -= duration;
 			newsec.timestarted = endTime;
-			var resultupd = await result.save();
-			// if (newsec.timeleft > 0) {
-			// 	res.json({});
-			// }
-			res.json({
-				status: 200,
-				timeleft: oldsec.timeleft,
-			});
-		} else {
-			res.json({
-				status: 404,
-				msg: 'Some Error occurred',
-			});
-		}
-	} catch (e) {
-		console.log(e);
-	}
-});
-router.post('/section/change2', async (req, res) => {
-	try {
-		var result = await Result.findOne({
-			test_id: req.body.testid,
-			user_id: req.user.id,
-		}).exec();
-		if (result) {
-			// console.log(result.sections);
-			// console.log(req.body.oldsec);
-			// var oldsec = result.sections.id(req.body.oldsec);
-			// console.log(oldsec);
-			var newsec = result.sections.id(req.body.newsec);
-			// var start = moment(oldsec.timestarted * 1000);
-			var endTime = moment();
-			// var duration = moment.duration(endTime.diff(start)).get('seconds');
-			// duration = parseInt(duration.asSeconds()) % 60;
-			// console.log(duration);
-			// oldsec.timeleft -= duration;
-			newsec.timestarted = endTime;
+			result.activesec = req.body.newsec;
 			var resultupd = await result.save();
 			// if (newsec.timeleft > 0) {
 			// 	res.json({});
