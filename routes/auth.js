@@ -253,7 +253,7 @@ router.post('/forget', async (req, res) => {
 				// console.log(process.env.EMAIL_PASSWORD);
 				var otp = {};
 				otp.id = uuid.v4();
-				otp.time = new Date().getTime();
+				otp.time = moment();
 				user.otp = otp;
 				user.save().then((user) => {
 					const mailOptions = {
@@ -304,9 +304,7 @@ router.post('/forget/set', async (req, res) => {
 			const user = await User.findOne({ email: email }).exec();
 			if (user) {
 				// console.log(process.env.EMAIL_PASSWORD);
-				if (
-					moment(user.otp.time).add(5, 'minute').isAfter(new Date().getTime())
-				) {
+				if (moment(user.otp.time).add(5, 'minute').isAfter(moment())) {
 					if (otp == user.otp.id) {
 						bcrypt.genSalt(10, (err, salt) => {
 							bcrypt.hash(req.body.password, salt, (err, hash) => {
