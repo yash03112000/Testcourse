@@ -12,7 +12,6 @@ const isDev = process.env.NODE_ENV !== 'production';
 const MongoStore = require('connect-mongo')(session);
 const { ensureAuthenciated } = require('./middleware/auth');
 const morgan = require('morgan');
-// const formidableMiddleware = require('express-formidable');
 const fileUpload = require('express-fileupload');
 // const config = isDev?require('./config/config'):'';
 var cors = require('cors');
