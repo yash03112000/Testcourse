@@ -1,6 +1,6 @@
 This is a [Nextjs](https://nextjs.org) project with Native Modules managed with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-This Platfrom was developed for OOkul Samadhan Pvt Ltd.
+This Platfrom was developed for [`OOkul Samadhan Pvt Ltd`](https://ookul.co/).
 Mobile Apps can be found at [Testcourse](https://github.com/yash03112000/TestCourseApp)
 In This Platfrom Users can
 
