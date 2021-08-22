@@ -1,4 +1,4 @@
-This is a [Nextjs](https://nextjs.org) project with Native Modules managed with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+This is a [Nextjs](https://nextjs.org) project with Server Side Rendering Enabled
 
 This Platfrom was developed for [`OOkul Samadhan Pvt Ltd`](https://ookul.co/).
 
