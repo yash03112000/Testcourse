@@ -130,7 +130,7 @@ export default function Home({ data }) {
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({ testid: id }),
+			body: JSON.stringify({ id }),
 		}).then((res) => {
 			// console.log(res.status)
 			if (res.status === 200) {
@@ -141,6 +141,10 @@ export default function Home({ data }) {
 				router.push(`/LogIn?next=${router.asPath}`);
 
 				// router.replace('/LogIn');
+			} else if (res.status == 400) {
+				res.json.then((res) => {
+					setMsg(res.msg);
+				});
 			}
 		});
 	};
@@ -153,7 +157,7 @@ export default function Home({ data }) {
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({ testid: id }),
+			body: JSON.stringify({ id }),
 		}).then((res) => {
 			if (res.status === 200) {
 				res.json().then((res) => {
@@ -209,6 +213,10 @@ export default function Home({ data }) {
 
 						const paymentObject = new window.Razorpay(options);
 						paymentObject.open();
+					} else if (res.status == 400) {
+						res.json.then((res) => {
+							setMsg(res.msg);
+						});
 					}
 				});
 			} else if (res.status == 403) {
@@ -390,6 +398,7 @@ export default function Home({ data }) {
 						<div className={classes.imgdiv}>
 							<img src="/static/banner.jpg" className={classes.img} />
 						</div>
+						{msg}
 						<div className={classes.column}>
 							{botfun()}
 							<div className={classes.column} style={{ paddingLeft: 20 }}>

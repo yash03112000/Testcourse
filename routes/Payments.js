@@ -24,7 +24,7 @@ const eligible = (test, id) => {
 };
 router.post('/orders/test', async (req, res) => {
 	// console.log(req.body.testid);
-	var test = await Test.findById(req.body.testid).exec();
+	var test = await Test.findById(req.body.id).exec();
 	if (test == null) {
 		res.json({
 			msg: 'Error',
@@ -215,14 +215,15 @@ router.post('/test/success', (req, res) => {
 	const shasum = crypto.createHmac('sha256', process.env.RAZORPAY_SECRET);
 	shasum.update(`${orderCreationId}|${razorpayPaymentId}`);
 	const digest = shasum.digest('hex');
-	console.log(digest);
+	// console.log(digest);
+	// console.log(razorpaySignature);
 
 	if (digest !== razorpaySignature)
 		return res.status(400).json({ msg: 'Transaction not legit!' });
 
 	// console.log(digest !== razorpaySignature);
 
-	Test.findById(req.body.testid)
+	Test.findById(req.body.id)
 		.exec()
 		.then((test) => {
 			if (test) {
@@ -232,7 +233,7 @@ router.post('/test/success', (req, res) => {
 					payment.orderCreationId = orderCreationId;
 					payment.razorpayPaymentId = razorpayPaymentId;
 					payment.razorpayOrderId = razorpayOrderId;
-					payment.entityid = req.body.testid;
+					payment.entityid = req.body.id;
 					payment.entitytype = 'Test';
 					payment.userid = req.user.id;
 					payment.free = false;
@@ -293,7 +294,7 @@ router.post('/digital/success', (req, res) => {
 
 	// console.log(digest !== razorpaySignature);
 
-	Digital.findById(req.body.testid)
+	Digital.findById(req.body.id)
 		.exec()
 		.then((test) => {
 			if (test) {
@@ -303,7 +304,7 @@ router.post('/digital/success', (req, res) => {
 					payment.orderCreationId = orderCreationId;
 					payment.razorpayPaymentId = razorpayPaymentId;
 					payment.razorpayOrderId = razorpayOrderId;
-					payment.entityid = req.body.testid;
+					payment.entityid = req.body.id;
 					payment.entitytype = 'Digital';
 					payment.userid = req.user.id;
 					payment.free = false;
@@ -346,8 +347,8 @@ router.post('/digital/success', (req, res) => {
 });
 
 router.post('/test/registerfree', (req, res) => {
-	console.log(req.body.testid);
-	Test.findById(req.body.testid)
+	console.log(req.body.id);
+	Test.findById(req.body.id)
 		.exec()
 		.then((test) => {
 			if (test) {
@@ -357,7 +358,7 @@ router.post('/test/registerfree', (req, res) => {
 					// payment.orderCreationId = orderCreationId;
 					// payment.razorpayPaymentId = razorpayPaymentId;
 					// payment.razorpayOrderId = razorpayOrderId;
-					payment.entityid = req.body.testid;
+					payment.entityid = req.body.id;
 					payment.entitytype = 'Test';
 					payment.userid = req.user.id;
 					payment.free = true;
