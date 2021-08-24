@@ -6,7 +6,8 @@
 		"dev": "nodemon --ignore pages --ignore components  server.js",
 		"build": "next build",
 		"prod_start": "cross-env NODE_ENV=production node server.js",
-		"start": "yarn run build && yarn run prod_start"
+		"prestart": "next build",
+		"start": "yarn run prod_start"
 	},
 	"dependencies": {
 		"@ckeditor/ckeditor5-build-classic": "^28.0.0",
