@@ -26,26 +26,33 @@ router.get('/:id', (req, res) => {
 					.then((result) => {
 						if (result) {
 							var a = result;
-							// console.log(a);
+							console.log(a);
 							var sec = a.sections.id(a.activesec);
 							// console.log(sec);
-							var start = moment(sec.timestarted);
-							var endTime = moment();
-							var duration = moment
-								.duration(endTime.diff(start))
-								.get('seconds');
-							console.log(start);
-							console.log(endTime);
-							console.log(duration);
-							sec.timeleft -= duration;
-							sec.timestarted = endTime;
-							// result.activesec = req.body.newssec;
-							result.save().then((result) => {
+							if (sec) {
+								var start = moment(sec.timestarted);
+								var endTime = moment();
+								var duration = moment
+									.duration(endTime.diff(start))
+									.get('seconds');
+								console.log(start);
+								console.log(endTime);
+								console.log(duration);
+								sec.timeleft -= duration;
+								sec.timestarted = endTime;
+								// result.activesec = req.body.newssec;
+								result.save().then((result) => {
+									res.json({
+										test,
+										result,
+									});
+								});
+							} else {
 								res.json({
 									test,
 									result,
 								});
-							});
+							}
 						} else {
 							// console.log(test.section_id[0]);
 							var result = new Result();

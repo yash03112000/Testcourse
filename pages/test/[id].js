@@ -100,7 +100,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export default function Home({ test, results, arr }) {
+export default function Home({ test, results, arr, serverstatus }) {
 	const [status, setStatus] = useState(false);
 	const [data, setData] = useState(test);
 	const [result, setResult] = useState(results);
@@ -218,159 +218,164 @@ export default function Home({ test, results, arr }) {
 				<title>TestCourse</title>
 			</Head>
 
-			<main>
-				<div className={classes.mainform}>
-					<div className={classes.header}>
-						<div>
-							<Typography
-								component="span"
-								color="primary"
-								variant="subtitle1"
-								gutterBottom
-								className={classes.headertext}
-							>
-								{data.title}
-							</Typography>
+			{serverstatus === 400 ? (
+				<h1>Server Error</h1>
+			) : (
+				<main>
+					<div className={classes.mainform}>
+						<div className={classes.header}>
+							<div>
+								<Typography
+									component="span"
+									color="primary"
+									variant="subtitle1"
+									gutterBottom
+									className={classes.headertext}
+								>
+									{data.title}
+								</Typography>
+							</div>
+							<div className={classes.headertextInstruct}>
+								<Typography
+									component="div"
+									align="right"
+									color="primary"
+									variant="subtitle1"
+									gutterBottom
+									style={{ color: 'white' }}
+								>
+									View Instructions
+								</Typography>
+							</div>
+							<Drawer result={result} changeqid={changeqid} section={section} />
+							{/* <MenuIcon className={classes.hamicon} /> */}
 						</div>
-						<div className={classes.headertextInstruct}>
-							<Typography
-								component="div"
-								align="right"
-								color="primary"
-								variant="subtitle1"
-								gutterBottom
-								style={{ color: 'white' }}
-							>
-								View Instructions
-							</Typography>
-						</div>
-						<Drawer result={result} changeqid={changeqid} section={section} />
-						{/* <MenuIcon className={classes.hamicon} /> */}
-					</div>
-					<div className={classes.maindiv}>
-						<div className={classes.maindivleft}>
-							<div className={classes.sec1}>
-								{result.sections.map((sec, index) => {
-									return (
-										<Button
-											style={{ padding: 5 }}
-											key={index}
-											onClick={() => {
-												secChange(sec);
-											}}
-											// disabled={sec.timeleft <= 0}
-										>
+						<div className={classes.maindiv}>
+							<div className={classes.maindivleft}>
+								<div className={classes.sec1}>
+									{result.sections.map((sec, index) => {
+										return (
+											<Button
+												style={{ padding: 5 }}
+												key={index}
+												onClick={() => {
+													secChange(sec);
+												}}
+												// disabled={sec.timeleft <= 0}
+											>
+												<Typography
+													component="span"
+													color="primary"
+													variant="subtitle1"
+													gutterBottom
+													style={{
+														backgroundColor: '#38A9EB',
+														color: 'white',
+														padding: 8,
+														margin: 10,
+														borderRadius: 10,
+													}}
+												>
+													{sec.title}
+												</Typography>
+											</Button>
+										);
+									})}
+								</div>
+								<div className={classes.sec2}>
+									<div>
+										<div>
 											<Typography
 												component="span"
 												color="primary"
 												variant="subtitle1"
 												gutterBottom
-												style={{
-													backgroundColor: '#38A9EB',
-													color: 'white',
-													padding: 8,
-													margin: 10,
-													borderRadius: 10,
-												}}
+												style={{ color: 'black', margin: 5 }}
 											>
-												{sec.title}
+												Section
 											</Typography>
-										</Button>
-									);
-								})}
-							</div>
-							<div className={classes.sec2}>
-								<div>
+										</div>
+									</div>
+									<Timer timeleft={section.timeleft} timeover={timeover} />
+								</div>
+								<div className={classes.sec3}>
 									<div>
 										<Typography
 											component="span"
 											color="primary"
 											variant="subtitle1"
 											gutterBottom
-											style={{ color: 'black', margin: 5 }}
+											style={{
+												backgroundColor: '#38A9EB',
+												color: 'white',
+												padding: 8,
+												margin: 10,
+											}}
 										>
-											Section
+											{section.title}
 										</Typography>
 									</div>
 								</div>
-								<Timer timeleft={section.timeleft} timeover={timeover} />
+								{section.timeleft > 0 ? (
+									<Question
+										id={quesid}
+										changeresult={changeresult}
+										result={result}
+										quesarr={quesarr}
+										changequesarr={changequesarr}
+										section={section}
+									/>
+								) : (
+									<div>
+										<h1>
+											Time Over for this section. Please Change section or
+											submit
+										</h1>
+									</div>
+								)}
 							</div>
-							<div className={classes.sec3}>
-								<div>
-									<Typography
-										component="span"
-										color="primary"
-										variant="subtitle1"
-										gutterBottom
-										style={{
-											backgroundColor: '#38A9EB',
-											color: 'white',
-											padding: 8,
-											margin: 10,
-										}}
-									>
-										{section.title}
-									</Typography>
-								</div>
-							</div>
-							{section.timeleft > 0 ? (
-								<Question
-									id={quesid}
-									changeresult={changeresult}
-									result={result}
-									quesarr={quesarr}
-									changequesarr={changequesarr}
-									section={section}
-								/>
-							) : (
-								<div>
-									<h1>
-										Time Over for this section. Please Change section or submit
-									</h1>
-								</div>
-							)}
+							<RightDiv
+								result={result}
+								changeqid={changeqid}
+								section={section}
+								changeModal={changeModal}
+							/>
 						</div>
-						<RightDiv
-							result={result}
-							changeqid={changeqid}
-							section={section}
-							changeModal={changeModal}
-						/>
 					</div>
-				</div>
-				<Modal
-					aria-labelledby="transition-modal-title"
-					aria-describedby="transition-modal-description"
-					className={classes.modal}
-					open={modal}
-					// onClose={handleClose}
-					closeAfterTransition
-					BackdropComponent={Backdrop}
-					BackdropProps={{
-						timeout: 500,
-					}}
-				>
-					<Fade in={modal}>
-						<div className={classes.paper}>
-							<h2 id="transition-modal-title">Do You Wanna Submit</h2>
-							<Button
-								variant="contained"
-								style={{ backgroundColor: '#449D44' }}
-								onClick={() => submitTest()}
-							>
-								Submit
-							</Button>
-							<Button
-								variant="contained"
-								style={{ backgroundColor: '#E74500' }}
-								onClick={() => setModal(false)}
-							>
-								Cancel
-							</Button>
-						</div>
-					</Fade>
-				</Modal>
-			</main>
+					<Modal
+						aria-labelledby="transition-modal-title"
+						aria-describedby="transition-modal-description"
+						className={classes.modal}
+						open={modal}
+						// onClose={handleClose}
+						closeAfterTransition
+						BackdropComponent={Backdrop}
+						BackdropProps={{
+							timeout: 500,
+						}}
+					>
+						<Fade in={modal}>
+							<div className={classes.paper}>
+								<h2 id="transition-modal-title">Do You Wanna Submit</h2>
+								<Button
+									variant="contained"
+									style={{ backgroundColor: '#449D44' }}
+									onClick={() => submitTest()}
+								>
+									Submit
+								</Button>
+								<Button
+									variant="contained"
+									style={{ backgroundColor: '#E74500' }}
+									onClick={() => setModal(false)}
+								>
+									Cancel
+								</Button>
+							</div>
+						</Fade>
+					</Modal>
+				</main>
+			)}
 		</div>
 	);
 }
@@ -418,10 +423,16 @@ export async function getServerSideProps(ctx) {
 			// console.log(result);
 
 			return {
-				props: { test, results: result, arr }, // will be passed to the page component as props
+				props: { test, results: result, arr, serverstatus: 200 }, // will be passed to the page component as props
 			};
 		}
 	} catch (err) {
+		return {
+			props: {
+				serverstatus: 400,
+				// msg: 'Error On Server',
+			},
+		};
 		console.log('Fetch Request is not returning JSON File');
 	}
 }
