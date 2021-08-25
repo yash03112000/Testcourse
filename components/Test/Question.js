@@ -75,6 +75,8 @@ export default function Question({
 		initial();
 	}, [id]);
 
+	// console.log(server);
+
 	const initial = () => {
 		setLoading(true);
 		var data = [...quesarr];
@@ -87,7 +89,7 @@ export default function Question({
 						setLoading(false);
 					});
 				} else {
-					// console.log('aa');
+					// console.log(server);
 					fetch(`${server}/Testserver/question`, {
 						method: 'POST',
 						headers: {

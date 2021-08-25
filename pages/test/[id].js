@@ -110,14 +110,13 @@ export default function Home({ test, results, arr, serverstatus }) {
 	// const [time, setTime] = useState(section.timeleft);
 	const [modal, setModal] = useState(false);
 
-	//   const [sanswer,setSanswer] = useState('')
-	//   const [manswer,setManswer] = useState([]);
 	const router = useRouter();
 	const classes = useStyles();
 
 	const { id: testid } = router.query;
 
-	//   console.log(data)
+	// console.log(server);
+	// console.log(process.env.NEXT_PUBLIC_URL);
 
 	const changeqid = (id) => {
 		console.log('quesid');
