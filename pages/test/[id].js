@@ -405,25 +405,34 @@ export async function getServerSideProps(ctx) {
 				},
 			};
 		} else {
-			var test = data.test;
-			var result = data.result;
-			var arr = [];
+			if (data.result.is_test_completed) {
+				return {
+					redirect: {
+						destination: `/result/${ctx.params.id}`,
+						permanent: false,
+					},
+				};
+			} else {
+				var test = data.test;
+				var result = data.result;
+				var arr = [];
 
-			result.sections.map((sec, i) => {
-				sec.questions.map((ques) => {
-					var a = {};
-					a['done'] = false;
-					a['_id'] = ques._id;
-					a['content'] = {};
-					arr.push(a);
+				result.sections.map((sec, i) => {
+					sec.questions.map((ques) => {
+						var a = {};
+						a['done'] = false;
+						a['_id'] = ques._id;
+						a['content'] = {};
+						arr.push(a);
+					});
 				});
-			});
 
-			// console.log(result);
+				// console.log(result);
 
-			return {
-				props: { test, results: result, arr, serverstatus: 200 }, // will be passed to the page component as props
-			};
+				return {
+					props: { test, results: result, arr, serverstatus: 200 }, // will be passed to the page component as props
+				};
+			}
 		}
 	} catch (err) {
 		return {

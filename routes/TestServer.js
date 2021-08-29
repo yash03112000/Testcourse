@@ -26,7 +26,7 @@ router.get('/:id', (req, res) => {
 					.then((result) => {
 						if (result) {
 							var a = result;
-							console.log(a);
+							// console.log(a);
 							var sec = a.sections.id(a.activesec);
 							// console.log(sec);
 							if (sec) {
@@ -35,9 +35,9 @@ router.get('/:id', (req, res) => {
 								var duration = moment
 									.duration(endTime.diff(start))
 									.get('seconds');
-								console.log(start);
-								console.log(endTime);
-								console.log(duration);
+								// console.log(start);
+								// console.log(endTime);
+								// console.log(duration);
 								sec.timeleft -= duration;
 								sec.timestarted = endTime;
 								// result.activesec = req.body.newssec;
@@ -514,7 +514,6 @@ router.get('/result/:id', (req, res) => {
 									result,
 								});
 							} else {
-								// computation(res,test,result)
 								Promise.all(
 									result.sections.map(async (sec) => {
 										// console.log('check-1');
