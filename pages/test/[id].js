@@ -104,7 +104,7 @@ export default function Home({ test, results, arr, serverstatus }) {
 	const [status, setStatus] = useState(false);
 	const [data, setData] = useState(test);
 	const [result, setResult] = useState(results);
-	const [section, setSection] = useState(result.sections[0]);
+	const [section, setSection] = useState(results.sections[0]);
 	const [quesid, setQuesid] = useState(section.questions[0]._id);
 	const [quesarr, setQuesarr] = useState(arr);
 	// const [time, setTime] = useState(section.timeleft);
@@ -416,15 +416,26 @@ export async function getServerSideProps(ctx) {
 				var test = data.test;
 				var result = data.result;
 				var arr = [];
+				console.log(data.quesarr);
 
-				result.sections.map((sec, i) => {
-					sec.questions.map((ques) => {
-						var a = {};
-						a['done'] = false;
-						a['_id'] = ques._id;
-						a['content'] = {};
-						arr.push(a);
-					});
+				// result.sections.map((sec, i) => {
+				// 	sec.questions.map((ques) => {
+				// 		var a = {};
+				// 		a['done'] = false;
+				// 		a['_id'] = ques._id;
+				// 		a['content'] = {};
+				// 		arr.push(a);
+				// 	});
+				// });
+				data.quesarr.map((item, i) => {
+					var a = {};
+					a['done'] = true;
+					a['_id'] = item.quesbody._id;
+					var b = {};
+					b['quesbody'] = item.quesbody;
+					b['response'] = item.response;
+					a['content'] = b;
+					arr.push(a);
 				});
 
 				// console.log(result);

@@ -38,7 +38,7 @@ export default function Home({ timeleft, timeover }) {
 
 	const { id: testid } = router.query;
 
-	console.log(timeleft);
+	// console.log(timeleft);
 
 	useEffect(() => {
 		if (timeleft != oldtime) {

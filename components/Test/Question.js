@@ -82,13 +82,18 @@ export default function Question({
 		var data = [...quesarr];
 		data.map((q, i) => {
 			if (q._id === id) {
-				if (q.done) {
+				if (!q.done) {
 					unstable(() => {
 						setQues(q.content.quesbody);
 						setAnswer(q.content.response);
 						setLoading(false);
 					});
 				} else {
+					unstable(() => {
+						setQues(q.content.quesbody);
+						setAnswer(q.content.response);
+						setLoading(false);
+					});
 					// console.log(server);
 					fetch(`${server}/Testserver/question`, {
 						method: 'POST',
@@ -101,15 +106,15 @@ export default function Question({
 						if (res.status === 200) {
 							res.json().then((res) => {
 								// console.log(res);
-								unstable(() => {
-									data[i].content.quesbody = res.quesbody;
-									data[i].content.response = res.ques.response;
-									data[i].done = true;
-									// console.log(data[i])
-									// changequesarr(data)
-									setQues(res.quesbody);
-									setAnswer(res.ques.response);
-								});
+								// unstable(() => {
+								// 	// data[i].content.quesbody = res.quesbody;
+								// 	// data[i].content.response = res.ques.response;
+								// 	// data[i].done = true;
+								// 	// console.log(data[i])
+								// 	// changequesarr(data)
+								// 	setQues(res.quesbody);
+								// 	setAnswer(res.ques.response);
+								// });
 								changeresult(res.result, id, data, false);
 								setLoading(false);
 							});

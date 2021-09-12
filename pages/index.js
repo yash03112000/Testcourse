@@ -122,6 +122,7 @@ export async function getServerSideProps() {
 	// console.log(server)
 	try {
 		var res = await fetch(`${server}/CourseServer/`);
+		// console.log(res);
 		var data = await res.json();
 
 		// var a = data.courses;

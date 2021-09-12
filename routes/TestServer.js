@@ -24,49 +24,117 @@ router.get('/:id', (req, res) => {
 				Result.findOne({ test_id: test._id, user_id: req.user.id })
 					.exec()
 					.then((result) => {
+						// console.log(quesarr);
 						if (result) {
-							var a = result;
-							// console.log(a);
-							var sec = a.sections.id(a.activesec);
-							// console.log(sec);
-							if (sec) {
-								var start = moment(sec.timestarted);
-								var endTime = moment();
-								var duration = moment
-									.duration(endTime.diff(start))
-									.get('seconds');
-								// console.log(start);
-								// console.log(endTime);
-								// console.log(duration);
-								sec.timeleft -= duration;
-								sec.timestarted = endTime;
-								// result.activesec = req.body.newssec;
-								result.save().then((result) => {
+							var quesarr = [];
+							Promise.all(
+								result.sections.map(async (sec) => {
+									// console.log('check-1');
+									return Promise.all(
+										sec.questions.map(async (item) => {
+											// var sec = result.sections.id(req.body.secid);
+											// console.log(sec);
+											// if (sec == null) res.json({ status: 400, msg: 'Failed' });
+											// console.log(sec);
+											// var ques = sec.questions.id(item._id);
+											// if (ques == null)
+											// 	res.json({ status: 400, msg: 'Failed' });
+											await Ques.findById(item._id)
+												.select('-answer')
+												.exec()
+												.then((quesbody) => {
+													var a = {};
+													a.response = item.response;
+													a.quesbody = quesbody;
+													quesarr.push(a);
+													// res.json({
+													// 	quesbody,
+													// 	result: test,
+													// 	ques,
+													// });
+												})
+												.catch((err) => {
+													console.log(err);
+												});
+										})
+									);
+								})
+							).then(() => {
+								var a = result;
+								// console.log(a);
+								var sec = a.sections.id(a.activesec);
+								// console.log(sec);
+								if (sec) {
+									var start = moment(sec.timestarted);
+									var endTime = moment();
+									var duration = moment
+										.duration(endTime.diff(start))
+										.get('seconds');
+									sec.timeleft -= duration;
+									sec.timestarted = endTime;
+									// result.activesec = req.body.newssec;
+									result.save().then((result) => {
+										// console.log(quesarr);
+
+										res.json({
+											test,
+											result,
+											quesarr,
+										});
+									});
+								} else {
+									// console.log(quesarr);
 									res.json({
 										test,
 										result,
+										quesarr,
 									});
-								});
-							} else {
-								res.json({
-									test,
-									result,
-								});
-							}
+								}
+							});
 						} else {
 							// console.log(test.section_id[0]);
-							var result = new Result();
-							result.test_id = test._id;
-							result.user_id = req.user.id;
-							// result.user_response = arr;
-							result.activesec = test.section_id[0]._id;
-							result.sections = test.section_id;
-							result.notvisited = test.total_questions;
-							result.save().then(() => {
-								res.json({
-									test,
-									result,
-									status: 200,
+							Promise.all(
+								test.section_id.map(async (sec) => {
+									// console.log('check-1');
+									return Promise.all(
+										sec.questions.map(async (res) => {
+											await Ques.findById(res._id)
+												.select('-answer')
+												.exec()
+												.then((quesbody) => {
+													var a = {};
+													a.response = [];
+													a.quesbody = quesbody;
+													quesarr.push(a);
+													// res.json({
+													// 	quesbody,
+													// 	result: test,
+													// 	ques,
+													// });
+												})
+												.catch((err) => {
+													console.log(err);
+												});
+										})
+									);
+								})
+							).then(() => {
+								var result = new Result();
+								result.test_id = test._id;
+								result.user_id = req.user.id;
+								// result.user_response = arr;
+								result.activesec = test.section_id[0]._id;
+								result.sections = test.section_id;
+								result.notvisited = test.total_questions;
+								result.save().then(() => {
+									// console.log(quesarr);
+
+									res.json({
+										test,
+										result,
+										status: 200,
+										quesarr,
+									});
 								});
 							});
 						}

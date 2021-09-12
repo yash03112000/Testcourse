@@ -80,7 +80,7 @@ export default function Home({ data }) {
 			<div className={classes.head}>
 				<div
 					className={classes.imgdiv}
-					onClick={() => router.replace(`/course/${data.slug}`)}
+					onClick={() => router.push(`/course/${data.slug}`)}
 				>
 					{data.thumbnail == '' ? (
 						<img src="/static/banner.jpg" className={classes.img} />
