@@ -93,6 +93,7 @@ router.get('/:id', (req, res) => {
 							});
 						} else {
 							// console.log(test.section_id[0]);
+							var quesarr = [];
 							Promise.all(
 								test.section_id.map(async (sec) => {
 									// console.log('check-1');
