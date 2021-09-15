@@ -22,24 +22,24 @@ var transporter = nodemailer.createTransport({
 	},
 });
 
-const middlefun = (req, res, next) => {
-	// console.log(req.headers)
-	if (req.query.applogin) {
-		// console.log(req.query.linkingUri)
-		baseUri = req.query.linkingUri;
-		// console.log(baseUri)
-		req.session.redirectTo = baseUri;
-		// req.session.save()
-		next();
-	} else {
-		req.session.redirectTo = '/dashboard?';
-		next();
-	}
-};
+// const middlefun = (req, res, next) => {
+// 	// console.log(req.headers)
+// 	if (req.query.applogin) {
+// 		// console.log(req.query.linkingUri)
+// 		baseUri = req.query.linkingUri;
+// 		// console.log(baseUri)
+// 		req.session.redirectTo = baseUri;
+// 		// req.session.save()
+// 		next();
+// 	} else {
+// 		req.session.redirectTo = '/dashboard?';
+// 		next();
+// 	}
+// };
 
 router.get(
 	'/google',
-	middlefun,
+	// middlefun,
 	passport.authenticate('google', { scope: ['email', 'profile'] })
 );
 router.get(
@@ -47,19 +47,19 @@ router.get(
 	passport.authenticate('google', { failureRedirect: '/' }),
 	(req, res) => {
 		// console.log(req.session.redirectTo)
-		res.redirect(`${req.session.redirectTo}success=true`);
+		res.redirect(`/dashboard`);
 	}
 );
 router.get(
 	'/facebook',
-	middlefun,
+	// middlefun,
 	passport.authenticate('facebook', { scope: ['email'] }, { scope: ['email'] })
 );
 router.get(
 	'/facebook/callback',
 	passport.authenticate('facebook', { failureRedirect: '/' }),
 	(req, res) => {
-		res.redirect(`${req.session.redirectTo}success=true`);
+		res.redirect(`/dashboard`);
 	}
 );
 router.post('/local', (req, res, next) => {
@@ -117,10 +117,12 @@ passport.use(
 					newUser.facebook.id = profile.id;
 					newUser.facebook.token = accessToken;
 					newUser.facebook.name = profile.displayName;
-					if (user.emails !== undefined) {
-						newUser.facebook.email = profile.emails[0].value;
-						newUser.email = profile.emails[0].value;
-					}
+					newUser.username = profile.displayName;
+
+					// if (user.emails !== undefined) {
+					// 	newUser.facebook.email = profile.emails[0].value;
+					// 	newUser.email = profile.emails[0].value;
+					// }
 
 					newUser.save().then((newUser) => {
 						return done(null, newUser);
@@ -142,7 +144,8 @@ passport.use(
 				: process.env.GOOGLE_CALLBACK,
 		},
 		function (accessToken, refreshToken, profile, done) {
-			// console.log(profile.id)
+			console.log(profile);
+			console.log(profile.displayName);
 			User.findOne({ 'google.id': profile.id }, function (err, user) {
 				if (err) return done(err);
 				if (user) {
@@ -155,7 +158,8 @@ passport.use(
 					// newUser.google.name = profile.name.givenName + ' ' + profile.name.familyName;
 					user.google.email = profile.emails[0].value;
 					user.email = profile.emails[0].value;
-
+					console.log(profile.displayName);
+					user.username = profile.displayName;
 					user.save().then((user) => {
 						return done(null, user);
 					});
