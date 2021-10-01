@@ -80,9 +80,18 @@ export default function Home({ data }) {
 			else {
 				setMsg('');
 				try {
-					const res = await axios.post(`/DashboardServer/admin/role`, {
-						usersearch,
-					});
+					const res = await axios.post(
+						`/DashboardServer/admin/role`,
+						{
+							usersearch,
+						},
+						{
+							headers: {
+								'Content-Type': 'application/json',
+								'x-access-token': localStorage.getItem('token'),
+							},
+						}
+					);
 					// console.log('hehe');
 					console.log(res);
 					if (res.data.status == 403) {
@@ -111,9 +120,18 @@ export default function Home({ data }) {
 		try {
 			setMsg('');
 			try {
-				const res = await axios.post(`/DashboardServer/admin/rolechange`, {
-					user,
-				});
+				const res = await axios.post(
+					`/DashboardServer/admin/rolechange`,
+					{
+						user,
+					},
+					{
+						headers: {
+							'Content-Type': 'application/json',
+							'x-access-token': localStorage.getItem('token'),
+						},
+					}
+				);
 				if (res.data.status == 403) {
 					setMsg(res.data.msg);
 				} else if (res.data.status == 404) {

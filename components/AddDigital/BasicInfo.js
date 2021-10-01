@@ -72,6 +72,7 @@ export default function Home({ changestep, isNew, edit }) {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
+				'x-access-token': localStorage.getItem('token'),
 			},
 		}).then((res) => {
 			// console.log(res.status)
@@ -136,7 +137,12 @@ export default function Home({ changestep, isNew, edit }) {
 			if (res.status === 200) {
 				res.json().then((res) => {
 					axios
-						.post('/AddDigitalServer/uploadfile/' + res.id, formData)
+						.post('/AddDigitalServer/uploadfile/' + res.id, formData, {
+							headers: {
+								'Content-Type': 'application/json',
+								'x-access-token': localStorage.getItem('token'),
+							},
+						})
 						.then((res) => {
 							// console.log(res.status)
 							if (res.status === 200) {

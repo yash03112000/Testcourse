@@ -85,6 +85,7 @@ export default function Home({ secid, edit, changestates }) {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
+					'x-access-token': localStorage.getItem('token'),
 				},
 				body: JSON.stringify({
 					id: edit,

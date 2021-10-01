@@ -59,6 +59,7 @@ export default function Home({ step }) {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
+				'x-access-token': localStorage.getItem('token'),
 			},
 		}).then((res) => {
 			// console.log(res.status)

@@ -5,7 +5,7 @@ const Test = require('../models/Test');
 const Course = require('../models/Course');
 const Digital = require('../models/Digital');
 const Lesson = require('../models/Lesson');
-const { ensureAuthenciated } = require('../middleware/auth');
+const { isAuthenticated } = require('../middleware/auth');
 
 router.get('/', (req, res) => {
 	Course.find({})
@@ -100,13 +100,15 @@ router.post('/lessondata', (req, res) => {
 		});
 });
 
-router.post('/permit', async (req, res) => {
+router.post('/permit', isAuthenticated, async (req, res) => {
 	try {
 		var course = await Course.findOne({ slug: req.body.slug }).exec();
 		var i;
 		var flag = false;
 		if (course) {
-			if (req.isAuthenticated()) {
+			var a = req.user.isAuthenticated;
+			console.log(a);
+			if (a) {
 				for (i = 0; i < course.payments.length; i++) {
 					if (course.payments[i].userid.equals(req.user.id)) flag = true;
 				}
@@ -128,13 +130,16 @@ router.post('/permit', async (req, res) => {
 	}
 });
 
-router.post('/test/permit', async (req, res) => {
+router.post('/test/permit', isAuthenticated, async (req, res) => {
 	try {
 		var course = await Test.findById(req.body.id).exec();
 		var i;
 		var flag = false;
 		if (course) {
-			if (req.isAuthenticated()) {
+			var a = req.user.isAuthenticated;
+			console.log(a);
+			if (a) {
+				console.log('a');
 				for (i = 0; i < course.payments.length; i++) {
 					if (course.payments[i].userid.equals(req.user.id)) flag = true;
 				}
@@ -144,6 +149,7 @@ router.post('/test/permit', async (req, res) => {
 					// type: req.user.type,
 				});
 			} else {
+				console.log('b');
 				res.json({
 					status: false,
 					data: course,

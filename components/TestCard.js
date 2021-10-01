@@ -86,6 +86,7 @@ export default function TestCard({ test, router }) {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				'x-access-token': localStorage.getItem('token'),
 			},
 			body: JSON.stringify({ testid: test._id }),
 		}).then((res) => {
@@ -107,6 +108,7 @@ export default function TestCard({ test, router }) {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				'x-access-token': localStorage.getItem('token'),
 			},
 			body: JSON.stringify({ testid: test._id }),
 		}).then((res) => {
@@ -127,6 +129,7 @@ export default function TestCard({ test, router }) {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				'x-access-token': localStorage.getItem('token'),
 			},
 			body: JSON.stringify({ testid: test._id }),
 		}).then((res) => {
@@ -154,6 +157,7 @@ export default function TestCard({ test, router }) {
 									method: 'POST',
 									headers: {
 										'Content-Type': 'application/json',
+										'x-access-token': localStorage.getItem('token'),
 									},
 									body: JSON.stringify({ data, testid: test._id }),
 								}).then((res) => {

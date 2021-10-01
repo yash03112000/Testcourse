@@ -133,7 +133,12 @@ export default function Home() {
 	const initial = () => {
 		// console.log('aa');
 		setLoad(true);
-		fetch(`/auth/`, { method: 'GET' }).then((res) => {
+		fetch(`/auth/`, {
+			method: 'GET',
+			headers: {
+				'x-access-token': localStorage.getItem('token'),
+			},
+		}).then((res) => {
 			// console.log(res.status)
 			if (res.status === 200) {
 				res.json().then((res) => {
@@ -145,20 +150,27 @@ export default function Home() {
 		});
 	};
 	const logout = () => {
+		localStorage.removeItem('token');
+		router.reload();
 		// console.log('aa');
-		setLoad(true);
-		fetch(`/auth/logout`, { method: 'GET' }).then((res) => {
-			// console.log(res.status)
-			if (res.status === 200) {
-				// res.json().then((res) => {
-				// 	setUser(res.user);
-				// 	setStatus(true);
-				// });
-				router.reload();
-			}
-			// else if (res.status == 403) setStatus(false);
-			setLoad(false);
-		});
+		// setLoad(true);
+		// fetch(`/auth/logout`, {
+		// 	method: 'GET',
+		// 	headers: {
+		// 		'x-access-token': localStorage.getItem('token'),
+		// 	},
+		// }).then((res) => {
+		// 	// console.log(res.status)
+		// 	if (res.status === 200) {
+		// 		// res.json().then((res) => {
+		// 		// 	setUser(res.user);
+		// 		// 	setStatus(true);
+		// 		// });
+		// 		router.reload();
+		// 	}
+		// 	// else if (res.status == 403) setStatus(false);
+		// 	setLoad(false);
+		// });
 	};
 
 	const but = () => {

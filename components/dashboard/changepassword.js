@@ -79,10 +79,19 @@ export default function Home({ data }) {
 			else {
 				setMsg('');
 				try {
-					const res = await axios.post(`/auth/change`, {
-						oldPassword,
-						newPassword,
-					});
+					const res = await axios.post(
+						`/auth/change`,
+						{
+							oldPassword,
+							newPassword,
+						},
+						{
+							headers: {
+								'Content-Type': 'application/json',
+								'x-access-token': localStorage.getItem('token'),
+							},
+						}
+					);
 					if (res.data.status == 403) {
 						setMsg('Wrong Password');
 					} else {

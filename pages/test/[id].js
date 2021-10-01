@@ -30,7 +30,7 @@ import Question from '../../components/Test/Question';
 import Timer from '../../components/Test/Timer';
 import { server } from '../../config';
 import axios from 'axios';
-
+import cookies from 'next-cookies';
 const useStyles = makeStyles((theme) => ({
 	mainform: {
 		width: '100vw',
@@ -126,11 +126,20 @@ export default function Home({ test, results, arr, serverstatus }) {
 		console.log('quesid');
 
 		if (curr._id !== section._id) {
-			var res = await axios.post(`/TestServer/section/change`, {
-				newsec: curr._id,
-				oldsec: section._id,
-				testid,
-			});
+			var res = await axios.post(
+				`/TestServer/section/change`,
+				{
+					newsec: curr._id,
+					oldsec: section._id,
+					testid,
+				},
+				{
+					headers: {
+						'Content-Type': 'application/json',
+						'x-access-token': localStorage.getItem('token'),
+					},
+				}
+			);
 			if (res.data.status == 200) {
 				var da = result;
 				var secs = da.sections;
@@ -193,6 +202,7 @@ export default function Home({ test, results, arr, serverstatus }) {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				'x-access-token': localStorage.getItem('token'),
 			},
 			body: JSON.stringify({ testid }),
 		}).then((res) => {
@@ -380,13 +390,14 @@ export default function Home({ test, results, arr, serverstatus }) {
 }
 
 export async function getServerSideProps(ctx) {
-	// console.log(server)
+	const { auth } = cookies(ctx);
+	// console.log(auth);
 	try {
 		var res = await fetch(`${server}/Testserver/${ctx.params.id}`, {
 			method: 'GET',
-			headers: ctx.req
-				? { cookie: ctx.req.headers.cookie, 'User-Agent': '*' }
-				: undefined,
+			headers: {
+				'x-access-token': auth,
+			},
 		});
 		if (res.status === 403) {
 			return {

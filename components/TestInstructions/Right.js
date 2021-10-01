@@ -102,6 +102,7 @@ export default function Home({ data }) {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				'x-access-token': localStorage.getItem('token'),
 			},
 			body: JSON.stringify({ id }),
 		}).then((res) => {
@@ -129,6 +130,7 @@ export default function Home({ data }) {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				'x-access-token': localStorage.getItem('token'),
 			},
 			body: JSON.stringify({ id }),
 		}).then((res) => {
@@ -156,6 +158,7 @@ export default function Home({ data }) {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				'x-access-token': localStorage.getItem('token'),
 			},
 			body: JSON.stringify({ id }),
 		}).then((res) => {
@@ -183,6 +186,7 @@ export default function Home({ data }) {
 									method: 'POST',
 									headers: {
 										'Content-Type': 'application/json',
+										'x-access-token': localStorage.getItem('token'),
 									},
 									body: JSON.stringify({ data, id }),
 								}).then((res) => {

@@ -13,6 +13,7 @@ const uuid = require('uuid');
 const moment = require('moment');
 var nodemailer = require('nodemailer');
 const { ensureAuthenciated } = require('../middleware/auth');
+var jwt = require('jsonwebtoken');
 
 var transporter = nodemailer.createTransport({
 	service: process.env.EMAIL_SERVICE,
@@ -42,12 +43,17 @@ router.get(
 	// middlefun,
 	passport.authenticate('google', { scope: ['email', 'profile'] })
 );
+// router.get('/google', (req, res) => {
+// 	console.log(req);
+// });
 router.get(
 	'/google/callback',
-	passport.authenticate('google', { failureRedirect: '/' }),
+	passport.authenticate('google', { failureRedirect: '/', session: true }),
 	(req, res) => {
-		// console.log(req.session.redirectTo)
-		res.redirect(`/dashboard`);
+		// console.log(req.user);
+		const token = jwt.sign(req.user.toJSON(), process.env.JWT_ACCESS_TOKEN);
+		res.cookie('auth', token);
+		res.redirect('/dashboard');
 	}
 );
 router.get(
@@ -62,28 +68,40 @@ router.get(
 		res.redirect(`/dashboard`);
 	}
 );
-router.post('/local', (req, res, next) => {
-	passport.authenticate('local', (err, user, info) => {
-		if (err) {
-			return next(err);
-		}
+
+router.post('/local', async (req, res) => {
+	try {
+		let user = await User.findOne({ username: req.body.username });
+		// console.log(user)
 		if (!user) {
-			return res.json({
+			res.json({
 				msg: 'User And Password Doesnt Match',
 				status: false,
 			});
 		}
-		req.logIn(user, function (err) {
-			if (err) {
-				return next(err);
+
+		bcrypt.compare(req.body.password, user.password).then((valid) => {
+			if (!valid) {
+				res.json({
+					msg: 'User And Password Doesnt Match',
+					status: false,
+				});
+			} else {
+				const token = jwt.sign(user.toJSON(), process.env.JWT_ACCESS_TOKEN);
+				// res.cookie('auth', token);
+
+				// console.log(token);
+				res.json({
+					msg: 'success',
+					status: true,
+					type: user.type,
+					accesstoken: token,
+				});
 			}
-			return res.json({
-				msg: 'success',
-				status: true,
-				type: user.type,
-			});
 		});
-	})(req, res, next);
+	} catch (err) {
+		console.error(err);
+	}
 });
 
 passport.serializeUser((user, done) => {
@@ -144,8 +162,8 @@ passport.use(
 				: process.env.GOOGLE_CALLBACK,
 		},
 		function (accessToken, refreshToken, profile, done) {
-			console.log(profile);
-			console.log(profile.displayName);
+			// console.log(profile);
+			// console.log(profile.displayName);
 			User.findOne({ 'google.id': profile.id }, function (err, user) {
 				if (err) return done(err);
 				if (user) {
@@ -167,27 +185,6 @@ passport.use(
 			});
 		}
 	)
-);
-
-passport.use(
-	'local',
-	new LocalStrategy(async (username, password, done) => {
-		// console.log(username)
-		try {
-			let user = await User.findOne({ username: username });
-			// console.log(user)
-			if (!user) {
-				return done(null, false);
-			}
-
-			bcrypt.compare(password, user.password).then((res) => {
-				if (!res) return done(null, false);
-				else return done(null, user);
-			});
-		} catch (err) {
-			console.error(err);
-		}
-	})
 );
 
 router.post('/SignUp', (req, res, next) => {
@@ -224,23 +221,30 @@ router.post('/SignUp', (req, res, next) => {
 });
 
 router.get('/', (req, res) => {
-	if (req.isAuthenticated()) {
-		User.findById(req.user.id)
-			.exec()
-			.then((user) => {
-				res.json({
-					user: user.username,
-				});
-			})
-			.catch((err) => console.log(err));
-	} else {
-		res.status(403).end();
-	}
-});
-
-router.get('/logout', (req, res) => {
-	req.logout();
-	res.status(200).end();
+	const token = req.headers['x-access-token'];
+	// console.log(token);
+	jwt.verify(token, process.env.JWT_ACCESS_TOKEN, (err, user) => {
+		if (err || !user) res.sendStatus(403).end();
+		else {
+			req.user = user;
+			// console.log(user);
+			res.json({
+				user: user.username,
+			});
+		}
+	});
+	// if (req.isAuthenticated()) {
+	// 	User.findById(req.user.id)
+	// 		.exec()
+	// 		.then((user) => {
+	// 			res.json({
+	// 				user: user.username,
+	// 			});
+	// 		})
+	// 		.catch((err) => console.log(err));
+	// } else {
+	// 	res.status(403).end();
+	// }
 });
 
 router.post('/forget', async (req, res) => {
@@ -396,5 +400,56 @@ router.post('/change', ensureAuthenciated, async (req, res) => {
 		});
 	}
 });
+
+// passport.use(
+// 	'local',
+// 	new LocalStrategy(async (username, password, done) => {
+// 		// console.log(username)
+// 		try {
+// 			let user = await User.findOne({ username: username });
+// 			// console.log(user)
+// 			if (!user) {
+// 				return done(null, false);
+// 			}
+
+// 			bcrypt.compare(password, user.password).then((res) => {
+// 				if (!res) return done(null, false);
+// 				else return done(null, user);
+// 			});
+// 		} catch (err) {
+// 			console.error(err);
+// 		}
+// 	})
+// );
+
+// router.post('/local', (req, res, next) => {
+// 	passport.authenticate('local', (err, user, info) => {
+// 		if (err) {
+// 			return next(err);
+// 		}
+// 		if (!user) {
+// 			return res.json({
+// 				msg: 'User And Password Doesnt Match',
+// 				status: false,
+// 			});
+// 		}
+// 		jwt.sign(user._id,processs.env.JWT_ACCESS_TOKEN)
+// 		req.logIn(user, function (err) {
+// 			if (err) {
+// 				return next(err);
+// 			}
+// 			return res.json({
+// 				msg: 'success',
+// 				status: true,
+// 				type: user.type,
+// 			});
+// 		});
+// 	})(req, res, next);
+// });
+
+// router.get('/logout', (req, res) => {
+// 	req.logout();
+// 	res.status(200).end();
+// });
 
 module.exports = router;

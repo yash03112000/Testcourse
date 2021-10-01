@@ -347,7 +347,8 @@ router.post('/digital/success', (req, res) => {
 });
 
 router.post('/test/registerfree', (req, res) => {
-	console.log(req.body.id);
+	// console.log(req.user);
+	// console.log(req.user.id);
 	Test.findById(req.body.id)
 		.exec()
 		.then((test) => {

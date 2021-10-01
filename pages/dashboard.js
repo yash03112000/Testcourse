@@ -19,6 +19,7 @@ import TeacherDashboard from '../components/dashboard/teacherdashboard';
 import AdminDashboard from '../components/dashboard/admindashboard';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { useCookies } from 'react-cookie';
 
 const useStyles = makeStyles((theme) => ({
 	msg: {
@@ -69,16 +70,25 @@ export default function Home() {
 	const [data, setData] = useState({});
 	const router = useRouter();
 	const classes = useStyles();
+	const [cookies, setCookie, removeCookie] = useCookies(['auth']);
 
 	useEffect(() => {
 		initial();
 	}, []);
 
 	const initial = () => {
+		var token = localStorage.getItem('token');
+		// console.log(token);
+		if (!token) {
+			token = cookies.auth;
+			if (token) localStorage.setItem('token', token);
+			// removeCookie('auth');
+		}
 		fetch(`/DashboardServer`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
+				'x-access-token': token,
 			},
 		}).then((res) => {
 			// console.log(res.status)

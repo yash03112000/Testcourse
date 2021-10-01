@@ -7,7 +7,10 @@ var Course = require('../models/Course');
 var Digital = require('../models/Digital');
 
 router.get('/', async (req, res) => {
-	var user = req.user;
+	var userid = req.user.id;
+	var user = await User.findById(userid).exec();
+	// console.log(user);
+	// console.log(userid);
 	if (user.type == 'User') {
 		var tests = [];
 		var courses = [];
@@ -37,6 +40,7 @@ router.get('/', async (req, res) => {
 		var tests = [];
 		var courses = [];
 		var digitals = [];
+		console.log('here');
 
 		await Promise.all(
 			user.courseposted.map(async (pay) => {
@@ -46,7 +50,9 @@ router.get('/', async (req, res) => {
 		);
 		await Promise.all(
 			user.testposted.map(async (pay) => {
+				console.log(pay);
 				var test = await Test.findById(pay).exec();
+				console.log(test);
 				if (test) tests.push(test);
 			})
 		);

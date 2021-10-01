@@ -64,6 +64,7 @@ export default function Home({ a, b }) {
 								method: 'POST',
 								headers: {
 									'Content-Type': 'application/json',
+									'x-access-token': localStorage.getItem('token'),
 								},
 								body: JSON.stringify({ data: reader.result }),
 							})

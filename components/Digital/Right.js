@@ -100,6 +100,7 @@ export default function Home({ data }) {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				'x-access-token': localStorage.getItem('token'),
 			},
 			body: JSON.stringify({ id }),
 		}).then((res) => {
@@ -125,6 +126,7 @@ export default function Home({ data }) {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				'x-access-token': localStorage.getItem('token'),
 			},
 			body: JSON.stringify({ id }),
 		}).then((res) => {
@@ -148,6 +150,7 @@ export default function Home({ data }) {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				'x-access-token': localStorage.getItem('token'),
 			},
 			body: JSON.stringify({ id }),
 		}).then((res) => {
@@ -175,6 +178,7 @@ export default function Home({ data }) {
 									method: 'POST',
 									headers: {
 										'Content-Type': 'application/json',
+										'x-access-token': localStorage.getItem('token'),
 									},
 									body: JSON.stringify({ data, id }),
 								}).then((res) => {
@@ -217,7 +221,12 @@ export default function Home({ data }) {
 
 	const download = async () => {
 		const config = { responseType: 'blob' };
-		var res = await axios.get('/DigitalServer/download/' + id, config);
+		var res = await axios.get('/DigitalServer/download/' + id, config, {
+			headers: {
+				'Content-Type': 'application/json',
+				'x-access-token': localStorage.getItem('token'),
+			},
+		});
 		// console.log(res);
 		// blob = res.blob();
 		// const url = window.URL.createObjectURL(new Blob([res.data]));

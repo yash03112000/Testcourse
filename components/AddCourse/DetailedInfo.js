@@ -59,6 +59,7 @@ export default function Home({ changestep, isNew, edit }) {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
+				'x-access-token': localStorage.getItem('token'),
 			},
 		}).then((res) => {
 			// console.log(res.status)
@@ -83,6 +84,7 @@ export default function Home({ changestep, isNew, edit }) {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				'x-access-token': localStorage.getItem('token'),
 			},
 			body: JSON.stringify({ id: edit, requirements, outcomes, tags, desc }),
 		}).then((res) => {

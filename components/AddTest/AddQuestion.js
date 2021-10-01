@@ -99,7 +99,12 @@ export default function AddQuestion({
 		// setMarkIncorrect(les.marks_incorrect);
 		// setMarkCorrect(les.marks_correct);
 		try {
-			var res = await axios.get(`/AddTestServer/question/edit/${quesid}`);
+			var res = await axios.get(`/AddTestServer/question/edit/${quesid}`, {
+				headers: {
+					'Content-Type': 'application/json',
+					'x-access-token': localStorage.getItem('token'),
+				},
+			});
 			if (res.status == 404) {
 			} else if (res.status == 403) {
 				router.push(`/LogIn?next=${router.asPath}`);
@@ -218,6 +223,7 @@ export default function AddQuestion({
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json',
+							'x-access-token': localStorage.getItem('token'),
 						},
 						body: JSON.stringify({
 							ques: quesBody,
@@ -253,6 +259,7 @@ export default function AddQuestion({
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json',
+							'x-access-token': localStorage.getItem('token'),
 						},
 						body: JSON.stringify({
 							id: edit,

@@ -15,6 +15,8 @@ import { useRouter } from 'next/router';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import GTranslateIcon from '@material-ui/icons/GTranslate';
+import FacebookLogin from 'react-facebook-login';
+
 const useStyles = makeStyles((theme) => ({
 	msg: {
 		color: 'red',
@@ -65,9 +67,14 @@ export default function Home() {
 	// console.log(router);
 	// console.log(router.query);
 
-	const googlelgn = () => {
-		fetch('/auth/google', { method: 'GET' });
-	};
+	// const googlelgn = () => {
+	// 	fetch('/auth/google', {
+	// 		method: 'GET',
+	// 		// headers: {
+	// 		// 	'access-control-allow-origin': 'http://localhost:8080',
+	// 		// },
+	// 	});
+	// };
 
 	const login = (e) => {
 		e.preventDefault();
@@ -78,12 +85,15 @@ export default function Home() {
 			},
 			body: JSON.stringify({ username: Name, password: Password }),
 		}).then((res) => {
+			// console.log(res.headers['cookie']);
 			if (res.status === 200) {
 				res.json().then((res) => {
-					console.log(res);
+					// console.log(res);
 					if (!res.status) {
 						setMsg(res.msg);
 					} else {
+						// console.log(res.accesstoken);
+						localStorage.setItem('token', res.accesstoken);
 						if (router.query.next) {
 							router.replace(router.query.next);
 						} else router.replace('/dashboard');
@@ -96,6 +106,9 @@ export default function Home() {
 		});
 	};
 
+	const fblogin = (res) => {
+		console.log(res);
+	};
 	const forget = () => {
 		router.push('/Forget');
 	};
@@ -141,6 +154,24 @@ export default function Home() {
 											SignIn with FaceBook
 										</Button>
 									</Link>
+									{/* <FacebookLogin
+										appId="281662726567615"
+										autoLoad={true}
+										fields="name,email,picture"
+										// onClick={componentClicked}
+										callback={fblogin}
+										render={(renderProps) => (
+											<Button
+												variant="contained"
+												type="submit"
+												className={classes.fb}
+												startIcon={<FacebookIcon />}
+												// onClick={renderProps.onClick}
+											>
+												SignIn with FaceBook
+											</Button>
+										)}
+									/> */}
 									<Link href="/auth/google">
 										<Button
 											variant="contained"

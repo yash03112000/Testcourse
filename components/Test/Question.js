@@ -99,6 +99,7 @@ export default function Question({
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/json',
+							'x-access-token': localStorage.getItem('token'),
 						},
 						body: JSON.stringify({ id, test, secid: section._id }),
 					}).then((res) => {
@@ -143,6 +144,7 @@ export default function Question({
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				'x-access-token': localStorage.getItem('token'),
 			},
 			body: JSON.stringify({ id, test, answer, secid: section._id }),
 		}).then((res) => {
@@ -173,6 +175,7 @@ export default function Question({
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				'x-access-token': localStorage.getItem('token'),
 			},
 			body: JSON.stringify({ id, test, secid: section._id }),
 		}).then((res) => {
@@ -205,6 +208,7 @@ export default function Question({
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				'x-access-token': localStorage.getItem('token'),
 			},
 			body: JSON.stringify({ id, test, answer, secid: section._id }),
 		}).then((res) => {

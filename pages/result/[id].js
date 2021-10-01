@@ -25,6 +25,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { server } from '../../config';
 import { ResponsivePie } from '@nivo/pie';
 import parse from 'html-react-parser';
+import cookies from 'next-cookies';
 
 const useStyles = makeStyles((theme) => ({
 	mainform: {
@@ -138,6 +139,7 @@ export default function Home({ data }) {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				'x-access-token': localStorage.getItem('token'),
 			},
 			body: JSON.stringify({ testid }),
 		}).then((res) => {
@@ -161,6 +163,7 @@ export default function Home({ data }) {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				'x-access-token': localStorage.getItem('token'),
 			},
 			body: JSON.stringify({ testid, id, text }),
 		}).then((res) => {
@@ -752,12 +755,14 @@ export default function Home({ data }) {
 
 export async function getServerSideProps(ctx) {
 	// console.log(server)
+	const { auth } = cookies(ctx);
+	// console.log(auth);
 	try {
 		var res = await fetch(`${server}/Testserver/result/${ctx.params.id}`, {
 			method: 'GET',
-			headers: ctx.req
-				? { cookie: ctx.req.headers.cookie, 'User-Agent': '*' }
-				: undefined,
+			headers: {
+				'x-access-token': auth,
+			},
 		});
 		if (res.status == 403) {
 			return {
