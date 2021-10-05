@@ -88,7 +88,7 @@ router.post('/local', async (req, res) => {
 				});
 			} else {
 				const token = jwt.sign(user.toJSON(), process.env.JWT_ACCESS_TOKEN);
-				// res.cookie('auth', token);
+				res.cookie('auth', token);
 
 				// console.log(token);
 				res.json({
@@ -186,6 +186,37 @@ passport.use(
 		}
 	)
 );
+
+router.post('/googleapp', (req, res) => {
+	var { profile, accessToken } = req.body;
+	User.findOne({ 'google.id': profile.id }, function (err, user) {
+		if (err) return done(err);
+		if (user) {
+			const token = jwt.sign(user.toJSON(), process.env.JWT_ACCESS_TOKEN);
+			res.cookie('auth', token);
+			res.json({
+				accesstoken: token,
+			});
+		} else {
+			// console.log(profile)
+			var user = new User();
+			user.google.id = profile.id;
+			user.google.token = accessToken;
+			// newUser.google.name = profile.name.givenName + ' ' + profile.name.familyName;
+			user.google.email = profile.email;
+			user.email = profile.email;
+			// console.log(profile.displayName);
+			user.username = profile.name;
+			user.save().then((user) => {
+				const token = jwt.sign(user.toJSON(), process.env.JWT_ACCESS_TOKEN);
+				res.cookie('auth', token);
+				res.json({
+					accesstoken: token,
+				});
+			});
+		}
+	});
+});
 
 router.post('/SignUp', (req, res, next) => {
 	User.findOne({ username: req.body.username })
